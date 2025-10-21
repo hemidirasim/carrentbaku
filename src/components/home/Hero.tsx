@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ReservationDialog from '@/components/ReservationDialog';
 
 const Hero = () => {
   const { t } = useLanguage();
+  const [isReservationOpen, setIsReservationOpen] = useState(false);
 
   return (
     <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
@@ -34,7 +37,8 @@ const Hero = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button 
-              size="lg" 
+              size="lg"
+              onClick={() => setIsReservationOpen(true)}
               className="bg-accent hover:bg-accent-light text-white shadow-glow hover:shadow-elegant transition-all text-lg px-8 py-6 group"
             >
               {t('hero.cta')}
@@ -63,6 +67,11 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      <ReservationDialog 
+        open={isReservationOpen} 
+        onOpenChange={setIsReservationOpen}
+      />
     </section>
   );
 };

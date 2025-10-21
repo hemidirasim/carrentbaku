@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ReservationDialog from '@/components/ReservationDialog';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isReservationOpen, setIsReservationOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
 
@@ -61,22 +64,27 @@ const Header = () => {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
-            {/* Language Selector */}
-            <div className="hidden sm:flex items-center space-x-1 bg-secondary rounded-lg p-1">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => setLanguage(lang.code)}
-                  className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                    language === lang.code
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-background'
-                  }`}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
+            {/* Language Selector - Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="hidden sm:flex items-center space-x-2">
+                  <Globe className="w-4 h-4" />
+                  <span>{language.toUpperCase()}</span>
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-background">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={language === lang.code ? 'bg-primary text-primary-foreground' : ''}
+                  >
+                    {lang.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Phone */}
             <a
@@ -88,7 +96,10 @@ const Header = () => {
             </a>
 
             {/* Reserve Button */}
-            <Button className="hidden md:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all">
+            <Button 
+              onClick={() => setIsReservationOpen(true)}
+              className="hidden md:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
+            >
               {t('nav.reserve')}
             </Button>
 
@@ -137,13 +148,24 @@ const Header = () => {
               </div>
             </div>
             <div className="px-4 pt-2">
-              <Button className="w-full bg-gradient-primary">
+              <Button 
+                onClick={() => {
+                  setIsReservationOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="w-full bg-gradient-primary"
+              >
                 {t('nav.reserve')}
               </Button>
             </div>
           </div>
         )}
       </div>
+
+      <ReservationDialog 
+        open={isReservationOpen} 
+        onOpenChange={setIsReservationOpen}
+      />
     </header>
   );
 };

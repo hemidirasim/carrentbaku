@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, Fuel, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
+import ReservationDialog from '@/components/ReservationDialog';
 
 interface Car {
   id: number;
@@ -19,6 +20,8 @@ interface Car {
 const FeaturedCars = () => {
   const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<string>('');
 
   const cars: Car[] = [
     {
@@ -151,7 +154,13 @@ const FeaturedCars = () => {
               </CardContent>
 
               <CardFooter>
-                <Button className="w-full bg-gradient-primary group">
+                <Button 
+                  onClick={() => {
+                    setSelectedCar(car.name);
+                    setIsReservationOpen(true);
+                  }}
+                  className="w-full bg-gradient-primary group"
+                >
                   {t('nav.reserve')}
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -168,6 +177,12 @@ const FeaturedCars = () => {
             </Button>
           </Link>
         </div>
+
+        <ReservationDialog 
+          open={isReservationOpen} 
+          onOpenChange={setIsReservationOpen}
+          carName={selectedCar}
+        />
       </div>
     </section>
   );
