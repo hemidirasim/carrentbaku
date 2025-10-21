@@ -4,8 +4,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Fuel, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Link } from 'react-router-dom';
-import ReservationDialog from '@/components/ReservationDialog';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Car {
   id: number;
@@ -19,9 +18,8 @@ interface Car {
 
 const FeaturedCars = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isReservationOpen, setIsReservationOpen] = useState(false);
-  const [selectedCar, setSelectedCar] = useState<string>('');
 
   const cars: Car[] = [
     {
@@ -155,13 +153,10 @@ const FeaturedCars = () => {
 
               <CardFooter>
                 <Button 
-                  onClick={() => {
-                    setSelectedCar(car.name);
-                    setIsReservationOpen(true);
-                  }}
+                  onClick={() => navigate(`/cars/${car.id}`)}
                   className="w-full bg-gradient-primary group"
                 >
-                  {t('nav.reserve')}
+                  {t('cars.viewDetails')}
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </CardFooter>
@@ -177,12 +172,6 @@ const FeaturedCars = () => {
             </Button>
           </Link>
         </div>
-
-        <ReservationDialog 
-          open={isReservationOpen} 
-          onOpenChange={setIsReservationOpen}
-          carName={selectedCar}
-        />
       </div>
     </section>
   );

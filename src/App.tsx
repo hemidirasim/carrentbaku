@@ -8,9 +8,11 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Home from "./pages/Home";
 import Cars from "./pages/Cars";
+import CarDetail from "./pages/CarDetail";
 import Services from "./pages/Services";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +30,9 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/cars" element={<Cars />} />
+                <Route path="/cars/:id" element={<CarDetail />} />
                 <Route path="/services" element={<Services />} />
+                <Route path="/blog" element={<Blog />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />

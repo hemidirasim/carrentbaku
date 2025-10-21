@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,11 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users, Fuel, ArrowRight, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { carBrands } from '@/data/carBrands';
 
 const Cars = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedBrand, setSelectedBrand] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
 
   const cars = [
@@ -18,6 +22,7 @@ const Cars = () => {
       id: 1,
       name: 'Hyundai Elantra',
       category: 'economy',
+      brand: 'Hyundai',
       image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
       price: 55,
       seats: 5,
@@ -28,6 +33,7 @@ const Cars = () => {
       id: 2,
       name: 'Toyota Camry',
       category: 'comfort',
+      brand: 'Toyota',
       image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
       price: 85,
       seats: 5,
@@ -38,6 +44,7 @@ const Cars = () => {
       id: 3,
       name: 'Mercedes E-Class',
       category: 'premium',
+      brand: 'Mercedes-Benz',
       image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
       price: 150,
       seats: 5,
@@ -48,6 +55,7 @@ const Cars = () => {
       id: 4,
       name: 'Kia Rio',
       category: 'economy',
+      brand: 'Kia',
       image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
       price: 50,
       seats: 5,
@@ -58,6 +66,7 @@ const Cars = () => {
       id: 5,
       name: 'BMW 5 Series',
       category: 'premium',
+      brand: 'BMW',
       image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
       price: 180,
       seats: 5,
@@ -68,6 +77,7 @@ const Cars = () => {
       id: 6,
       name: 'Honda Accord',
       category: 'comfort',
+      brand: 'Honda',
       image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
       price: 80,
       seats: 5,
@@ -78,6 +88,7 @@ const Cars = () => {
       id: 7,
       name: 'Nissan Sentra',
       category: 'economy',
+      brand: 'Nissan',
       image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
       price: 60,
       seats: 5,
@@ -88,6 +99,7 @@ const Cars = () => {
       id: 8,
       name: 'Audi A6',
       category: 'premium',
+      brand: 'Audi',
       image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
       price: 170,
       seats: 5,
@@ -99,13 +111,14 @@ const Cars = () => {
   const filteredCars = cars.filter(car => {
     const matchesSearch = car.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || car.category === selectedCategory;
+    const matchesBrand = selectedBrand === 'all' || car.brand.toLowerCase().replace('-', '') === selectedBrand.toLowerCase().replace('-', '');
     const matchesPrice = 
       priceRange === 'all' ||
       (priceRange === 'low' && car.price < 70) ||
       (priceRange === 'medium' && car.price >= 70 && car.price < 120) ||
       (priceRange === 'high' && car.price >= 120);
     
-    return matchesSearch && matchesCategory && matchesPrice;
+    return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
   });
 
   return (
@@ -117,7 +130,7 @@ const Cars = () => {
             {t('nav.cars')}
           </h1>
           <p className="text-white/90 text-center text-lg">
-            Geniş avtomobil parkımızdan seçim edin
+            {t('cars.header')}
           </p>
         </div>
       </section>
@@ -125,12 +138,12 @@ const Cars = () => {
       {/* Filters */}
       <section className="py-8 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Avtomobil axtar..."
+                placeholder={t('cars.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -140,7 +153,7 @@ const Cars = () => {
             {/* Category */}
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger>
-                <SelectValue placeholder="Kateqoriya" />
+                <SelectValue placeholder={t('cars.filter.all')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
@@ -150,13 +163,28 @@ const Cars = () => {
               </SelectContent>
             </Select>
 
+            {/* Brand */}
+            <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('cars.filter.brand')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
+                {carBrands.map(brand => (
+                  <SelectItem key={brand.id} value={brand.id}>
+                    {brand.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             {/* Price Range */}
             <Select value={priceRange} onValueChange={setPriceRange}>
               <SelectTrigger>
-                <SelectValue placeholder="Qiymət aralığı" />
+                <SelectValue placeholder={t('cars.price')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Bütün qiymətlər</SelectItem>
+                <SelectItem value="all">{t('cars.price.all')}</SelectItem>
                 <SelectItem value="low">0-70 AZN</SelectItem>
                 <SelectItem value="medium">70-120 AZN</SelectItem>
                 <SelectItem value="high">120+ AZN</SelectItem>
@@ -169,11 +197,31 @@ const Cars = () => {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCategory('all');
+                setSelectedBrand('all');
                 setPriceRange('all');
               }}
             >
-              Sıfırla
+              {t('cars.reset')}
             </Button>
+          </div>
+
+          {/* Brand Logos */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {carBrands.map(brand => (
+              <button
+                key={brand.id}
+                onClick={() => setSelectedBrand(brand.id)}
+                className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-md ${
+                  selectedBrand === brand.id ? 'border-primary' : 'border-transparent'
+                }`}
+              >
+                <img 
+                  src={brand.logo} 
+                  alt={brand.name} 
+                  className="h-8 w-auto grayscale hover:grayscale-0 transition-all"
+                />
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -221,8 +269,11 @@ const Cars = () => {
                 </CardContent>
 
                 <CardFooter>
-                  <Button className="w-full bg-gradient-primary group">
-                    {t('nav.reserve')}
+                  <Button 
+                    className="w-full bg-gradient-primary group"
+                    onClick={() => navigate(`/cars/${car.id}`)}
+                  >
+                    {t('cars.viewDetails')}
                     <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </CardFooter>
@@ -232,7 +283,7 @@ const Cars = () => {
 
           {filteredCars.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">Axtarış nəticəsində avtomobil tapılmadı</p>
+              <p className="text-muted-foreground text-lg">{t('cars.noResults')}</p>
             </div>
           )}
         </div>
