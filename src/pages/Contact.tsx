@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
@@ -186,6 +187,55 @@ const Contact = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mt-16">
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center">{t('faq.title')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger>{t('faq.q1')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a1')}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-2">
+                    <AccordionTrigger>{t('faq.q2')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a2')}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-3">
+                    <AccordionTrigger>{t('faq.q3')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a3')}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-4">
+                    <AccordionTrigger>{t('faq.q4')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a4')}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-5">
+                    <AccordionTrigger>{t('faq.q5')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a5')}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-6">
+                    <AccordionTrigger>{t('faq.q6')}</AccordionTrigger>
+                    <AccordionContent>
+                      {t('faq.a6')}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Map */}

@@ -21,7 +21,7 @@ const Cars = () => {
     {
       id: 1,
       name: 'Hyundai Elantra',
-      category: 'economy',
+      category: 'ekonomik',
       brand: 'Hyundai',
       image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
       price: 55,
@@ -32,7 +32,7 @@ const Cars = () => {
     {
       id: 2,
       name: 'Toyota Camry',
-      category: 'comfort',
+      category: 'biznes',
       brand: 'Toyota',
       image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
       price: 85,
@@ -54,7 +54,7 @@ const Cars = () => {
     {
       id: 4,
       name: 'Kia Rio',
-      category: 'economy',
+      category: 'ekonomik',
       brand: 'Kia',
       image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
       price: 50,
@@ -76,7 +76,7 @@ const Cars = () => {
     {
       id: 6,
       name: 'Honda Accord',
-      category: 'comfort',
+      category: 'biznes',
       brand: 'Honda',
       image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
       price: 80,
@@ -87,7 +87,7 @@ const Cars = () => {
     {
       id: 7,
       name: 'Nissan Sentra',
-      category: 'economy',
+      category: 'ekonomik',
       brand: 'Nissan',
       image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
       price: 60,
@@ -105,6 +105,28 @@ const Cars = () => {
       seats: 5,
       fuel: 'Diesel',
       year: 2024,
+    },
+    {
+      id: 9,
+      name: 'Toyota Land Cruiser',
+      category: 'suv',
+      brand: 'Toyota',
+      image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1000',
+      price: 200,
+      seats: 7,
+      fuel: 'Diesel',
+      year: 2024,
+    },
+    {
+      id: 10,
+      name: 'Mercedes-Benz V-Class',
+      category: 'minivan',
+      brand: 'Mercedes-Benz',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000',
+      price: 180,
+      seats: 8,
+      fuel: 'Diesel',
+      year: 2023,
     },
   ];
 
@@ -157,9 +179,11 @@ const Cars = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
-                <SelectItem value="economy">{t('cars.filter.economy')}</SelectItem>
-                <SelectItem value="comfort">{t('cars.filter.comfort')}</SelectItem>
+                <SelectItem value="ekonomik">{t('cars.filter.ekonomik')}</SelectItem>
+                <SelectItem value="biznes">{t('cars.filter.biznes')}</SelectItem>
                 <SelectItem value="premium">{t('cars.filter.premium')}</SelectItem>
+                <SelectItem value="suv">{t('cars.filter.suv')}</SelectItem>
+                <SelectItem value="minivan">{t('cars.filter.minivan')}</SelectItem>
               </SelectContent>
             </Select>
 

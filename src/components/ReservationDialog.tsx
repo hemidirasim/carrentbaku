@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar as CalendarIcon, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -25,27 +27,31 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
     name: '',
     phone: '',
     email: '',
+    pickupLocation: '',
+    dropoffLocation: '',
+    childSeat: false,
+    videoRecorder: false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.phone || !startDate || !endDate) {
+    if (!formData.name || !formData.phone || !startDate || !endDate || !formData.pickupLocation || !formData.dropoffLocation) {
       toast({
-        title: 'Xəta',
-        description: 'Zəhmət olmasa bütün xanaları doldurun',
+        title: t('reservation.error'),
+        description: t('reservation.fillAll'),
         variant: 'destructive',
       });
       return;
     }
 
     toast({
-      title: 'Uğurlu!',
-      description: 'Rezervasiyanız qeydə alındı. Tezliklə sizinlə əlaqə saxlanılacaq.',
+      title: t('reservation.success'),
+      description: t('reservation.successMsg'),
     });
 
     onOpenChange(false);
-    setFormData({ name: '', phone: '', email: '' });
+    setFormData({ name: '', phone: '', email: '', pickupLocation: '', dropoffLocation: '', childSeat: false, videoRecorder: false });
     setStartDate(undefined);
     setEndDate(undefined);
   };
@@ -56,7 +62,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
         <DialogHeader>
           <DialogTitle className="text-2xl">{t('nav.reserve')}</DialogTitle>
           <DialogDescription>
-            {carName ? `${carName} üçün rezervasiya et` : 'Avtomobil rezervasiyası et'}
+            {carName ? `${carName} ${t('reservation.forCar')}` : t('reservation.title')}
           </DialogDescription>
         </DialogHeader>
 
@@ -67,7 +73,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Adınız və soyadınız"
+              placeholder={t('reservation.namePlaceholder')}
               required
             />
           </div>
@@ -103,7 +109,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Başlama tarixi *</Label>
+              <Label>{t('reservation.startDate')} *</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -111,7 +117,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
                     className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, 'dd/MM/yyyy') : 'Seçin'}
+                    {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 bg-background" align="start">
@@ -126,7 +132,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
             </div>
 
             <div className="space-y-2">
-              <Label>Bitmə tarixi *</Label>
+              <Label>{t('reservation.endDate')} *</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -134,7 +140,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
                     className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, 'dd/MM/yyyy') : 'Seçin'}
+                    {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 bg-background" align="start">
@@ -149,9 +155,69 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>{t('reservation.pickupLocation')} *</Label>
+              <Select value={formData.pickupLocation} onValueChange={(value) => setFormData({ ...formData, pickupLocation: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('reservation.selectLocation')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="office">{t('reservation.location.office')}</SelectItem>
+                  <SelectItem value="airport">{t('reservation.location.airport')}</SelectItem>
+                  <SelectItem value="hotel">{t('reservation.location.hotel')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('reservation.dropoffLocation')} *</Label>
+              <Select value={formData.dropoffLocation} onValueChange={(value) => setFormData({ ...formData, dropoffLocation: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('reservation.selectLocation')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="office">{t('reservation.location.office')}</SelectItem>
+                  <SelectItem value="airport">{t('reservation.location.airport')}</SelectItem>
+                  <SelectItem value="hotel">{t('reservation.location.hotel')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label>{t('reservation.additionalOptions')}</Label>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="childSeat"
+                checked={formData.childSeat}
+                onCheckedChange={(checked) => setFormData({ ...formData, childSeat: checked as boolean })}
+              />
+              <label
+                htmlFor="childSeat"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {t('reservation.options.childSeat')}
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="videoRecorder"
+                checked={formData.videoRecorder}
+                onCheckedChange={(checked) => setFormData({ ...formData, videoRecorder: checked as boolean })}
+              />
+              <label
+                htmlFor="videoRecorder"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {t('reservation.options.videoRecorder')}
+              </label>
+            </div>
+          </div>
+
           <DialogFooter>
             <Button type="submit" className="w-full bg-gradient-primary">
-              Rezervasiya Et
+              {t('reservation.submit')}
             </Button>
           </DialogFooter>
         </form>
