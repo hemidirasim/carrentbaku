@@ -43,8 +43,8 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          {/* Desktop Navigation (visible on lg and up) */}
+          <nav className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -96,24 +96,24 @@ const Header = () => {
             {/* Reserve Button */}
             <Button 
               onClick={() => setIsReservationOpen(true)}
-              className="hidden md:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
+              className="hidden lg:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
             >
               {t('nav.reserve')}
             </Button>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle (visible below lg) */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu (shown below lg) */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 border-t border-border">
+          <div className="lg:hidden py-4 space-y-2 border-t border-border">
             {navItems.map((item) => (
               <Link
                 key={item.path}
