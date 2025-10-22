@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReservationDialog from '@/components/ReservationDialog';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 
 const Hero = () => {
   const { t } = useLanguage();
   const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const interval = setInterval(() => {
+      if (!carouselApi) return;
+      const canNext = carouselApi.canScrollNext();
+      if (canNext) {
+        carouselApi.scrollNext();
+      } else {
+        carouselApi.scrollTo(0);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi]);
 
   return (
     <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
       {/* Background Carousel */}
       <div className="absolute inset-0 z-0">
-        <Carousel className="h-full">
+        <Carousel className="h-full" setApi={setCarouselApi}>
           <CarouselContent className="h-full">
             {[
               'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070',
@@ -22,7 +37,7 @@ const Hero = () => {
             ].map((src, idx) => (
               <CarouselItem key={idx} className="h-[600px] md:h-[700px] lg:h-[800px]">
                 <div
-                  className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-20"
+                  className="h-full w-full bg-cover bg-center mix-blend-overlay opacity-20"
                   style={{ backgroundImage: `url(${src})` }}
                 />
               </CarouselItem>
