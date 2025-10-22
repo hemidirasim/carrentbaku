@@ -26,18 +26,23 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background Carousel */}
+      {/* Background Carousel (no overlay) */}
       <div className="absolute inset-0 z-0">
         <Carousel className="h-full" setApi={setCarouselApi}>
           <CarouselContent className="h-full">
             {[
-              'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070',
-              'https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=2070',
+              // Car with city background
+              'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=2070',
+              // Car with nature/mountains
               'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070',
+              // City skyline road
+              'https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=2070',
+              // Nature road through forest
+              'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2070',
             ].map((src, idx) => (
               <CarouselItem key={idx} className="h-[600px] md:h-[700px] lg:h-[800px]">
                 <div
-                  className="h-full w-full bg-cover bg-center mix-blend-overlay opacity-20"
+                  className="h-full w-full bg-cover bg-center"
                   style={{ backgroundImage: `url(${src})` }}
                 />
               </CarouselItem>
@@ -45,9 +50,6 @@ const Hero = () => {
           </CarouselContent>
         </Carousel>
       </div>
-
-      {/* Gradient overlay above images */}
-      <div className="absolute inset-0 bg-gradient-hero opacity-90 z-[1]" />
       
       {/* Decorative Elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary-glow rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse z-[1]" />
