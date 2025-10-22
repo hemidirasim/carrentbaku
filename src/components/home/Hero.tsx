@@ -50,6 +50,9 @@ const Hero = () => {
           </CarouselContent>
         </Carousel>
       </div>
+
+      {/* Subtle dark overlay for text readability */}
+      <div className="absolute inset-0 bg-black/40 z-[1]" />
       
       {/* Decorative Elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary-glow rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse z-[1]" />
