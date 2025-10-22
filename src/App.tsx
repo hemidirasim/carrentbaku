@@ -32,6 +32,24 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/cars" element={
+                <AdminRoute>
+                  <AdminCars />
+                </AdminRoute>
+              } />
+              <Route path="/admin/reservations" element={
+                <AdminRoute>
+                  <AdminReservations />
+                </AdminRoute>
+              } />
+              
               {/* Public Routes */}
               <Route path="/*" element={
                 <div className="flex flex-col min-h-screen">
@@ -50,24 +68,6 @@ const App = () => (
                   </main>
                   <Footer />
                 </div>
-              } />
-              
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard" element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              } />
-              <Route path="/admin/cars" element={
-                <AdminRoute>
-                  <AdminCars />
-                </AdminRoute>
-              } />
-              <Route path="/admin/reservations" element={
-                <AdminRoute>
-                  <AdminReservations />
-                </AdminRoute>
               } />
             </Routes>
           </BrowserRouter>
