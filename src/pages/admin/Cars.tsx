@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { adminDb } from '@/integrations/supabase/admin';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,14 +25,16 @@ interface CarData {
   brand: string;
   model: string;
   year: number;
+  category: string;
   price_per_day: number;
   fuel_type: string;
   transmission: string;
   seats: number;
-  image_url?: string;
-  description?: string;
-  is_available: boolean;
+  image_url: string | null;
+  features: string[] | null;
+  available: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 const AdminCars = () => {
@@ -48,12 +50,14 @@ const AdminCars = () => {
     brand: '',
     model: '',
     year: new Date().getFullYear(),
+    category: 'ekonomik',
     price_per_day: 0,
-    fuel_type: 'gasoline',
+    fuel_type: 'petrol',
     transmission: 'automatic',
     seats: 5,
-    description: '',
-    is_available: true,
+    image_url: '',
+    features: [] as string[],
+    available: true,
   });
 
   useEffect(() => {
@@ -63,11 +67,12 @@ const AdminCars = () => {
   const loadCars = async () => {
     try {
       setLoading(true);
-      const { data, error } = await adminDb.getCars();
-      if (error) {
-        console.error('Error loading cars:', error);
-        return;
-      }
+      const { data, error } = await supabase
+        .from('cars')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
       setCars(data || []);
     } catch (error) {
       console.error('Error loading cars:', error);
@@ -80,17 +85,18 @@ const AdminCars = () => {
     e.preventDefault();
     try {
       if (editingCar) {
-        const { error } = await adminDb.updateCar(editingCar.id, formData);
-        if (error) {
-          console.error('Error updating car:', error);
-          return;
-        }
+        const { error } = await supabase
+          .from('cars')
+          .update(formData)
+          .eq('id', editingCar.id);
+        
+        if (error) throw error;
       } else {
-        const { error } = await adminDb.createCar(formData);
-        if (error) {
-          console.error('Error creating car:', error);
-          return;
-        }
+        const { error } = await supabase
+          .from('cars')
+          .insert([formData]);
+        
+        if (error) throw error;
       }
       
       await loadCars();
@@ -100,12 +106,14 @@ const AdminCars = () => {
         brand: '',
         model: '',
         year: new Date().getFullYear(),
+        category: 'ekonomik',
         price_per_day: 0,
-        fuel_type: 'gasoline',
+        fuel_type: 'petrol',
         transmission: 'automatic',
         seats: 5,
-        description: '',
-        is_available: true,
+        image_url: '',
+        features: [] as string[],
+        available: true,
       });
     } catch (error) {
       console.error('Error saving car:', error);
@@ -118,12 +126,14 @@ const AdminCars = () => {
       brand: car.brand,
       model: car.model,
       year: car.year,
+      category: car.category,
       price_per_day: car.price_per_day,
       fuel_type: car.fuel_type,
       transmission: car.transmission,
       seats: car.seats,
-      description: car.description || '',
-      is_available: car.is_available,
+      image_url: car.image_url || '',
+      features: car.features || [],
+      available: car.available,
     });
     setIsAddDialogOpen(true);
   };
@@ -132,11 +142,12 @@ const AdminCars = () => {
     if (!confirm('Are you sure you want to delete this car?')) return;
     
     try {
-      const { error } = await adminDb.deleteCar(id);
-      if (error) {
-        console.error('Error deleting car:', error);
-        return;
-      }
+      const { error } = await supabase
+        .from('cars')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
       await loadCars();
     } catch (error) {
       console.error('Error deleting car:', error);
@@ -273,24 +284,33 @@ const AdminCars = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows={3}
-                    />
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ekonomik">Ekonomik</SelectItem>
+                        <SelectItem value="biznes">Biznes</SelectItem>
+                        <SelectItem value="premium">Premium</SelectItem>
+                        <SelectItem value="suv">SUV</SelectItem>
+                        <SelectItem value="minivan">Minivan</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id="is_available"
-                      checked={formData.is_available}
-                      onChange={(e) => setFormData({ ...formData, is_available: e.target.checked })}
+                      id="available"
+                      checked={formData.available}
+                      onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
                       className="rounded"
                     />
-                    <Label htmlFor="is_available">Available for rent</Label>
+                    <Label htmlFor="available">Available for rent</Label>
                   </div>
 
                   <div className="flex justify-end space-x-2">
@@ -370,8 +390,8 @@ const AdminCars = () => {
                       <TableCell className="capitalize">{car.fuel_type}</TableCell>
                       <TableCell className="capitalize">{car.transmission}</TableCell>
                       <TableCell>
-                        <Badge variant={car.is_available ? 'default' : 'secondary'}>
-                          {car.is_available ? 'Available' : 'Unavailable'}
+                        <Badge variant={car.available ? 'default' : 'secondary'}>
+                          {car.available ? 'Available' : 'Unavailable'}
                         </Badge>
                       </TableCell>
                       <TableCell>

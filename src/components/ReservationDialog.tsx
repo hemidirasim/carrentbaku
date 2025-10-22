@@ -11,14 +11,17 @@ import { Calendar as CalendarIcon, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReservationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   carName?: string;
+  carId?: string;
+  pricePerDay?: number;
 }
 
-const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogProps) => {
+const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0 }: ReservationDialogProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date>();
@@ -33,7 +36,7 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
     videoRecorder: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.phone || !startDate || !endDate || !formData.pickupLocation || !formData.dropoffLocation) {
@@ -45,15 +48,56 @@ const ReservationDialog = ({ open, onOpenChange, carName }: ReservationDialogPro
       return;
     }
 
-    toast({
-      title: t('reservation.success'),
-      description: t('reservation.successMsg'),
-    });
+    if (!carId) {
+      toast({
+        title: t('reservation.error'),
+        description: 'Car ID is required',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    onOpenChange(false);
-    setFormData({ name: '', phone: '', email: '', pickupLocation: '', dropoffLocation: '', childSeat: false, videoRecorder: false });
-    setStartDate(undefined);
-    setEndDate(undefined);
+    try {
+      // Calculate total price
+      const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const totalPrice = days * pricePerDay;
+
+      const { error } = await supabase
+        .from('reservations')
+        .insert([{
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          customer_email: formData.email,
+          car_id: carId,
+          start_date: startDate.toISOString().split('T')[0],
+          end_date: endDate.toISOString().split('T')[0],
+          pickup_location: formData.pickupLocation,
+          dropoff_location: formData.dropoffLocation,
+          child_seat: formData.childSeat,
+          video_recorder: formData.videoRecorder,
+          total_price: totalPrice,
+          status: 'pending',
+        }]);
+
+      if (error) throw error;
+
+      toast({
+        title: t('reservation.success'),
+        description: t('reservation.successMsg'),
+      });
+
+      onOpenChange(false);
+      setFormData({ name: '', phone: '', email: '', pickupLocation: '', dropoffLocation: '', childSeat: false, videoRecorder: false });
+      setStartDate(undefined);
+      setEndDate(undefined);
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      toast({
+        title: t('reservation.error'),
+        description: 'Failed to create reservation',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

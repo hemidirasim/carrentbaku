@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { adminDb } from '@/integrations/supabase/admin';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,13 +23,19 @@ interface ReservationData {
   customer_email: string;
   customer_phone: string;
   car_id: string;
-  car_brand?: string;
-  car_model?: string;
   start_date: string;
   end_date: string;
+  pickup_location: string;
+  dropoff_location: string;
+  child_seat: boolean;
+  video_recorder: boolean;
   total_price: number;
-  status: 'pending' | 'confirmed' | 'active' | 'completed' | 'cancelled';
+  status: string;
   created_at: string;
+  cars?: {
+    brand: string;
+    model: string;
+  };
 }
 
 const AdminReservations = () => {
@@ -46,11 +52,12 @@ const AdminReservations = () => {
   const loadReservations = async () => {
     try {
       setLoading(true);
-      const { data, error } = await adminDb.getReservations();
-      if (error) {
-        console.error('Error loading reservations:', error);
-        return;
-      }
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*, cars(brand, model)')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
       setReservations(data || []);
     } catch (error) {
       console.error('Error loading reservations:', error);
@@ -61,11 +68,12 @@ const AdminReservations = () => {
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     try {
-      const { error } = await adminDb.updateReservation(id, { status: newStatus });
-      if (error) {
-        console.error('Error updating reservation:', error);
-        return;
-      }
+      const { error } = await supabase
+        .from('reservations')
+        .update({ status: newStatus })
+        .eq('id', id);
+      
+      if (error) throw error;
       await loadReservations();
     } catch (error) {
       console.error('Error updating reservation:', error);
@@ -76,11 +84,12 @@ const AdminReservations = () => {
     if (!confirm('Are you sure you want to delete this reservation?')) return;
     
     try {
-      const { error } = await adminDb.deleteReservation(id);
-      if (error) {
-        console.error('Error deleting reservation:', error);
-        return;
-      }
+      const { error } = await supabase
+        .from('reservations')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
       await loadReservations();
     } catch (error) {
       console.error('Error deleting reservation:', error);
@@ -104,10 +113,11 @@ const AdminReservations = () => {
   };
 
   const filteredReservations = reservations.filter(reservation => {
+    const carBrand = reservation.cars?.brand || '';
     const matchesSearch = 
       reservation.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reservation.customer_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (reservation.car_brand && reservation.car_brand.toLowerCase().includes(searchTerm.toLowerCase()));
+      carBrand.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || reservation.status === statusFilter;
     
@@ -210,7 +220,7 @@ const AdminReservations = () => {
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {reservation.car_brand} {reservation.car_model}
+                            {reservation.cars?.brand} {reservation.cars?.model}
                           </div>
                         </div>
                       </TableCell>
