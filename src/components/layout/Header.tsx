@@ -38,18 +38,18 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img src={logo} alt="CARRENTBAKU.AZ" className="h-12 w-auto" />
-            <span className="text-xl font-bold text-primary hidden sm:block">
+            <span className="text-xl font-bold text-primary hidden lg:block">
               CARRENTBAKU.AZ
             </span>
           </Link>
 
-          {/* Desktop Navigation (visible on lg and up) */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Desktop Navigation (visible on xl and up) */}
+          <nav className="hidden xl:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(item.path)
                     ? 'bg-primary text-primary-foreground'
                     : 'hover:bg-secondary'
@@ -61,11 +61,11 @@ const Header = () => {
           </nav>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Language Selector - Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="hidden sm:flex items-center space-x-2">
+                <Button variant="outline" size="sm" className="hidden xl:flex items-center space-x-2">
                   <Globe className="w-4 h-4" />
                   <span>{language.toUpperCase()}</span>
                   <ChevronDown className="w-3 h-3" />
@@ -87,7 +87,7 @@ const Header = () => {
             {/* Phone */}
             <a
               href="tel:+994501234567"
-              className="hidden lg:flex items-center space-x-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+              className="hidden xl:flex items-center space-x-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
             >
               <Phone className="w-4 h-4 text-primary" />
               <span className="font-semibold">+994 (50) 123 45 67</span>
@@ -96,24 +96,24 @@ const Header = () => {
             {/* Reserve Button */}
             <Button 
               onClick={() => setIsReservationOpen(true)}
-              className="hidden lg:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
+              className="hidden xl:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
             >
               {t('nav.reserve')}
             </Button>
 
-            {/* Mobile Menu Toggle (visible below lg) */}
+            {/* Mobile Menu Toggle (visible below xl) */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="xl:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu (shown below lg) */}
+        {/* Mobile Menu (shown below xl) */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 space-y-2 border-t border-border">
+          <div className="xl:hidden py-4 space-y-2 border-t border-border">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -128,6 +128,24 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+            {/* Language quick switch in mobile */}
+            <div className="px-4 py-2">
+              <div className="flex items-center space-x-1 bg-secondary rounded-lg p-1">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                      language === lang.code
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-background'
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="px-4 py-2">
               <div className="flex items-center space-x-1 bg-secondary rounded-lg p-1">
                 {languages.map((lang) => (
