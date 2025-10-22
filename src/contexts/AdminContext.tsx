@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { adminAuth } from '@/integrations/supabase/admin';
 
 interface AdminUser {
   id: string;
@@ -25,12 +26,12 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
-          setUser({ id: data.user.id, email: data.user.email });
-        }
+      const currentUser = await adminAuth.getCurrentUser();
+      if (currentUser) {
+        setUser({
+          id: currentUser.id,
+          email: currentUser.email || '',
+        });
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -41,24 +42,19 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        return { success: false, error: err.error || 'Login failed' };
+      const { data, error } = await adminAuth.login(email, password);
+      if (error) {
+        return { success: false, error: error.message };
       }
-      // After login, fetch user
-      const me = await fetch('/api/auth/me');
-      if (me.ok) {
-        const data = await me.json();
-        if (data.user) {
-          setUser({ id: data.user.id, email: data.user.email });
-          return { success: true };
-        }
+      
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email || '',
+        });
+        return { success: true };
       }
+      
       return { success: false, error: 'Login failed' };
     } catch (error) {
       return { success: false, error: 'Login failed' };
@@ -67,8 +63,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      // Clear cookie by setting expired cookie via client redirect to API if needed
-      document.cookie = 'admin_token=; Max-Age=0; Path=/';
+      await adminAuth.logout();
       setUser(null);
     } catch (error) {
       console.error('Logout failed:', error);
