@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Quote, Calendar, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Quote, Calendar, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Carousel,
@@ -9,12 +9,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { useState } from 'react';
 
 const Reviews = () => {
   const { t } = useLanguage();
-  const [viewMode, setViewMode] = useState<'grid' | 'slider'>('grid');
-  const [showVideos, setShowVideos] = useState(false);
 
   const reviews = [
     {
@@ -125,7 +122,7 @@ const Reviews = () => {
 
       <CardContent className="pt-6 pb-6 space-y-4 relative z-10">
         {/* Video Section */}
-        {review.videoUrl && showVideos && (
+        {review.videoUrl && (
           <div className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 mb-4 shadow-lg">
             <iframe
               src={review.videoUrl}
@@ -207,42 +204,6 @@ const Reviews = () => {
             {t('reviews.subtitle')}
           </p>
           
-          {/* View Mode Toggle */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  viewMode === 'grid'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50'
-                }`}
-              >
-                {t('reviews.gridView')}
-              </button>
-              <button
-                onClick={() => setViewMode('slider')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  viewMode === 'slider'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50'
-                }`}
-              >
-                {t('reviews.sliderView')}
-              </button>
-            </div>
-            
-            <button
-              onClick={() => setShowVideos(!showVideos)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                showVideos
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'bg-white text-green-600 border border-green-200 hover:bg-green-50'
-              }`}
-            >
-              {showVideos ? t('reviews.hideVideos') : t('reviews.showVideos')}
-            </button>
-          </div>
 
           {/* Average Rating */}
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full shadow-lg">
@@ -256,33 +217,25 @@ const Reviews = () => {
           </div>
         </div>
 
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.map((review, index) => (
-              <ReviewCard key={review.id} review={review} index={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="max-w-6xl mx-auto">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {reviews.map((review, index) => (
-                  <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                    <ReviewCard review={review} index={index} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0 md:-left-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
-              <CarouselNext className="right-0 md:-right-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
-            </Carousel>
-          </div>
-        )}
+        <div className="max-w-6xl mx-auto">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {reviews.map((review, index) => (
+                <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                  <ReviewCard review={review} index={index} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 md:-left-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
+            <CarouselNext className="right-0 md:-right-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
+          </Carousel>
+        </div>
       </div>
     </section>
   );
