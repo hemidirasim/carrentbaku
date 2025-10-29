@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, Globe, ChevronDown, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReservationDialog from '@/components/ReservationDialog';
-import logo from '@/assets/logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,7 +36,9 @@ const Header = () => {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <img src={logo} alt="CARRENTBAKU.AZ" className="h-12 w-auto" />
+            <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-lg">
+              <Car className="w-8 h-8 text-primary-foreground" />
+            </div>
             <span className="text-xl font-bold text-primary hidden lg:block">
               CARRENTBAKU.AZ
             </span>
