@@ -34,7 +34,7 @@ const FeaturedCars = () => {
     {
       id: 2,
       name: 'Toyota Camry',
-      category: 'comfort',
+      category: 'business',
       image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
       price: 85,
       seats: 5,
@@ -70,19 +70,57 @@ const FeaturedCars = () => {
     {
       id: 6,
       name: 'Honda Accord',
-      category: 'comfort',
+      category: 'business',
       image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
       price: 80,
       seats: 5,
       fuel: 'Petrol',
     },
+    {
+      id: 7,
+      name: 'Toyota Land Cruiser',
+      category: 'suv',
+      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      price: 120,
+      seats: 7,
+      fuel: 'Diesel',
+    },
+    {
+      id: 8,
+      name: 'BMW X5',
+      category: 'suv',
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
+      price: 200,
+      seats: 5,
+      fuel: 'Diesel',
+    },
+    {
+      id: 9,
+      name: 'Mercedes V-Class',
+      category: 'minivan',
+      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1000',
+      price: 180,
+      seats: 8,
+      fuel: 'Diesel',
+    },
+    {
+      id: 10,
+      name: 'Toyota Alphard',
+      category: 'minivan',
+      image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
+      price: 160,
+      seats: 7,
+      fuel: 'Petrol',
+    },
   ];
 
   const categories = [
-    { id: 'all', label: t('cars.filter.all') },
-    { id: 'economy', label: t('cars.filter.economy') },
-    { id: 'comfort', label: t('cars.filter.comfort') },
-    { id: 'premium', label: t('cars.filter.premium') },
+    { id: 'all', label: 'Hamısı' },
+    { id: 'economy', label: 'Ekonom' },
+    { id: 'business', label: 'Biznes' },
+    { id: 'premium', label: 'Premium' },
+    { id: 'suv', label: 'SUV' },
+    { id: 'minivan', label: 'Minivan' },
   ];
 
   const filteredCars = selectedCategory === 'all' 
