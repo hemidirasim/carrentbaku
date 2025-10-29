@@ -159,6 +159,21 @@ const translations: Record<Language, Record<string, string>> = {
     'feedback.send': 'Rəy göndər',
     'feedback.error.fillRequired': 'Zəhmət olmasa bütün məcburi sahələri doldurun',
     'feedback.success': 'Rəyiniz uğurla göndərildi! Təşəkkür edirik!',
+    
+    // Contact additional
+    'contact.visitUs': 'BİZİ ZİYARƏT EDİN',
+    'contact.firstNamePlaceholder': 'Adınız',
+    'contact.lastNamePlaceholder': 'Soyadınız',
+    'contact.emailPlaceholder': 'E-mail ünvanınız',
+    'contact.subject': 'Mövzu',
+    'contact.subjectPlaceholder': 'Mesajın mövzusu',
+    'contact.messagePlaceholder': 'Mesajınızı yazın...',
+    'contact.submit': 'Göndər',
+    'contact.hours.weekdays': 'B.e. - C.a: 09:00 - 18:00',
+    'contact.hours.saturday': 'Şənbə: 10:00 - 16:00',
+    'contact.hours.sunday': 'Bazar: Bağlı',
+    'contact.error.fillRequired': 'Zəhmət olmasa bütün məcburi sahələri doldurun',
+    'contact.success': 'Mesajınız uğurla göndərildi! Tezliklə sizinlə əlaqə saxlanılacaq.',
   },
   ru: {
     'nav.home': 'Главная',
@@ -299,6 +314,21 @@ const translations: Record<Language, Record<string, string>> = {
     'feedback.send': 'Отправить отзыв',
     'feedback.error.fillRequired': 'Пожалуйста, заполните все обязательные поля',
     'feedback.success': 'Ваш отзыв успешно отправлен! Спасибо!',
+    
+    // Contact additional
+    'contact.visitUs': 'ПОСЕТИТЕ НАС',
+    'contact.firstNamePlaceholder': 'Ваше имя',
+    'contact.lastNamePlaceholder': 'Ваша фамилия',
+    'contact.emailPlaceholder': 'Ваш e-mail адрес',
+    'contact.subject': 'Тема',
+    'contact.subjectPlaceholder': 'Тема сообщения',
+    'contact.messagePlaceholder': 'Напишите ваше сообщение...',
+    'contact.submit': 'Отправить',
+    'contact.hours.weekdays': 'Пн - Пт: 09:00 - 18:00',
+    'contact.hours.saturday': 'Суббота: 10:00 - 16:00',
+    'contact.hours.sunday': 'Воскресенье: Закрыто',
+    'contact.error.fillRequired': 'Пожалуйста, заполните все обязательные поля',
+    'contact.success': 'Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.',
   },
   en: {
     'nav.home': 'Home',
@@ -439,6 +469,21 @@ const translations: Record<Language, Record<string, string>> = {
     'feedback.send': 'Send Feedback',
     'feedback.error.fillRequired': 'Please fill in all required fields',
     'feedback.success': 'Your feedback has been sent successfully! Thank you!',
+    
+    // Contact additional
+    'contact.visitUs': 'VISIT US',
+    'contact.firstNamePlaceholder': 'Your first name',
+    'contact.lastNamePlaceholder': 'Your last name',
+    'contact.emailPlaceholder': 'Your email address',
+    'contact.subject': 'Subject',
+    'contact.subjectPlaceholder': 'Message subject',
+    'contact.messagePlaceholder': 'Write your message...',
+    'contact.submit': 'Submit',
+    'contact.hours.weekdays': 'Mon - Fri: 9am - 6pm',
+    'contact.hours.saturday': 'Saturday: 10am - 4pm',
+    'contact.hours.sunday': 'Sunday: Closed',
+    'contact.error.fillRequired': 'Please fill in all required fields',
+    'contact.success': 'Your message has been sent successfully! We will contact you shortly.',
   },
   ar: {
     'nav.home': 'الرئيسية',
@@ -579,6 +624,21 @@ const translations: Record<Language, Record<string, string>> = {
     'feedback.send': 'إرسال التعليقات',
     'feedback.error.fillRequired': 'يرجى ملء جميع الحقول المطلوبة',
     'feedback.success': 'تم إرسال رأيك بنجاح! شكرا لك!',
+    
+    // Contact additional
+    'contact.visitUs': 'زرنا',
+    'contact.firstNamePlaceholder': 'اسمك الأول',
+    'contact.lastNamePlaceholder': 'اسم عائلتك',
+    'contact.emailPlaceholder': 'عنوان بريدك الإلكتروني',
+    'contact.subject': 'الموضوع',
+    'contact.subjectPlaceholder': 'موضوع الرسالة',
+    'contact.messagePlaceholder': 'اكتب رسالتك...',
+    'contact.submit': 'إرسال',
+    'contact.hours.weekdays': 'الاثنين - الجمعة: 9 صباحاً - 6 مساءً',
+    'contact.hours.saturday': 'السبت: 10 صباحاً - 4 مساءً',
+    'contact.hours.sunday': 'الأحد: مغلق',
+    'contact.error.fillRequired': 'يرجى ملء جميع الحقول المطلوبة',
+    'contact.success': 'تم إرسال رسالتك بنجاح! سنتصل بك قريباً.',
   },
 };
 
