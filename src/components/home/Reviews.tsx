@@ -194,19 +194,19 @@ const Reviews = () => {
   );
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 via-white to-blue-50">
+    <section className="py-20" style={{ backgroundColor: '#b9be57' }}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-blue-900">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
             {t('reviews.title')}
           </h2>
-          <p className="text-lg text-blue-700 mb-6">
+          <p className="text-lg text-white/90 mb-6">
             {t('reviews.subtitle')}
           </p>
           
 
           {/* Average Rating */}
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full shadow-lg">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full shadow-lg border border-white/30">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
