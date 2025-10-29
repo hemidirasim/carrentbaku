@@ -74,9 +74,9 @@ const Services = () => {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute top-4 left-4">
-                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                          <service.icon className="w-7 h-7 text-white" />
+                      <div className="absolute top-2 left-2">
+                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                          <service.icon className="w-5 h-5 text-white" />
                         </div>
                       </div>
                     </div>
