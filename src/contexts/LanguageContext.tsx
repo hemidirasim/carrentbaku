@@ -23,6 +23,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.title': 'Bakıda Premium Avtomobil Kirayəsi',
     'hero.subtitle': 'Kirayə maşınlar 55 AZN-dən başlayır',
     'hero.cta': 'İndi Rezerv Et',
+    'hero.selectCar': 'İdeal avtomobilinizi seçin',
     
     // Services
     'services.title': 'Xidmətlərimiz',
@@ -193,6 +194,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.title': 'Премиум аренда авто в Баку',
     'hero.subtitle': 'Аренда авто от 55 AZN',
     'hero.cta': 'Забронировать сейчас',
+    'hero.selectCar': 'Выберите идеальный автомобиль',
     
     'services.title': 'Наши услуги',
     'services.rental': 'Аренда автомобилей',
@@ -354,6 +356,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.title': 'Premium Car Rental in Baku',
     'hero.subtitle': 'Car rental from 55 AZN',
     'hero.cta': 'Reserve Now',
+    'hero.selectCar': 'Choose Your Ideal Car',
     
     'services.title': 'Our Services',
     'services.rental': 'Car Rental',
@@ -515,6 +518,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.title': 'تأجير سيارات فاخرة في باكو',
     'hero.subtitle': 'تأجير السيارات من 55 مانات',
     'hero.cta': 'احجز الآن',
+    'hero.selectCar': 'اختر سيارتك المثالية',
     
     'services.title': 'خدماتنا',
     'services.rental': 'تأجير السيارات',

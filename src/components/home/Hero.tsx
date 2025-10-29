@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ReservationDialog from '@/components/ReservationDialog';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const { t } = useLanguage();
-  const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
@@ -73,10 +73,10 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button 
               size="lg"
-              onClick={() => setIsReservationOpen(true)}
+              onClick={() => navigate('/cars')}
               className="bg-accent hover:bg-accent-light text-white shadow-glow hover:shadow-elegant transition-all text-lg px-8 py-6 group"
             >
-              {t('hero.cta')}
+              {t('hero.selectCar')}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -103,10 +103,6 @@ const Hero = () => {
         </div>
       </div>
 
-      <ReservationDialog 
-        open={isReservationOpen} 
-        onOpenChange={setIsReservationOpen}
-      />
     </section>
   );
 };
