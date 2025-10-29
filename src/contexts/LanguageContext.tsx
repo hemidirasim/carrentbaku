@@ -66,6 +66,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Reviews
     'reviews.title': 'Müştəri Rəyləri',
     'reviews.subtitle': 'Real müştərilərimizin fikirləri',
+    'reviews.reviews': 'rəy',
+    'reviews.verified': 'Təsdiqlənmiş',
     
     // Contact
     'contact.title': 'Bizimlə Əlaqə',
@@ -226,6 +228,8 @@ const translations: Record<Language, Record<string, string>> = {
     
     'reviews.title': 'Отзывы клиентов',
     'reviews.subtitle': 'Мнения наших клиентов',
+    'reviews.reviews': 'отзывов',
+    'reviews.verified': 'Подтверждено',
     
     'contact.title': 'Свяжитесь с нами',
     'contact.name': 'Ваше имя',
@@ -381,6 +385,8 @@ const translations: Record<Language, Record<string, string>> = {
     
     'reviews.title': 'Customer Reviews',
     'reviews.subtitle': 'What our customers say',
+    'reviews.reviews': 'reviews',
+    'reviews.verified': 'Verified',
     
     'contact.title': 'Contact Us',
     'contact.name': 'Your Name',
@@ -536,6 +542,8 @@ const translations: Record<Language, Record<string, string>> = {
     
     'reviews.title': 'آراء العملاء',
     'reviews.subtitle': 'ماذا يقول عملاؤنا',
+    'reviews.reviews': 'مراجعة',
+    'reviews.verified': 'مؤكد',
     
     'contact.title': 'اتصل بنا',
     'contact.name': 'اسمك',
