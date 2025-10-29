@@ -194,7 +194,7 @@ const Reviews = () => {
   );
 
   return (
-    <section className="py-20" style={{ backgroundColor: '#b9be57' }}>
+    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
@@ -206,10 +206,10 @@ const Reviews = () => {
           
 
           {/* Average Rating */}
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full shadow-lg border border-white/30">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full shadow-xl">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <Star key={i} className="w-5 h-5 fill-white text-white" />
               ))}
             </div>
             <span className="font-bold text-white">4.9/5</span>
@@ -232,8 +232,8 @@ const Reviews = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-0 md:-left-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
-            <CarouselNext className="right-0 md:-right-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
+            <CarouselPrevious className="left-0 md:-left-12 bg-white/90 backdrop-blur-sm border-white/20 text-slate-800 hover:bg-white shadow-lg" />
+            <CarouselNext className="right-0 md:-right-12 bg-white/90 backdrop-blur-sm border-white/20 text-slate-800 hover:bg-white shadow-lg" />
           </Carousel>
         </div>
       </div>
