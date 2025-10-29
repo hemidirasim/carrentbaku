@@ -1,10 +1,20 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Quote, Calendar, MapPin } from 'lucide-react';
+import { Star, Quote, Calendar, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import { useState } from 'react';
 
 const Reviews = () => {
   const { t } = useLanguage();
+  const [viewMode, setViewMode] = useState<'grid' | 'slider'>('grid');
+  const [showVideos, setShowVideos] = useState(false);
 
   const reviews = [
     {
@@ -17,6 +27,7 @@ const Reviews = () => {
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Anar',
       carType: 'Mercedes E-Class',
       verified: true,
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
       id: 2,
@@ -39,6 +50,7 @@ const Reviews = () => {
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
       carType: 'Toyota Camry',
       verified: true,
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
       id: 4,
@@ -61,6 +73,7 @@ const Reviews = () => {
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed',
       carType: 'Mercedes E-Class',
       verified: true,
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
       id: 6,
@@ -83,6 +96,7 @@ const Reviews = () => {
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mehmet',
       carType: 'Honda Accord',
       verified: true,
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
       id: 8,
@@ -97,18 +111,141 @@ const Reviews = () => {
     },
   ];
 
+  const ReviewCard = ({ review, index }: { review: any; index: number }) => (
+    <Card 
+      className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm relative overflow-hidden"
+      style={{
+        animationDelay: `${index * 0.1}s`,
+      }}
+    >
+      {/* Quote Icon */}
+      <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <Quote className="w-16 h-16 text-primary" />
+      </div>
+
+      <CardContent className="pt-6 pb-6 space-y-4 relative z-10">
+        {/* Video Section */}
+        {review.videoUrl && showVideos && (
+          <div className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 mb-4 shadow-lg">
+            <iframe
+              src={review.videoUrl}
+              title={`${review.name} review`}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center space-x-3 flex-1">
+            <div className="relative">
+              <img 
+                src={review.image} 
+                alt={review.name}
+                className="w-14 h-14 rounded-full border-2 border-primary/20 ring-2 ring-primary/10"
+              />
+              {review.verified && (
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-base truncate">{review.name}</div>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <MapPin className="w-3 h-3" />
+                <span className="truncate">{review.location}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2">
+          <div className="flex space-x-0.5">
+            {[...Array(review.rating)].map((_, i) => (
+              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            ))}
+          </div>
+          <Badge variant="secondary" className="text-xs">
+            {review.carType}
+          </Badge>
+        </div>
+
+        {/* Review Text */}
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5 group-hover:line-clamp-none transition-all">
+          {review.text}
+        </p>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Calendar className="w-3 h-3" />
+            <span>{review.date}</span>
+          </div>
+          {review.verified && (
+            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+              {t('reviews.verified')}
+            </Badge>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <section className="py-20 bg-gradient-to-b from-background via-gradient-card to-background">
+    <section className="py-20 bg-gradient-to-b from-blue-50 via-white to-blue-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-blue-900">
             {t('reviews.title')}
           </h2>
-          <p className="text-lg text-muted-foreground mb-6">
+          <p className="text-lg text-blue-700 mb-6">
             {t('reviews.subtitle')}
           </p>
+          
+          {/* View Mode Toggle */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50'
+                }`}
+              >
+                {t('reviews.gridView')}
+              </button>
+              <button
+                onClick={() => setViewMode('slider')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  viewMode === 'slider'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50'
+                }`}
+              >
+                {t('reviews.sliderView')}
+              </button>
+            </div>
+            
+            <button
+              onClick={() => setShowVideos(!showVideos)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                showVideos
+                  ? 'bg-green-600 text-white shadow-lg'
+                  : 'bg-white text-green-600 border border-green-200 hover:bg-green-50'
+              }`}
+            >
+              {showVideos ? t('reviews.hideVideos') : t('reviews.showVideos')}
+            </button>
+          </div>
+
           {/* Average Rating */}
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-primary rounded-full">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full shadow-lg">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -119,81 +256,33 @@ const Reviews = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map((review, index) => (
-            <Card 
-              key={review.id}
-              className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm relative overflow-hidden"
-              style={{
-                animationDelay: `${index * 0.1}s`,
+        {viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.map((review, index) => (
+              <ReviewCard key={review.id} review={review} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
               }}
+              className="w-full"
             >
-              {/* Quote Icon */}
-              <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Quote className="w-16 h-16 text-primary" />
-              </div>
-
-              <CardContent className="pt-6 pb-6 space-y-4 relative z-10">
-                {/* Header */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center space-x-3 flex-1">
-                    <div className="relative">
-                      <img 
-                        src={review.image} 
-                        alt={review.name}
-                        className="w-14 h-14 rounded-full border-2 border-primary/20 ring-2 ring-primary/10"
-                      />
-                      {review.verified && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-base truncate">{review.name}</div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                        <MapPin className="w-3 h-3" />
-                        <span className="truncate">{review.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-2">
-                  <div className="flex space-x-0.5">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {review.carType}
-                  </Badge>
-                </div>
-
-                {/* Review Text */}
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5 group-hover:line-clamp-none transition-all">
-                  {review.text}
-                </p>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    <span>{review.date}</span>
-                  </div>
-                  {review.verified && (
-                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                      {t('reviews.verified')}
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              <CarouselContent>
+                {reviews.map((review, index) => (
+                  <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                    <ReviewCard review={review} index={index} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-0 md:-left-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
+              <CarouselNext className="right-0 md:-right-12 bg-white border-blue-200 text-blue-600 hover:bg-blue-50" />
+            </Carousel>
+          </div>
+        )}
       </div>
     </section>
   );

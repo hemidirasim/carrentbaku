@@ -68,6 +68,10 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.subtitle': 'Real müştərilərimizin fikirləri',
     'reviews.reviews': 'rəy',
     'reviews.verified': 'Təsdiqlənmiş',
+    'reviews.gridView': 'Grid Görünüşü',
+    'reviews.sliderView': 'Slider Görünüşü',
+    'reviews.showVideos': 'Videoları Göstər',
+    'reviews.hideVideos': 'Videoları Gizlət',
     
     // Contact
     'contact.title': 'Bizimlə Əlaqə',
@@ -230,6 +234,10 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.subtitle': 'Мнения наших клиентов',
     'reviews.reviews': 'отзывов',
     'reviews.verified': 'Подтверждено',
+    'reviews.gridView': 'Сетка',
+    'reviews.sliderView': 'Слайдер',
+    'reviews.showVideos': 'Показать видео',
+    'reviews.hideVideos': 'Скрыть видео',
     
     'contact.title': 'Свяжитесь с нами',
     'contact.name': 'Ваше имя',
@@ -387,6 +395,10 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.subtitle': 'What our customers say',
     'reviews.reviews': 'reviews',
     'reviews.verified': 'Verified',
+    'reviews.gridView': 'Grid View',
+    'reviews.sliderView': 'Slider View',
+    'reviews.showVideos': 'Show Videos',
+    'reviews.hideVideos': 'Hide Videos',
     
     'contact.title': 'Contact Us',
     'contact.name': 'Your Name',
@@ -544,6 +556,10 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.subtitle': 'ماذا يقول عملاؤنا',
     'reviews.reviews': 'مراجعة',
     'reviews.verified': 'مؤكد',
+    'reviews.gridView': 'عرض الشبكة',
+    'reviews.sliderView': 'عرض الشرائح',
+    'reviews.showVideos': 'إظهار الفيديوهات',
+    'reviews.hideVideos': 'إخفاء الفيديوهات',
     
     'contact.title': 'اتصل بنا',
     'contact.name': 'اسمك',
