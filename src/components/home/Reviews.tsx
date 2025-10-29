@@ -151,8 +151,8 @@ const Reviews = () => {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-bold text-base truncate">{review.name}</div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <div className="font-bold text-base truncate text-white">{review.name}</div>
+              <div className="flex items-center gap-1 text-xs text-white/80 mt-1">
                 <MapPin className="w-3 h-3" />
                 <span className="truncate">{review.location}</span>
               </div>
@@ -167,24 +167,24 @@ const Reviews = () => {
               <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             ))}
           </div>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/30">
             {review.carType}
           </Badge>
         </div>
 
         {/* Review Text */}
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5 group-hover:line-clamp-none transition-all">
+        <p className="text-sm text-white leading-relaxed line-clamp-5 group-hover:line-clamp-none transition-all font-medium">
           {review.text}
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-border/50">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between pt-2 border-t border-white/20">
+          <div className="flex items-center gap-2 text-xs text-white/80">
             <Calendar className="w-3 h-3" />
             <span>{review.date}</span>
           </div>
           {review.verified && (
-            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="text-xs bg-green-500/20 text-green-300 border-green-400/50">
               {t('reviews.verified')}
             </Badge>
           )}
