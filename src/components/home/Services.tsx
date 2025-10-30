@@ -21,6 +21,21 @@ const Services = () => {
       title: t('services.luxury.title'),
       desc: t('services.luxury.desc'),
     },
+    {
+      image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1600',
+      title: t('services.airport'),
+      desc: t('services.airport.desc'),
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1600',
+      title: t('services.driver'),
+      desc: t('services.driver.desc'),
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1600',
+      title: t('services.rental'),
+      desc: t('services.rental.desc'),
+    },
   ];
 
   return (
@@ -45,7 +60,7 @@ const Services = () => {
                 <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
               </div>
               <CardHeader>
-                <CardTitle className="text-xl">{c.title}</CardTitle>
+                <CardTitle className="text-base md:text-lg">{c.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base mb-4">{c.desc}</CardDescription>
