@@ -288,9 +288,9 @@ const FeaturedCars = () => {
               <CardContent className="p-4">
                 <div className="grid grid-cols-3 gap-2">
                   {/* Gün */}
-                  <div className="rounded-lg p-3 text-center bg-red-100">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-700 mb-1">gün</div>
-                    <div className="text-2xl font-bold text-slate-900">{car.price}<span className="text-sm font-semibold ml-1">AZN</span></div>
+                  <div className="rounded-lg p-3 text-center bg-[#7b1020]">
+                    <div className="text-[10px] uppercase tracking-wide text-white/80 mb-1">gün</div>
+                    <div className="text-2xl font-bold text-white">{car.price}<span className="text-sm font-semibold ml-1 text-white/90">AZN</span></div>
                   </div>
                   {/* Həftə */}
                   <div className="rounded-lg p-3 text-center border border-border">
