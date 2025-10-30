@@ -30,11 +30,47 @@ const FeaturedCars = () => {
       fuel: 'Petrol',
     },
     {
+      id: 14,
+      name: 'Hyundai i20',
+      category: 'economy',
+      image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=1000',
+      price: 45,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 15,
+      name: 'Kia Picanto',
+      category: 'economy',
+      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000',
+      price: 40,
+      seats: 4,
+      fuel: 'Petrol',
+    },
+    {
       id: 11,
       name: 'Toyota Corolla',
       category: 'medium-sedan',
       image: 'https://images.unsplash.com/photo-1617817647345-bb19fff15db7?q=80&w=1000',
       price: 70,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 16,
+      name: 'Nissan Sentra',
+      category: 'medium-sedan',
+      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+      price: 68,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 17,
+      name: 'Honda Civic',
+      category: 'medium-sedan',
+      image: 'https://images.unsplash.com/photo-1552519507-88aa1e2c1c4d?q=80&w=1000',
+      price: 72,
       seats: 5,
       fuel: 'Petrol',
     },
@@ -48,6 +84,15 @@ const FeaturedCars = () => {
       fuel: 'Hybrid',
     },
     {
+      id: 18,
+      name: 'Mazda 6',
+      category: 'business',
+      image: 'https://images.unsplash.com/photo-1549921296-3ecf4a8b7d3b?q=80&w=1000',
+      price: 90,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
       id: 3,
       name: 'Mercedes E-Class',
       category: 'premium',
@@ -55,6 +100,15 @@ const FeaturedCars = () => {
       price: 150,
       seats: 5,
       fuel: 'Diesel',
+    },
+    {
+      id: 19,
+      name: 'Audi A6',
+      category: 'premium',
+      image: 'https://images.unsplash.com/photo-1619767886899-30d87a9b75a1?q=80&w=1000',
+      price: 170,
+      seats: 5,
+      fuel: 'Petrol',
     },
     {
       id: 4,
@@ -102,6 +156,15 @@ const FeaturedCars = () => {
       fuel: 'Diesel',
     },
     {
+      id: 20,
+      name: 'Range Rover Sport',
+      category: 'suv',
+      image: 'https://images.unsplash.com/photo-1619767886902-5ffbf8b5d4a7?q=80&w=1000',
+      price: 250,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
       id: 9,
       name: 'Mercedes V-Class',
       category: 'minivan',
@@ -120,11 +183,29 @@ const FeaturedCars = () => {
       fuel: 'Petrol',
     },
     {
+      id: 21,
+      name: 'Volkswagen Caravelle',
+      category: 'minivan',
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000',
+      price: 170,
+      seats: 8,
+      fuel: 'Diesel',
+    },
+    {
       id: 12,
       name: 'Mercedes S-Class',
       category: 'luxury',
       image: 'https://images.unsplash.com/photo-1596995804697-5d4f4a5d1a96?q=80&w=1000',
       price: 350,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 22,
+      name: 'BMW 7 Series',
+      category: 'luxury',
+      image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1000',
+      price: 320,
       seats: 5,
       fuel: 'Petrol',
     },
@@ -135,6 +216,15 @@ const FeaturedCars = () => {
       image: 'https://images.unsplash.com/photo-1610395219791-f9bc5f3867be?q=80&w=1000',
       price: 400,
       seats: 21,
+      fuel: 'Diesel',
+    },
+    {
+      id: 23,
+      name: 'Isuzu Novo 27+1',
+      category: 'big-bus',
+      image: 'https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1000',
+      price: 450,
+      seats: 28,
       fuel: 'Diesel',
     },
   ];
@@ -192,7 +282,7 @@ const FeaturedCars = () => {
               <CardContent className="p-4">
                 <div className="grid grid-cols-3 gap-2">
                   {/* Gün */}
-                  <div className="rounded-lg p-3 text-center bg-blue-100">
+                  <div className="rounded-lg p-3 text-center bg-red-100">
                     <div className="text-[10px] uppercase tracking-wide text-slate-700 mb-1">gün</div>
                     <div className="text-2xl font-bold text-slate-900">{car.price}<span className="text-sm font-semibold ml-1">AZN</span></div>
                   </div>
