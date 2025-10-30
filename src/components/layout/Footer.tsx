@@ -78,21 +78,14 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4">{t('footer.legal')}</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {t('footer.terms')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {t('footer.privacy')}
-                </Link>
-              </li>
-            </ul>
+            <h3 className="font-semibold mb-4">Bakı və ölkənin rayonlarının hava proqnozu</h3>
+            <div className="bg-white rounded-lg p-4 border border-border">
+              <p className="text-slate-900 font-extrabold">
+                Sizin planlarınız havadan asılı deyil. Biz sizi hər şəraitdə yola çıxarırıq
+              </p>
+            </div>
           </div>
-
+          
           {/* Contact */}
           <div>
             <h3 className="font-semibold mb-4">{t('contact.title')}</h3>
