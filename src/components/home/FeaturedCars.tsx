@@ -115,7 +115,6 @@ const FeaturedCars = () => {
   ];
 
   const categories = [
-    { id: 'all', label: 'Hamısı' },
     { id: 'economy', label: 'Ekonom' },
     { id: 'business', label: 'Biznes' },
     { id: 'premium', label: 'Premium' },
@@ -183,9 +182,15 @@ const FeaturedCars = () => {
                   </div>
                 </div>
 
-                <div className="flex items-baseline space-x-1">
-                  <span className="text-3xl font-bold text-primary">{car.price}</span>
-                  <span className="text-muted-foreground">AZN / {t('cars.perDay')}</span>
+                <div className="space-y-1">
+                  <div className="flex items-baseline space-x-1">
+                    <span className="text-3xl font-bold text-primary">{car.price}</span>
+                    <span className="text-muted-foreground">AZN / {t('cars.perDay')}</span>
+                  </div>
+                  <div className="flex items-baseline space-x-1 text-sm">
+                    <span className="font-semibold">{car.price * 7}</span>
+                    <span className="text-muted-foreground">AZN / həftə</span>
+                  </div>
                 </div>
               </CardContent>
 
@@ -202,14 +207,7 @@ const FeaturedCars = () => {
           ))}
         </div>
 
-        <div className="text-center">
-          <Link to="/cars">
-            <Button size="lg" variant="outline" className="group">
-              {t('cars.viewAll')}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-        </div>
+        {/* Removed bottom 'view all' button as requested */}
       </div>
     </section>
   );
