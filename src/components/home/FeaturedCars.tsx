@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Users, Fuel, ArrowRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -177,65 +175,54 @@ const FeaturedCars = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {filteredCars.map((car) => (
             <Card 
               key={car.id}
               className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-40 overflow-hidden">
                 <img 
                   src={car.image} 
                   alt={car.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
-                <Badge 
-                  className="absolute top-4 right-4 bg-accent text-accent-foreground"
-                >
-                  {car.category}
-                </Badge>
               </div>
               
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-bold mb-4">{car.name}</h3>
-                
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-4 h-4" />
-                    <span>{car.seats}</span>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Gün */}
+                  <div className="rounded-lg p-3 text-center bg-blue-100">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-700 mb-1">gün</div>
+                    <div className="text-2xl font-bold text-slate-900">{car.price}<span className="text-sm font-semibold ml-1">AZN</span></div>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Fuel className="w-4 h-4" />
-                    <span>{car.fuel}</span>
+                  {/* Həftə */}
+                  <div className="rounded-lg p-3 text-center border border-border">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-600 mb-1">həftə</div>
+                    <div className="text-xl font-bold text-slate-900">{car.price * 7}<span className="text-xs font-semibold ml-1">AZN</span></div>
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-3xl font-bold text-primary">{car.price}</span>
-                    <span className="text-muted-foreground">AZN / {t('cars.perDay')}</span>
-                  </div>
-                  <div className="flex items-baseline space-x-1 text-sm">
-                    <span className="font-semibold">{car.price * 7}</span>
-                    <span className="text-muted-foreground">AZN / həftə</span>
+                  {/* Ay + Endirim */}
+                  <div className="rounded-lg p-3 text-center border border-border">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-600 mb-1">ay</div>
+                    {(() => {
+                      const original = car.price * 30;
+                      const discounted = Math.round(original * 0.85);
+                      return (
+                        <div>
+                          <div className="text-[11px] text-slate-500 line-through">{original} AZN</div>
+                          <div className="text-xl font-extrabold text-slate-900">{discounted}<span className="text-xs font-semibold ml-1">AZN</span></div>
+                          <div className="mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">15% endirim</div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </CardContent>
-
-              <CardFooter>
-                <Button 
-                  onClick={() => navigate(`/cars/${car.id}`)}
-                  className="w-full bg-gradient-primary group"
-                >
-                  {t('cars.viewDetails')}
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
 
-        {/* Removed bottom 'view all' button as requested */}
+        {/* Bottom button removed previously; keeping section minimal with prices only */}
       </div>
     </section>
   );
