@@ -297,20 +297,10 @@ const FeaturedCars = () => {
                     <div className="text-[10px] uppercase tracking-wide text-slate-600 mb-1">həftə</div>
                     <div className="text-xl font-bold text-slate-900">{car.price * 7}<span className="text-xs font-semibold ml-1">AZN</span></div>
                   </div>
-                  {/* Ay + Endirim */}
+                  {/* Ay */}
                   <div className="rounded-lg p-3 text-center border border-border">
                     <div className="text-[10px] uppercase tracking-wide text-slate-600 mb-1">ay</div>
-                    {(() => {
-                      const original = car.price * 30;
-                      const discounted = Math.round(original * 0.85);
-                      return (
-                        <div>
-                          <div className="text-[11px] text-slate-500 line-through">{original} AZN</div>
-                          <div className="text-xl font-extrabold text-slate-900">{discounted}<span className="text-xs font-semibold ml-1">AZN</span></div>
-                          <div className="mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">15% endirim</div>
-                        </div>
-                      );
-                    })()}
+                    <div className="text-xl font-extrabold text-slate-900">{car.price * 30}<span className="text-xs font-semibold ml-1">AZN</span></div>
                   </div>
                 </div>
               </CardContent>
