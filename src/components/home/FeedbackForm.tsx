@@ -44,7 +44,7 @@ const FeedbackForm = () => {
   };
 
   return (
-    <section className="py-20 bg-slate-900">
+    <section className="py-20" style={{ backgroundColor: 'aliceblue' }}>
       <div className="container mx-auto px-4">
         {/* Single redesigned contact card */}
         <div className="rounded-2xl p-0 shadow-elegant overflow-hidden relative max-w-7xl mx-auto">
