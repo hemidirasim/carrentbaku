@@ -82,11 +82,16 @@ const FeedbackForm = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-card">
+    <section className="py-20 bg-slate-900">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Contact Section - Blue */}
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 md:p-12 shadow-elegant">
+          {/* Contact Section - Nature photo on dark */}
+          <div className="rounded-2xl p-0 md:p-0 shadow-elegant overflow-hidden relative">
+            <div className="absolute inset-0">
+              <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600" alt="nature road" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/60" />
+            </div>
+            <div className="relative p-8 md:p-12">
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
                 {t('contact.visitUs')}
@@ -199,17 +204,23 @@ const FeedbackForm = () => {
                 />
               </div>
 
-              <Button
+                <Button
                 type="submit"
-                className="w-full bg-yellow-500 text-white hover:bg-yellow-600 font-bold text-lg py-4 rounded-lg shadow-lg transition-all hover:shadow-xl"
+                className="w-full bg-emerald-500 text-white hover:bg-emerald-600 font-bold text-lg py-4 rounded-lg shadow-lg transition-all hover:shadow-xl"
               >
                 {t('contact.submit')}
               </Button>
             </form>
+            </div>
           </div>
 
-          {/* Feedback Section - Yellow */}
-          <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl p-8 md:p-12 shadow-elegant">
+          {/* Feedback Section - Car photo on dark */}
+          <div className="rounded-2xl p-0 md:p-0 shadow-elegant overflow-hidden relative">
+            <div className="absolute inset-0">
+              <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1600" alt="car city" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/65" />
+            </div>
+            <div className="relative p-8 md:p-12">
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
                 {t('feedback.title')}
@@ -328,12 +339,13 @@ const FeedbackForm = () => {
               <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full bg-white text-yellow-600 hover:bg-white/90 font-bold text-lg py-6 rounded-lg shadow-lg transition-all hover:shadow-xl"
+                  className="w-full bg-indigo-500 text-white hover:bg-indigo-600 font-bold text-lg py-6 rounded-lg shadow-lg transition-all hover:shadow-xl"
                 >
                   {t('feedback.send')}
                 </Button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       </div>

@@ -245,13 +245,13 @@ const FeaturedCars = () => {
   return (
     <section className="py-20" style={{ backgroundColor: 'aliceblue' }}>
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-left mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {t('cars.title')}
           </h2>
           
           {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-2 mt-8">
+          <div className="flex flex-wrap justify-start gap-2 mt-8">
             {categories.map((category) => (
               <Button
                 key={category.id}
