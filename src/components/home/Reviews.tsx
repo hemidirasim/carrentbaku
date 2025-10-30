@@ -40,6 +40,51 @@ const Reviews = () => {
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= John',
       rating: 5,
     },
+    {
+      title: t('reviews.card1.title'),
+      text:
+        'Great communication and quick pickup. The car was clean and fuel-efficient. Will rent again on my next trip.',
+      name: 'Ali Rzayev',
+      location: 'Baku',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Ali',
+      rating: 5,
+    },
+    {
+      title: t('reviews.card2.title'),
+      text:
+        'Booking took less than two minutes and everything matched the description. Support was friendly and helpful.',
+      name: 'Elena Petrova',
+      location: 'Saint Petersburg',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Elena',
+      rating: 5,
+    },
+    {
+      title: t('reviews.card3.title'),
+      text:
+        'Multiple payment choices and clear policies. Returning the vehicle was seamless and super convenient.',
+      name: 'Omar Al-Khaled',
+      location: 'Dubai',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Omar',
+      rating: 5,
+    },
+    {
+      title: t('reviews.card1.title'),
+      text:
+        'Perfect for a weekend getaway. The whole experience felt easy and well-organized from start to finish.',
+      name: 'Leyla Aliyeva',
+      location: 'Ganja',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Leyla',
+      rating: 5,
+    },
+    {
+      title: t('reviews.card2.title'),
+      text:
+        'Fast pickup at the airport and the car exceeded expectations. Excellent value for money.',
+      name: 'Mehmet Yilmaz',
+      location: 'Istanbul',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Mehmet',
+      rating: 5,
+    },
   ];
 
   return (
