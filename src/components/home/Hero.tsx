@@ -1,54 +1,27 @@
-import { useEffect, useState } from 'react';
+import { } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
-
-  useEffect(() => {
-    if (!carouselApi) return;
-    const interval = setInterval(() => {
-      if (!carouselApi) return;
-      const canNext = carouselApi.canScrollNext();
-      if (canNext) {
-        carouselApi.scrollNext();
-      } else {
-        carouselApi.scrollTo(0);
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselApi]);
+  
 
   return (
     <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background Carousel (no overlay) */}
-      <div className="absolute inset-0 z-0">
-        <Carousel className="h-full" setApi={setCarouselApi}>
-          <CarouselContent className="h-full">
-            {[
-              // Car with city background
-              'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=2070',
-              // Car with nature/mountains
-              'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070',
-              // City skyline road
-              'https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=2070',
-              // Nature road through forest
-              'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2070',
-            ].map((src, idx) => (
-              <CarouselItem key={idx} className="h-[600px] md:h-[700px] lg:h-[800px]">
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${src})` }}
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+      {/* Background Video (YouTube) */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="w-full h-full">
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/5qbjKpxfD64?autoplay=1&mute=1&controls=0&loop=1&modestbranding=1&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&playlist=5qbjKpxfD64"
+            title="Hero Background Video"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
       </div>
 
       {/* Subtle dark overlay for text readability */}
