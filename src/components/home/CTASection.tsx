@@ -54,12 +54,17 @@ const CTASection = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-primary relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-      </div>
-      
+    <section
+      className="py-20 relative overflow-hidden"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1600')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="absolute inset-0 bg-black/35" />
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           {/* CTA Content replaced with Weather Message */}
