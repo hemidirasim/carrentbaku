@@ -1,4 +1,4 @@
-import { } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -35,47 +35,33 @@ const Hero = () => {
       <div className="absolute bottom-20 right-10 w-72 h-72 bg-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse z-[1]" style={{ animationDelay: '1s' }} />
 
       {/* Content */}
-      <div className="container relative z-10 mx-auto px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white drop-shadow-lg">
-              {t('hero.title')}
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
+          {/* Left text */}
+          <div className="text-left max-w-2xl">
+            <div className="text-accent font-semibold tracking-wide mb-2">Fast and Easy Way to Rent a Car</div>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-lg">
+              Explore the world with
+              <br />
+              comfortable car
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 drop-shadow-md">
-              {t('hero.subtitle')}
+            <p className="mt-6 text-white/90 text-lg max-w-xl">
+              Embark on unforgettable adventures and discover the world in unparalleled comfort and style with our fleet of exceptionally comfortable cars.
             </p>
+            <div className="mt-8">
+              <Button 
+                size="lg"
+                onClick={() => navigate('/cars')}
+                className="bg-accent hover:bg-accent-light text-white shadow-glow hover:shadow-elegant transition-all text-lg px-8 py-6 group"
+              >
+                {t('hero.selectCar')}
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg"
-              onClick={() => navigate('/cars')}
-              className="bg-accent hover:bg-accent-light text-white shadow-glow hover:shadow-elegant transition-all text-lg px-8 py-6 group"
-            >
-              {t('hero.selectCar')}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
-            <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-              <div className="text-3xl font-bold text-white">100+</div>
-              <div className="text-sm text-white/80">Avtomobil</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-              <div className="text-3xl font-bold text-white">24/7</div>
-              <div className="text-sm text-white/80">Dəstək</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-              <div className="text-3xl font-bold text-white">8+</div>
-              <div className="text-sm text-white/80">İl təcrübə</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-              <div className="text-3xl font-bold text-white">5000+</div>
-              <div className="text-sm text-white/80">Məmnun müştəri</div>
-            </div>
-          </div>
+          {/* Right booking widget */}
+          <HeroBookingPanel />
         </div>
       </div>
 
@@ -84,3 +70,81 @@ const Hero = () => {
 };
 
 export default Hero;
+
+// Inline booking panel component to match reference layout
+const vehicleTypes = [
+  { id: 'car', label: 'Car' },
+  { id: 'van', label: 'Van' },
+  { id: 'minibus', label: 'Minibus' },
+  { id: 'prestige', label: 'Prestige' },
+];
+
+function HeroBookingPanel() {
+  const navigate = useNavigate();
+  const [vehicle, setVehicle] = useState('car');
+  const [pickup, setPickup] = useState('');
+  const [dropoff, setDropoff] = useState('');
+  const [pickupDate, setPickupDate] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [returnTime, setReturnTime] = useState('');
+
+  return (
+    <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+      <h3 className="text-white font-semibold mb-4">What is your vehicle type?</h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        {vehicleTypes.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setVehicle(t.id)}
+            className={`rounded-xl py-4 text-center font-semibold transition-all ${
+              vehicle === t.id
+                ? 'bg-accent text-white shadow-lg'
+                : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-sm text-white/80 mb-1">Pick Up Location</label>
+          <input value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Enter your pickup location" className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white placeholder-white/60" />
+        </div>
+        <div>
+          <label className="block text-sm text-white/80 mb-1">Drop Off Location</label>
+          <input value={dropoff} onChange={(e) => setDropoff(e.target.value)} placeholder="Enter your dropoff location" className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white placeholder-white/60" />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Pick Up Date</label>
+            <input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          </div>
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Time</label>
+            <input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} className="w-28 h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          </div>
+        </div>
+        <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Return Date</label>
+            <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          </div>
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Time</label>
+            <input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} className="w-28 h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          </div>
+        </div>
+      </div>
+
+      <Button onClick={() => navigate('/cars')} className="w-full bg-green-500 hover:bg-green-600 text-white h-12 text-base font-semibold">
+        Find a Vehicle
+      </Button>
+    </div>
+  );
+}
