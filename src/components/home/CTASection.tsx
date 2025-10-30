@@ -64,7 +64,7 @@ const CTASection = () => {
         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           {/* CTA Content replaced with Weather Message */}
           <div className="flex flex-col justify-center">
-            <div className="bg-white rounded-2xl p-8 lg:p-12 shadow-elegant border border-border">
+            <div className="rounded-2xl p-0 lg:p-0">
               <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-slate-900 tracking-wide">
                 HAVA PROQNOZU
               </h2>
@@ -85,7 +85,7 @@ const CTASection = () => {
                     {locations.map((loc) => {
                       const data = weatherData[loc.key];
                       return (
-                        <div key={loc.key} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 bg-slate-50">
+                        <div key={loc.key} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 bg-transparent">
                           <div className="text-slate-800 font-semibold">{loc.key}</div>
                           {data ? (
                             <div className="text-slate-700 text-sm">
