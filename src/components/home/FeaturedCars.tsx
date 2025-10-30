@@ -277,6 +277,12 @@ const FeaturedCars = () => {
                   alt={car.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
+                {/* bottom gradient for text readability */}
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
+                {/* car name overlay */}
+                <div className="absolute left-3 bottom-3">
+                  <span className="text-white font-semibold text-sm sm:text-base drop-shadow">{car.name}</span>
+                </div>
               </div>
               
               <CardContent className="p-4">
