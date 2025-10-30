@@ -205,16 +205,7 @@ const Reviews = () => {
           </p>
           
 
-          {/* Average Rating */}
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full shadow-xl">
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-white text-white" />
-              ))}
-            </div>
-            <span className="font-bold text-white">4.9/5</span>
-            <span className="text-white/80 text-sm">({reviews.length} {t('reviews.reviews')})</span>
-          </div>
+        
         </div>
 
         <div className="max-w-6xl mx-auto">
