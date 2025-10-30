@@ -85,6 +85,9 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.sliderView': 'Slider Görünüşü',
     'reviews.showVideos': 'Videoları Göstər',
     'reviews.hideVideos': 'Videoları Gizlət',
+    'reviews.card1.title': 'Asan başa düşülən',
+    'reviews.card2.title': 'Sürətli və istifadəsi rahat',
+    'reviews.card3.title': 'Çox rahat',
     
     // Contact
     'contact.title': 'Bizimlə Əlaqə',
@@ -264,6 +267,9 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.sliderView': 'Слайдер',
     'reviews.showVideos': 'Показать видео',
     'reviews.hideVideos': 'Скрыть видео',
+    'reviews.card1.title': 'Понятно и просто',
+    'reviews.card2.title': 'Быстро и удобно',
+    'reviews.card3.title': 'Супер удобно',
     
     'contact.title': 'Свяжитесь с нами',
     'contact.name': 'Ваше имя',
@@ -438,6 +444,9 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.sliderView': 'Slider View',
     'reviews.showVideos': 'Show Videos',
     'reviews.hideVideos': 'Hide Videos',
+    'reviews.card1.title': 'Easy to Understand',
+    'reviews.card2.title': 'Fast and Easy to Use',
+    'reviews.card3.title': 'Super Convenient',
     
     'contact.title': 'Contact Us',
     'contact.name': 'Your Name',
@@ -612,6 +621,9 @@ const translations: Record<Language, Record<string, string>> = {
     'reviews.sliderView': 'عرض الشرائح',
     'reviews.showVideos': 'إظهار الفيديوهات',
     'reviews.hideVideos': 'إخفاء الفيديوهات',
+    'reviews.card1.title': 'سهل الفهم',
+    'reviews.card2.title': 'سريع وسهل الاستخدام',
+    'reviews.card3.title': 'مريح للغاية',
     
     'contact.title': 'اتصل بنا',
     'contact.name': 'اسمك',

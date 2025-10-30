@@ -1,231 +1,69 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Star, Quote, Calendar, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
+import { Star } from 'lucide-react';
 
 const Reviews = () => {
   const { t } = useLanguage();
 
-  const reviews = [
+  const cards = [
     {
-      id: 1,
-      name: 'Anar Məmmədov',
-      location: 'Bakı, Azərbaycan',
+      title: t('reviews.card1.title'),
+      text:
+        'The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together.',
+      name: 'Sara Mohamed',
+      location: 'Jakarta',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sara',
       rating: 5,
-      date: '15 Yanvar 2024',
-      text: 'Çox keyfiyyətli xidmət! Avtomobil təmiz və yeni idi. Xidmət şəffaf və peşəkardır. Hava limanından götürdük, hər şey rahat və sürətli oldu. Mütləq tövsiyə edirəm!',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Anar',
-      carType: 'Mercedes E-Class',
-      verified: true,
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
-      id: 2,
-      name: 'Dmitry Ivanov',
-      location: 'Moskva, Rusiya',
+      title: t('reviews.card2.title'),
+      text:
+        "I've used many car rental platforms before, but our booking system is hands down the best! The process is so smooth and straightforward.",
+      name: 'Sophia Moore',
+      location: 'New York',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sophia',
       rating: 5,
-      date: '22 Yanvar 2024',
-      text: 'Отличный сервис! Машина в идеальном состоянии, чистая и современная. Персонал очень внимательный и профессиональный. Всё прошло гладко от начала до конца.',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dmitry',
-      carType: 'BMW 5 Series',
-      verified: true,
     },
     {
-      id: 3,
-      name: 'John Smith',
-      location: 'London, UK',
+      title: t('reviews.card3.title'),
+      text:
+        'Everything is laid out clearly, and there are multiple payment options, which makes things super convenient.',
+      name: 'Atend John',
+      location: 'Tokyo',
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= John',
       rating: 5,
-      date: '10 Fevral 2024',
-      text: 'Excellent service! The car was perfect and the staff was very helpful. Everything was straightforward and professional. Would definitely use again!',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-      carType: 'Toyota Camry',
-      verified: true,
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    },
-    {
-      id: 4,
-      name: 'Leyla Əliyeva',
-      location: 'Bakı, Azərbaycan',
-      rating: 5,
-      date: '5 Mart 2024',
-      text: 'Hava limanından götürdük, çox rahat oldu. Peşəkar komanda! Avtomobil çox təmiz və rahat idi. Xidmət 24/7 mövcuddur və çox sürətli cavab verirlər.',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Leyla',
-      carType: 'Hyundai Elantra',
-      verified: true,
-    },
-    {
-      id: 5,
-      name: 'Ahmed Al-Rashid',
-      location: 'Dubai, UAE',
-      rating: 5,
-      date: '18 Mart 2024',
-      text: 'خدمة ممتازة! السيارة كانت نظيفة جداً والموظفون محترفون. كل شيء كان سلساً وسريعاً. أنصح بشدة باستخدام هذه الخدمة.',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed',
-      carType: 'Mercedes E-Class',
-      verified: true,
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    },
-    {
-      id: 6,
-      name: 'Elena Petrova',
-      location: 'Sankt-Peterburq, Rusiya',
-      rating: 5,
-      date: '1 Aprel 2024',
-      text: 'Прекрасный опыт! Всё прошло гладко от начала до конца. Машина была в отличном состоянии, персонал дружелюбный и профессиональный.',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena',
-      carType: 'Kia Rio',
-      verified: true,
-    },
-    {
-      id: 7,
-      name: 'Mehmet Yılmaz',
-      location: 'İstanbul, Türkiyə',
-      rating: 5,
-      date: '12 Aprel 2024',
-      text: 'Harika bir hizmet! Araba çok temiz ve yeniydi. Personel çok yardımsever ve profesyonel. Kesinlikle tavsiye ederim!',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mehmet',
-      carType: 'Honda Accord',
-      verified: true,
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    },
-    {
-      id: 8,
-      name: 'Sarah Johnson',
-      location: 'New York, USA',
-      rating: 5,
-      date: '25 Aprel 2024',
-      text: 'Amazing service! The car was spotless and everything was handled professionally. Great communication throughout the process. Highly recommend!',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      carType: 'BMW X5',
-      verified: true,
     },
   ];
 
-  const ReviewCard = ({ review, index }: { review: any; index: number }) => (
-    <Card 
-      className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm relative overflow-hidden"
-      style={{
-        animationDelay: `${index * 0.1}s`,
-      }}
-    >
-      {/* Quote Icon */}
-      <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-        <Quote className="w-16 h-16 text-primary" />
-      </div>
-
-      <CardContent className="pt-6 pb-6 space-y-4 relative z-10">
-        {/* Video Section */}
-        {review.videoUrl && (
-          <div className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 mb-4 shadow-lg">
-            <iframe
-              src={review.videoUrl}
-              title={`${review.name} review`}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        )}
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center space-x-3 flex-1">
-            <div className="relative">
-              <img 
-                src={review.image} 
-                alt={review.name}
-                className="w-14 h-14 rounded-full border-2 border-primary/20 ring-2 ring-primary/10"
-              />
-              {review.verified && (
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-bold text-base truncate text-white">{review.name}</div>
-              <div className="flex items-center gap-1 text-xs text-white/80 mt-1">
-                <MapPin className="w-3 h-3" />
-                <span className="truncate">{review.location}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <div className="flex space-x-0.5">
-            {[...Array(review.rating)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            ))}
-          </div>
-          <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/30">
-            {review.carType}
-          </Badge>
-        </div>
-
-        {/* Review Text */}
-        <p className="text-sm text-white leading-relaxed line-clamp-5 group-hover:line-clamp-none transition-all font-medium">
-          {review.text}
-        </p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-white/20">
-          <div className="flex items-center gap-2 text-xs text-white/80">
-            <Calendar className="w-3 h-3" />
-            <span>{review.date}</span>
-          </div>
-          {review.verified && (
-            <Badge variant="outline" className="text-xs bg-green-500/20 text-green-300 border-green-400/50">
-              {t('reviews.verified')}
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            {t('reviews.title')}
-          </h2>
-          <p className="text-lg text-white/90 mb-6">
-            {t('reviews.subtitle')}
-          </p>
-          
-
-        
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {reviews.map((review, index) => (
-                <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                  <ReviewCard review={review} index={index} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0 md:-left-12 bg-white/90 backdrop-blur-sm border-white/20 text-slate-800 hover:bg-white shadow-lg" />
-            <CarouselNext className="right-0 md:-right-12 bg-white/90 backdrop-blur-sm border-white/20 text-slate-800 hover:bg-white shadow-lg" />
-          </Carousel>
+        <h2 className="text-3xl md:text-4xl font-extrabold mb-10">
+          {t('reviews.title')}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cards.map((c, i) => (
+            <Card key={i} className="border-border">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
+                <p className="text-muted-foreground mb-6">{c.text}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
+                    <div>
+                      <div className="font-semibold">{c.name}</div>
+                      <div className="text-sm text-muted-foreground">{c.location}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[...Array(c.rating)].map((_, idx) => (
+                      <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
