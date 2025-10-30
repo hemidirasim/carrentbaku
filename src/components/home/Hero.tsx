@@ -13,9 +13,9 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video (YouTube) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
           <iframe
-            className="w-full h-full"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto"
             src="https://www.youtube.com/embed/5qbjKpxfD64?autoplay=1&mute=1&controls=0&loop=1&modestbranding=1&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&playlist=5qbjKpxfD64&fs=0&disablekb=1"
             title="Hero Background Video"
             allow="autoplay; encrypted-media; picture-in-picture"
