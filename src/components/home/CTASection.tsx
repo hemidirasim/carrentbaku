@@ -1,9 +1,57 @@
-import { Button } from '@/components/ui/button';
-import { Phone } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const CTASection = () => {
   const { t } = useLanguage();
+  const [weatherData, setWeatherData] = useState<Record<string, { temperature: number; windspeed: number; time: string }>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const locations = [
+    { key: 'Bakı', latitude: 40.4093, longitude: 49.8671 },
+    { key: 'Gəncə', latitude: 40.6828, longitude: 46.3606 },
+    { key: 'Sumqayıt', latitude: 40.5897, longitude: 49.6686 },
+    { key: 'Quba', latitude: 41.3611, longitude: 48.5122 },
+    { key: 'Şəki', latitude: 41.1919, longitude: 47.1705 },
+  ];
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchWeather() {
+      try {
+        const results = await Promise.all(
+          locations.map(async (loc) => {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true`;
+            const res = await fetch(url);
+            const json = await res.json();
+            return {
+              key: loc.key,
+              temperature: json?.current_weather?.temperature,
+              windspeed: json?.current_weather?.windspeed,
+              time: json?.current_weather?.time,
+            } as { key: string; temperature: number; windspeed: number; time: string };
+          })
+        );
+        if (!isCancelled) {
+          const map: Record<string, { temperature: number; windspeed: number; time: string }> = {};
+          results.forEach((r) => {
+            if (r && typeof r.temperature === 'number') {
+              map[r.key] = { temperature: r.temperature, windspeed: r.windspeed, time: r.time };
+            }
+          });
+          setWeatherData(map);
+        }
+      } catch (e: any) {
+        if (!isCancelled) setError('Weather data could not be loaded');
+      } finally {
+        if (!isCancelled) setLoading(false);
+      }
+    }
+    fetchWeather();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   return (
     <section className="py-20 bg-gradient-primary relative overflow-hidden">
@@ -20,9 +68,39 @@ const CTASection = () => {
               <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900">
                 Bakı və ölkənin rayonlarının hava proqnozu
               </h2>
-              <p className="text-slate-900 font-extrabold leading-relaxed">
+              <p className="text-slate-900 font-extrabold leading-relaxed mb-6">
                 Sizin planlarınız havadan asılı deyil. Biz sizi hər şəraitdə yola çıxarırıq
               </p>
+
+              {/* Live Weather */}
+              <div className="space-y-3">
+                {loading && (
+                  <div className="text-sm text-slate-600">Yüklənir...</div>
+                )}
+                {error && (
+                  <div className="text-sm text-red-600">{error}</div>
+                )}
+                {!loading && !error && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {locations.map((loc) => {
+                      const data = weatherData[loc.key];
+                      return (
+                        <div key={loc.key} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 bg-slate-50">
+                          <div className="text-slate-800 font-semibold">{loc.key}</div>
+                          {data ? (
+                            <div className="text-slate-700 text-sm">
+                              <span className="font-bold text-slate-900">{Math.round(data.temperature)}°C</span>
+                              <span className="ml-2 text-slate-600">külək {Math.round(data.windspeed)} km/s</span>
+                            </div>
+                          ) : (
+                            <div className="text-slate-500 text-sm">—</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
