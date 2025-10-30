@@ -93,7 +93,7 @@ const Reviews = () => {
         <h2 className="text-3xl md:text-4xl font-extrabold mb-10">
           {t('reviews.title')}
         </h2>
-        <div className="max-w-6xl mx-auto">
+        <div className="relative">
           <Carousel opts={{ align: 'start', loop: true }} className="w-full">
             <CarouselContent>
               {cards.map((c, i) => (
@@ -121,8 +121,8 @@ const Reviews = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-0 md:-left-12" />
-            <CarouselNext className="right-0 md:-right-12" />
+            <CarouselPrevious className="absolute -top-12 right-16 bg-white border border-border text-slate-700 hover:bg-slate-50" />
+            <CarouselNext className="absolute -top-12 right-0 bg-white border border-border text-slate-700 hover:bg-slate-50" />
           </Carousel>
         </div>
       </div>
