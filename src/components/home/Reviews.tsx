@@ -1,6 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Star } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 const Reviews = () => {
   const { t } = useLanguage();
@@ -41,29 +48,37 @@ const Reviews = () => {
         <h2 className="text-3xl md:text-4xl font-extrabold mb-10">
           {t('reviews.title')}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards.map((c, i) => (
-            <Card key={i} className="border-border">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
-                <p className="text-muted-foreground mb-6">{c.text}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
-                    <div>
-                      <div className="font-semibold">{c.name}</div>
-                      <div className="text-sm text-muted-foreground">{c.location}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(c.rating)].map((_, idx) => (
-                      <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="max-w-6xl mx-auto">
+          <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+            <CarouselContent>
+              {cards.map((c, i) => (
+                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
+                  <Card className="border-border">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
+                      <p className="text-muted-foreground mb-6">{c.text}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
+                          <div>
+                            <div className="font-semibold">{c.name}</div>
+                            <div className="text-sm text-muted-foreground">{c.location}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {[...Array(c.rating)].map((_, idx) => (
+                            <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 md:-left-12" />
+            <CarouselNext className="right-0 md:-right-12" />
+          </Carousel>
         </div>
       </div>
     </section>
