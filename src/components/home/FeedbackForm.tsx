@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Star, MapPin, Mail, Phone, Clock } from 'lucide-react';
+import { MapPin, Mail, Phone, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,15 +9,6 @@ import { toast } from 'sonner';
 
 const FeedbackForm = () => {
   const { t } = useLanguage();
-  const [feedbackData, setFeedbackData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    rating: 0,
-    liked: '',
-    improvements: '',
-  });
-
   const [contactData, setContactData] = useState({
     firstName: '',
     lastName: '',
@@ -26,40 +17,11 @@ const FeedbackForm = () => {
     message: '',
   });
 
-  const handleFeedbackChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFeedbackData(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setContactData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRatingClick = (rating: number) => {
-    setFeedbackData(prev => ({ ...prev, rating }));
-  };
-
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!feedbackData.firstName || !feedbackData.email || !feedbackData.liked) {
-      toast.error(t('feedback.error.fillRequired'));
-      return;
-    }
-
-    console.log('Feedback submitted:', feedbackData);
-    toast.success(t('feedback.success'));
-    
-    setFeedbackData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      rating: 0,
-      liked: '',
-      improvements: '',
-    });
-  };
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,50 +46,56 @@ const FeedbackForm = () => {
   return (
     <section className="py-20 bg-slate-900">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Contact Section - Nature photo on dark */}
-          <div className="rounded-2xl p-0 md:p-0 shadow-elegant overflow-hidden relative">
-            <div className="absolute inset-0">
-              <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600" alt="nature road" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/60" />
-            </div>
-            <div className="relative p-8 md:p-12">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-                {t('contact.visitUs')}
-              </h2>
-            </div>
+        {/* Single redesigned contact card */}
+        <div className="rounded-2xl p-0 shadow-elegant overflow-hidden relative max-w-7xl mx-auto">
+          <div className="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1600" alt="contact background" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/65" />
+          </div>
+          <div className="relative p-8 md:p-12">
+            <div className="grid lg:grid-cols-2 gap-10 items-start">
+              {/* Left: info */}
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-white">
+                  {t('contact.title')}
+                </h2>
+                <p className="text-white/80 mb-8 max-w-prose">
+                  {t('contact.subtitle') || 'Bizimlə əlaqə saxlayın — komandamız sizə məmnuniyyətlə kömək edəcək.'}
+                </p>
 
-            {/* Contact Info */}
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center space-x-3 text-white">
-                <MapPin className="w-5 h-5" />
-                <span>{t('contact.address')}</span>
-              </div>
-              <div className="flex items-center space-x-3 text-white">
-                <Mail className="w-5 h-5" />
-                <span>info@carrentbaku.az</span>
-              </div>
-              <div className="flex items-center space-x-3 text-white">
-                <Phone className="w-5 h-5" />
-                <span>+994 (50) 123 45 67</span>
-              </div>
-              <div className="space-y-2 text-white">
-                <div className="flex items-center space-x-3">
-                  <Clock className="w-5 h-5" />
-                  <span>{t('contact.hours.weekdays')}</span>
+                {/* Contact Info */}
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center space-x-3 text-white">
+                    <MapPin className="w-5 h-5" />
+                    <span>{t('contact.address')}</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-white">
+                    <Mail className="w-5 h-5" />
+                    <span>info@carrentbaku.az</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-white">
+                    <Phone className="w-5 h-5" />
+                    <span>+994 (50) 123 45 67</span>
+                  </div>
+                  <div className="space-y-2 text-white">
+                    <div className="flex items-center space-x-3">
+                      <Clock className="w-5 h-5" />
+                      <span>{t('contact.hours.weekdays')}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 ml-8">
+                      <span>{t('contact.hours.saturday')}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 ml-8">
+                      <span>{t('contact.hours.sunday')}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3 ml-8">
-                  <span>{t('contact.hours.saturday')}</span>
-                </div>
-                <div className="flex items-center space-x-3 ml-8">
-                  <span>{t('contact.hours.sunday')}</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Contact Form */}
-            <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="hidden lg:block h-px bg-white/20" />
+              </div>
+
+              {/* Right: form */}
+              <form onSubmit={handleContactSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="contactFirstName" className="text-white font-semibold mb-2 block">
@@ -204,147 +172,13 @@ const FeedbackForm = () => {
                 />
               </div>
 
-                <Button
+              <Button
                 type="submit"
                 className="w-full bg-emerald-500 text-white hover:bg-emerald-600 font-bold text-lg py-4 rounded-lg shadow-lg transition-all hover:shadow-xl"
               >
                 {t('contact.submit')}
               </Button>
-            </form>
-            </div>
-          </div>
-
-          {/* Feedback Section - Car photo on dark */}
-          <div className="rounded-2xl p-0 md:p-0 shadow-elegant overflow-hidden relative">
-            <div className="absolute inset-0">
-              <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1600" alt="car city" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/65" />
-            </div>
-            <div className="relative p-8 md:p-12">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-                {t('feedback.title')}
-              </h2>
-              <p className="text-white/90 text-lg">
-                {t('feedback.subtitle')}
-              </p>
-            </div>
-
-            <form onSubmit={handleFeedbackSubmit} className="space-y-6">
-              {/* First Name */}
-              <div>
-                <Label htmlFor="firstName" className="text-white font-semibold mb-2 block">
-                  {t('feedback.firstName')} <span className="text-red-400">*</span>
-                </Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  value={feedbackData.firstName}
-                  onChange={handleFeedbackChange}
-                  className="bg-white border-none focus-visible:ring-2 focus-visible:ring-white/50"
-                  placeholder={t('feedback.firstNamePlaceholder')}
-                  required
-                />
-              </div>
-
-              {/* Last Name */}
-              <div>
-                <Label htmlFor="lastName" className="text-white font-semibold mb-2 block">
-                  {t('feedback.lastName')}
-                </Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  value={feedbackData.lastName}
-                  onChange={handleFeedbackChange}
-                  className="bg-white border-none focus-visible:ring-2 focus-visible:ring-white/50"
-                  placeholder={t('feedback.lastNamePlaceholder')}
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <Label htmlFor="email" className="text-white font-semibold mb-2 block">
-                  {t('feedback.email')} <span className="text-red-400">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={feedbackData.email}
-                  onChange={handleFeedbackChange}
-                  className="bg-white border-none focus-visible:ring-2 focus-visible:ring-white/50"
-                  placeholder={t('feedback.emailPlaceholder')}
-                  required
-                />
-              </div>
-
-              {/* Rating */}
-              <div>
-                <Label className="text-white font-semibold mb-3 block">
-                  {t('feedback.rateServices')}
-                </Label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => handleRatingClick(star)}
-                      className="focus:outline-none transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={`w-8 h-8 ${
-                          star <= feedbackData.rating
-                            ? 'fill-white text-white'
-                            : 'fill-white/30 text-white/30'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* What did you like */}
-              <div>
-                <Label htmlFor="liked" className="text-white font-semibold mb-2 block">
-                  {t('feedback.liked')} <span className="text-red-400">*</span>
-                </Label>
-                <Textarea
-                  id="liked"
-                  name="liked"
-                  value={feedbackData.liked}
-                  onChange={handleFeedbackChange}
-                  className="bg-white border-none focus-visible:ring-2 focus-visible:ring-white/50 min-h-[100px]"
-                  placeholder={t('feedback.likedPlaceholder')}
-                  required
-                />
-              </div>
-
-              {/* How can we improve */}
-              <div>
-                <Label htmlFor="improvements" className="text-white font-semibold mb-2 block">
-                  {t('feedback.improvements')}
-                </Label>
-                <Textarea
-                  id="improvements"
-                  name="improvements"
-                  value={feedbackData.improvements}
-                  onChange={handleFeedbackChange}
-                  className="bg-white border-none focus-visible:ring-2 focus-visible:ring-white/50 min-h-[100px]"
-                  placeholder={t('feedback.improvementsPlaceholder')}
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  className="w-full bg-indigo-500 text-white hover:bg-indigo-600 font-bold text-lg py-6 rounded-lg shadow-lg transition-all hover:shadow-xl"
-                >
-                  {t('feedback.send')}
-                </Button>
-              </div>
-            </form>
+              </form>
             </div>
           </div>
         </div>
