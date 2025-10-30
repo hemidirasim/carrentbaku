@@ -19,7 +19,7 @@ interface Car {
 const FeaturedCars = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('economy');
 
   const cars: Car[] = [
     {
@@ -28,6 +28,15 @@ const FeaturedCars = () => {
       category: 'economy',
       image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
       price: 55,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 11,
+      name: 'Toyota Corolla',
+      category: 'medium-sedan',
+      image: 'https://images.unsplash.com/photo-1617817647345-bb19fff15db7?q=80&w=1000',
+      price: 70,
       seats: 5,
       fuel: 'Petrol',
     },
@@ -112,19 +121,38 @@ const FeaturedCars = () => {
       seats: 7,
       fuel: 'Petrol',
     },
+    {
+      id: 12,
+      name: 'Mercedes S-Class',
+      category: 'luxury',
+      image: 'https://images.unsplash.com/photo-1596995804697-5d4f4a5d1a96?q=80&w=1000',
+      price: 350,
+      seats: 5,
+      fuel: 'Petrol',
+    },
+    {
+      id: 13,
+      name: 'Mercedes Sprinter 20+1',
+      category: 'big-bus',
+      image: 'https://images.unsplash.com/photo-1610395219791-f9bc5f3867be?q=80&w=1000',
+      price: 400,
+      seats: 21,
+      fuel: 'Diesel',
+    },
   ];
 
   const categories = [
     { id: 'economy', label: 'Ekonom' },
+    { id: 'medium-sedan', label: 'Medium Sedan' },
     { id: 'business', label: 'Biznes' },
     { id: 'premium', label: 'Premium' },
     { id: 'suv', label: 'SUV' },
     { id: 'minivan', label: 'Minivan' },
+    { id: 'luxury', label: 'Luxury' },
+    { id: 'big-bus', label: 'Big Bus' },
   ];
 
-  const filteredCars = selectedCategory === 'all' 
-    ? cars 
-    : cars.filter(car => car.category === selectedCategory);
+  const filteredCars = cars.filter(car => car.category === selectedCategory);
 
   return (
     <section className="py-20">
