@@ -73,7 +73,6 @@ const vehicleTypes = [
 ];
 
 const locationOptions = [
-  { value: '', label: 'Seçin...' },
   { value: 'office', label: 'Baş Ofis' },
   { value: 'airport', label: 'Hava Limanı' },
   { value: 'hotel', label: 'Bakıda istənilən otel' },
@@ -83,8 +82,8 @@ function HeroBookingPanel() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [vehicle, setVehicle] = useState('car');
-  const [pickup, setPickup] = useState('');
-  const [dropoff, setDropoff] = useState('');
+  const [pickup, setPickup] = useState('office');
+  const [dropoff, setDropoff] = useState('office');
   const [pickupDate, setPickupDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
 
