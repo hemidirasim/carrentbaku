@@ -163,38 +163,61 @@ const Reviews = () => {
                 <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
                   <Card className="border-border overflow-hidden">
                     {c.type === 'video' && c.videoUrl ? (
-                      <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
-                        <iframe
-                          src={c.videoUrl}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title={`${c.name} review video`}
-                        />
-                        <div className="absolute top-2 right-2 bg-primary/80 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                          <Play className="w-3 h-3" />
-                          Video
-                        </div>
-                      </div>
-                    ) : null}
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
-                      <p className="text-muted-foreground mb-6">{c.text}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
-                          <div>
-                            <div className="font-semibold">{c.name}</div>
-                            <div className="text-sm text-muted-foreground">{c.location}</div>
+                      <CardContent className="p-0">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="flex-1 p-6">
+                            <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
+                            <p className="text-muted-foreground mb-6">{c.text}</p>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
+                                <div>
+                                  <div className="font-semibold">{c.name}</div>
+                                  <div className="text-sm text-muted-foreground">{c.location}</div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                {[...Array(c.rating)].map((_, idx) => (
+                                  <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="relative w-full md:w-1/2" style={{ aspectRatio: '16 / 9', minHeight: '200px' }}>
+                            <iframe
+                              src={c.videoUrl}
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              title={`${c.name} review video`}
+                            />
+                            <div className="absolute top-2 right-2 bg-primary/80 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                              <Play className="w-3 h-3" />
+                              Video
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          {[...Array(c.rating)].map((_, idx) => (
-                            <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
-                          ))}
+                      </CardContent>
+                    ) : (
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
+                        <p className="text-muted-foreground mb-6">{c.text}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
+                            <div>
+                              <div className="font-semibold">{c.name}</div>
+                              <div className="text-sm text-muted-foreground">{c.location}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {[...Array(c.rating)].map((_, idx) => (
+                              <Star key={idx} className="w-4 h-4 fill-green-500 text-green-500" />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
+                      </CardContent>
+                    )}
                   </Card>
                 </CarouselItem>
               ))}
