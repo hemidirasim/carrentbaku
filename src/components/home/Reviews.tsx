@@ -160,11 +160,11 @@ const Reviews = () => {
           <Carousel opts={{ align: 'start', loop: true }} setApi={setApi} className="w-full">
             <CarouselContent>
               {cards.map((c, i) => (
-                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="border-border overflow-hidden">
+                <CarouselItem key={i} className="md:basis-2/3 lg:basis-1/2">
+                  <Card className="border-border overflow-hidden h-full">
                     {c.type === 'video' && c.videoUrl ? (
                       <CardContent className="p-0">
-                        <div className="flex flex-col md:flex-row">
+                        <div className="flex flex-col md:flex-row h-full">
                           <div className="flex-1 p-6">
                             <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
                             <p className="text-muted-foreground mb-6">{c.text}</p>
@@ -183,7 +183,7 @@ const Reviews = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="relative w-full md:w-1/2" style={{ aspectRatio: '16 / 9', minHeight: '200px' }}>
+                          <div className="relative w-full md:w-2/5" style={{ aspectRatio: '21 / 9', minHeight: '150px' }}>
                             <iframe
                               src={c.videoUrl}
                               className="w-full h-full"
