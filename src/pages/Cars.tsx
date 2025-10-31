@@ -1,24 +1,17 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowRight, Search, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { carBrands } from '@/data/carBrands';
 
 const Cars = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedBrand, setSelectedBrand] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // URL-dən category parametrini oxu
@@ -154,8 +147,6 @@ const Cars = () => {
   ];
 
   const filteredCars = cars.filter(car => {
-    const matchesSearch = car.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
     // Category mapping
     const categoryMap: Record<string, string> = {
       'ekonomik': 'ekonomik',
@@ -172,14 +163,7 @@ const Cars = () => {
       car.category === selectedCategory || 
       car.category === categoryMap[selectedCategory];
     
-    const matchesBrand = selectedBrand === 'all' || car.brand.toLowerCase().replace('-', '') === selectedBrand.toLowerCase().replace('-', '');
-    const matchesPrice = 
-      priceRange === 'all' ||
-      (priceRange === 'low' && car.price < 70) ||
-      (priceRange === 'medium' && car.price >= 70 && car.price < 120) ||
-      (priceRange === 'high' && car.price >= 120);
-    
-    return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
+    return matchesCategory;
   });
 
   return (
@@ -278,76 +262,6 @@ const Cars = () => {
               </Button>
             </div>
           </div>
-
-          {/* Advanced Filters - Collapsible */}
-          <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
-            <CollapsibleTrigger asChild>
-              <button className="w-full flex items-center justify-between py-3 border-t border-border">
-                <h3 className="text-lg font-semibold">Əlavə Filterlər</h3>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                {/* Search */}
-                <div className="relative lg:col-span-2">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder={t('cars.search')}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                {/* Price Range */}
-                <Select value={priceRange} onValueChange={setPriceRange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('cars.price')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('cars.price.all')}</SelectItem>
-                    <SelectItem value="low">0-70 AZN</SelectItem>
-                    <SelectItem value="medium">70-120 AZN</SelectItem>
-                    <SelectItem value="high">120+ AZN</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Brand Filter */}
-                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('cars.filter.brand')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
-                    {carBrands.map(brand => (
-                      <SelectItem key={brand.id} value={brand.id}>
-                        {brand.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Reset Button */}
-              {(searchQuery || selectedBrand !== 'all' || priceRange !== 'all') && (
-                <div className="flex justify-end">
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedBrand('all');
-                      setPriceRange('all');
-                    }}
-                  >
-                    {t('cars.reset')}
-                  </Button>
-                </div>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-
         </div>
       </section>
 
@@ -438,10 +352,8 @@ const Cars = () => {
               <Button 
                 variant="outline"
                 onClick={() => {
-                  setSearchQuery('');
                   setSelectedCategory('all');
-                  setSelectedBrand('all');
-                  setPriceRange('all');
+                  handleCategoryChange('all');
                 }}
               >
                 {t('cars.reset')}
