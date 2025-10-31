@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,27 +10,32 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const Cars = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // URL-dən category parametrini oxu
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
+    } else {
+      setSelectedCategory('all');
     }
-  }, [searchParams]);
+  }, [location.search]);
 
   // Category dəyişəndə URL-i yenilə
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+    const searchParams = new URLSearchParams(location.search);
     if (category === 'all') {
       searchParams.delete('category');
     } else {
       searchParams.set('category', category);
     }
-    setSearchParams(searchParams, { replace: true });
+    const newSearch = searchParams.toString();
+    navigate(`/cars${newSearch ? `?${newSearch}` : ''}`, { replace: true });
   };
 
   const cars = [
