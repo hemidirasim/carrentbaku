@@ -121,8 +121,8 @@ const Reviews = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute -top-12 right-12 bg-white border border-border text-slate-700 hover:bg-slate-50" />
-            <CarouselNext className="absolute -top-12 right-0 bg-white border border-border text-slate-700 hover:bg-slate-50" />
+            <CarouselPrevious className="absolute -top-12 right-0 bg-white border border-border text-slate-700 hover:bg-slate-50" />
+            <CarouselNext className="absolute -top-12 right-12 bg-white border border-border text-slate-700 hover:bg-slate-50" />
           </Carousel>
         </div>
       </div>
