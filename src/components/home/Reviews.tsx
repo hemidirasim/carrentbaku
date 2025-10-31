@@ -1,16 +1,32 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Star } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from '@/components/ui/carousel';
+import { Button } from '@/components/ui/button';
 
 const Reviews = () => {
   const { t } = useLanguage();
+  const [api, setApi] = useState<CarouselApi>();
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCanScrollPrev(api.canScrollPrev());
+    setCanScrollNext(api.canScrollNext());
+
+    api.on('select', () => {
+      setCanScrollPrev(api.canScrollPrev());
+      setCanScrollNext(api.canScrollNext());
+    });
+  }, [api]);
 
   const cards = [
     {
@@ -90,11 +106,35 @@ const Reviews = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-10">
-          {t('reviews.title')}
-        </h2>
+        <div className="relative mb-10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl md:text-4xl font-extrabold">
+              {t('reviews.title')}
+            </h2>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => api?.scrollPrev()}
+                disabled={!canScrollPrev}
+                className="bg-white border border-border text-slate-700 hover:bg-slate-50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => api?.scrollNext()}
+                disabled={!canScrollNext}
+                className="bg-white border border-border text-slate-700 hover:bg-slate-50"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
         <div className="relative">
-          <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+          <Carousel opts={{ align: 'start', loop: true }} setApi={setApi} className="w-full">
             <CarouselContent>
               {cards.map((c, i) => (
                 <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
@@ -121,8 +161,6 @@ const Reviews = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute -top-12 right-0 bg-white border border-border text-slate-700 hover:bg-slate-50 z-10" />
-            <CarouselNext className="absolute -top-12 right-12 bg-white border border-border text-slate-700 hover:bg-slate-50 z-0" />
           </Carousel>
         </div>
       </div>
