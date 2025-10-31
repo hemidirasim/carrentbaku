@@ -17,7 +17,7 @@ const Cars = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
-  const [isBrandsOpen, setIsBrandsOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const cars = [
     {
@@ -134,7 +134,23 @@ const Cars = () => {
 
   const filteredCars = cars.filter(car => {
     const matchesSearch = car.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || car.category === selectedCategory;
+    
+    // Category mapping
+    const categoryMap: Record<string, string> = {
+      'ekonomik': 'ekonomik',
+      'medium-sedan': 'ekonomik', // map to existing categories
+      'biznes': 'biznes',
+      'premium': 'premium',
+      'suv': 'suv',
+      'minivan': 'minivan',
+      'luxury': 'premium', // map to premium
+      'big-bus': 'minivan', // map to minivan
+    };
+    
+    const matchesCategory = selectedCategory === 'all' || 
+      car.category === selectedCategory || 
+      car.category === categoryMap[selectedCategory];
+    
     const matchesBrand = selectedBrand === 'all' || car.brand.toLowerCase().replace('-', '') === selectedBrand.toLowerCase().replace('-', '');
     const matchesPrice = 
       priceRange === 'all' ||
@@ -160,57 +176,118 @@ const Cars = () => {
       </section>
 
       {/* Filters */}
-      <section className="py-12 bg-white border-b border-border">
+      <section className="py-8 bg-white border-b border-border">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-4">Filterlər</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Search */}
-              <div className="relative lg:col-span-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('cars.search')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Category */}
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('cars.filter.all')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
-                  <SelectItem value="ekonomik">{t('cars.filter.ekonomik')}</SelectItem>
-                  <SelectItem value="biznes">{t('cars.filter.biznes')}</SelectItem>
-                  <SelectItem value="premium">{t('cars.filter.premium')}</SelectItem>
-                  <SelectItem value="suv">{t('cars.filter.suv')}</SelectItem>
-                  <SelectItem value="minivan">{t('cars.filter.minivan')}</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Price Range */}
-              <Select value={priceRange} onValueChange={setPriceRange}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('cars.price')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('cars.price.all')}</SelectItem>
-                  <SelectItem value="low">0-70 AZN</SelectItem>
-                  <SelectItem value="medium">70-120 AZN</SelectItem>
-                  <SelectItem value="high">120+ AZN</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Category Filter - Ana səhifə stili */}
+          <div className="mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              {t('cars.title')}
+            </h2>
+            
+            <div className="flex flex-wrap justify-start gap-2">
+              <Button
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('all')}
+                className={selectedCategory === 'all' ? 'bg-gradient-primary' : ''}
+              >
+                Hamısı
+              </Button>
+              <Button
+                variant={selectedCategory === 'ekonomik' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('ekonomik')}
+                className={selectedCategory === 'ekonomik' ? 'bg-gradient-primary' : ''}
+              >
+                Ekonom
+              </Button>
+              <Button
+                variant={selectedCategory === 'medium-sedan' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('medium-sedan')}
+                className={selectedCategory === 'medium-sedan' ? 'bg-gradient-primary' : ''}
+              >
+                Medium Sedan
+              </Button>
+              <Button
+                variant={selectedCategory === 'biznes' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('biznes')}
+                className={selectedCategory === 'biznes' ? 'bg-gradient-primary' : ''}
+              >
+                Biznes
+              </Button>
+              <Button
+                variant={selectedCategory === 'premium' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('premium')}
+                className={selectedCategory === 'premium' ? 'bg-gradient-primary' : ''}
+              >
+                Premium
+              </Button>
+              <Button
+                variant={selectedCategory === 'suv' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('suv')}
+                className={selectedCategory === 'suv' ? 'bg-gradient-primary' : ''}
+              >
+                SUV
+              </Button>
+              <Button
+                variant={selectedCategory === 'minivan' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('minivan')}
+                className={selectedCategory === 'minivan' ? 'bg-gradient-primary' : ''}
+              >
+                Minivan
+              </Button>
+              <Button
+                variant={selectedCategory === 'luxury' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('luxury')}
+                className={selectedCategory === 'luxury' ? 'bg-gradient-primary' : ''}
+              >
+                Luxury
+              </Button>
+              <Button
+                variant={selectedCategory === 'big-bus' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('big-bus')}
+                className={selectedCategory === 'big-bus' ? 'bg-gradient-primary' : ''}
+              >
+                Big Bus
+              </Button>
             </div>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-3 mt-4">
-              {/* Brand Filter */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground font-medium">Brend:</span>
+          {/* Advanced Filters - Collapsible */}
+          <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="w-full flex items-center justify-between py-3 border-t border-border">
+                <h3 className="text-lg font-semibold">Əlavə Filterlər</h3>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                {/* Search */}
+                <div className="relative lg:col-span-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t('cars.search')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Price Range */}
+                <Select value={priceRange} onValueChange={setPriceRange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('cars.price')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('cars.price.all')}</SelectItem>
+                    <SelectItem value="low">0-70 AZN</SelectItem>
+                    <SelectItem value="medium">70-120 AZN</SelectItem>
+                    <SelectItem value="high">120+ AZN</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Brand Filter */}
                 <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger>
                     <SelectValue placeholder={t('cars.filter.brand')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -225,55 +302,24 @@ const Cars = () => {
               </div>
 
               {/* Reset Button */}
-              {(searchQuery || selectedCategory !== 'all' || selectedBrand !== 'all' || priceRange !== 'all') && (
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('all');
-                    setSelectedBrand('all');
-                    setPriceRange('all');
-                  }}
-                >
-                  {t('cars.reset')}
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Brand Logos */}
-          <Collapsible open={isBrandsOpen} onOpenChange={setIsBrandsOpen}>
-            <CollapsibleTrigger asChild>
-              <button className="pt-6 w-full flex items-center justify-between border-t border-border">
-                <p className="text-sm text-muted-foreground font-medium">Brend seçin:</p>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isBrandsOpen ? 'rotate-180' : ''}`} />
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="pt-4">
-              <div className="flex flex-wrap justify-start gap-3">
-                {carBrands.map(brand => (
-                  <button
-                    key={brand.id}
-                    onClick={() => setSelectedBrand(brand.id)}
-                    className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-elegant ${
-                      selectedBrand === brand.id 
-                        ? 'border-primary shadow-glow bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
+              {(searchQuery || selectedBrand !== 'all' || priceRange !== 'all') && (
+                <div className="flex justify-end">
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedBrand('all');
+                      setPriceRange('all');
+                    }}
                   >
-                    <img 
-                      src={brand.logo} 
-                      alt={brand.name} 
-                      className={`h-8 w-auto transition-all ${
-                        selectedBrand === brand.id ? 'grayscale-0' : 'grayscale hover:grayscale-0'
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
+                    {t('cars.reset')}
+                  </Button>
+                </div>
+              )}
             </CollapsibleContent>
           </Collapsible>
+
         </div>
       </section>
 
