@@ -3,8 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Cars = () => {
@@ -12,7 +11,6 @@ const Cars = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // URL-dən category parametrini oxu
   useEffect(() => {
@@ -190,16 +188,6 @@ const Cars = () => {
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Category Filter - Ana səhifə stili */}
           <div className="mb-8">
-            <Collapsible open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
-              <CollapsibleTrigger asChild>
-                <button className="w-full flex items-center justify-between mb-6">
-                  <h2 className="text-3xl md:text-4xl font-bold">
-                    {t('cars.title')}
-                  </h2>
-                  <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
-                </button>
-              </CollapsibleTrigger>
-            </Collapsible>
             {/* Category buttons - həmişə görünür */}
             <div className="flex flex-wrap justify-start gap-2">
               <Button
@@ -251,13 +239,13 @@ const Cars = () => {
               >
                 Minivan
               </Button>
-              <Button
+            <Button 
                 variant={selectedCategory === 'luxury' ? 'default' : 'outline'}
                 onClick={() => handleCategoryChange('luxury')}
                 className={selectedCategory === 'luxury' ? 'bg-gradient-primary' : ''}
               >
                 Luxury
-              </Button>
+            </Button>
               <Button
                 variant={selectedCategory === 'big-bus' ? 'default' : 'outline'}
                 onClick={() => handleCategoryChange('big-bus')}
