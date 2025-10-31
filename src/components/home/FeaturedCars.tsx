@@ -271,7 +271,7 @@ const FeaturedCars = () => {
               key={car.id}
               className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
             >
-              <div className="relative h-40 overflow-hidden">
+              <div className="relative w-full" style={{ aspectRatio: '16 / 9', minHeight: '220px' }}>
                 <img 
                   src={car.image} 
                   alt={car.name}
@@ -290,17 +290,17 @@ const FeaturedCars = () => {
                   {/* Gün */}
                   <div className="rounded-lg p-3 text-center bg-[#7b1020]">
                     <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
-                    <div className="flex items-baseline justify-center gap-1 flex-wrap">
+                    <div className="flex flex-col items-center">
                       <span className="text-2xl font-bold text-white">{car.price}</span>
-                      <span className="text-sm font-semibold text-white/90 leading-none">AZN</span>
+                      <span className="text-sm font-semibold text-white/90">AZN</span>
                     </div>
                   </div>
                   {/* Həftə */}
                   <div className="rounded-lg p-3 text-center border border-border">
                     <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
-                    <div className="flex items-baseline justify-center gap-1 flex-wrap">
+                    <div className="flex flex-col items-center">
                       <span className="text-xl font-bold text-slate-900">{car.price * 7}</span>
-                      <span className="text-xs font-semibold text-slate-700 leading-none">AZN</span>
+                      <span className="text-xs font-semibold text-slate-700">AZN</span>
                     </div>
                   </div>
                   {/* Ay */}

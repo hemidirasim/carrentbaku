@@ -259,7 +259,7 @@ const Cars = () => {
                 key={car.id}
                 className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
               >
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '280px' }}>
                   <img 
                     src={car.image} 
                     alt={car.name}
@@ -286,9 +286,9 @@ const Cars = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-baseline space-x-1">
+                  <div className="flex flex-col">
                     <span className="text-3xl font-bold text-primary">{car.price}</span>
-                    <span className="text-muted-foreground">AZN / {t('cars.perDay')}</span>
+                    <span className="text-sm text-muted-foreground">AZN / {t('cars.perDay')}</span>
                   </div>
                 </CardContent>
 

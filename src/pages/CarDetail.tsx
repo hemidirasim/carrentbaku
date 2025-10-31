@@ -180,7 +180,7 @@ const CarDetail = () => {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Image Gallery */}
             <div className="space-y-4">
-              <div className="relative h-[400px] rounded-lg overflow-hidden">
+              <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
                 <img
                   src={car.images[selectedImage]}
                   alt={car.name}
@@ -260,9 +260,9 @@ const CarDetail = () => {
                     <div className="flex items-baseline justify-between mb-4">
                       <div>
                         <p className="text-sm text-muted-foreground">{t('detail.price')}</p>
-                        <div className="flex items-baseline space-x-2">
+                        <div className="flex flex-col">
                           <span className="text-4xl font-bold text-primary">{car.price}</span>
-                          <span className="text-muted-foreground">AZN / {t('cars.perDay')}</span>
+                          <span className="text-sm text-muted-foreground">AZN / {t('cars.perDay')}</span>
                         </div>
                       </div>
                       <DollarSign className="w-8 h-8 text-primary" />
