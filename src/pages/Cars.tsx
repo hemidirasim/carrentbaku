@@ -180,17 +180,19 @@ const Cars = () => {
       <section className="py-8 bg-white border-b border-border">
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Category Filter - Ana səhifə stili */}
-          <Collapsible open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
-            <CollapsibleTrigger asChild>
-              <button className="w-full flex items-center justify-between mb-6">
-                <h2 className="text-3xl md:text-4xl font-bold">
-                  {t('cars.title')}
-                </h2>
-                <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="flex flex-wrap justify-start gap-2 pb-6">
+          <div className="mb-8">
+            <Collapsible open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
+              <CollapsibleTrigger asChild>
+                <button className="w-full flex items-center justify-between mb-6">
+                  <h2 className="text-3xl md:text-4xl font-bold">
+                    {t('cars.title')}
+                  </h2>
+                  <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+            </Collapsible>
+            {/* Category buttons - həmişə görünür */}
+            <div className="flex flex-wrap justify-start gap-2">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory('all')}
@@ -254,9 +256,8 @@ const Cars = () => {
               >
                 Big Bus
               </Button>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+            </div>
+          </div>
 
           {/* Advanced Filters - Collapsible */}
           <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
