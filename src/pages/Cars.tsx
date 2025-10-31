@@ -5,7 +5,8 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Fuel, ArrowRight, Search } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Users, Fuel, ArrowRight, Search, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { carBrands } from '@/data/carBrands';
 
@@ -16,6 +17,7 @@ const Cars = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
+  const [isBrandsOpen, setIsBrandsOpen] = useState(false);
 
   const cars = [
     {
@@ -241,30 +243,37 @@ const Cars = () => {
           </div>
 
           {/* Brand Logos */}
-          <div className="pt-6 border-t border-border">
-            <p className="text-sm text-muted-foreground mb-4 font-medium">Brend seçin:</p>
-            <div className="flex flex-wrap justify-start gap-3">
-              {carBrands.map(brand => (
-                <button
-                  key={brand.id}
-                  onClick={() => setSelectedBrand(brand.id)}
-                  className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-elegant ${
-                    selectedBrand === brand.id 
-                      ? 'border-primary shadow-glow bg-primary/5' 
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                >
-                  <img 
-                    src={brand.logo} 
-                    alt={brand.name} 
-                    className={`h-8 w-auto transition-all ${
-                      selectedBrand === brand.id ? 'grayscale-0' : 'grayscale hover:grayscale-0'
+          <Collapsible open={isBrandsOpen} onOpenChange={setIsBrandsOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="pt-6 w-full flex items-center justify-between border-t border-border">
+                <p className="text-sm text-muted-foreground font-medium">Brend seçin:</p>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isBrandsOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <div className="flex flex-wrap justify-start gap-3">
+                {carBrands.map(brand => (
+                  <button
+                    key={brand.id}
+                    onClick={() => setSelectedBrand(brand.id)}
+                    className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-elegant ${
+                      selectedBrand === brand.id 
+                        ? 'border-primary shadow-glow bg-primary/5' 
+                        : 'border-border hover:border-primary/50'
                     }`}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+                  >
+                    <img 
+                      src={brand.logo} 
+                      alt={brand.name} 
+                      className={`h-8 w-auto transition-all ${
+                        selectedBrand === brand.id ? 'grayscale-0' : 'grayscale hover:grayscale-0'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </section>
 
