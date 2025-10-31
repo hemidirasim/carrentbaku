@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Users, Fuel, ArrowRight, Search, ChevronDown } from 'lucide-react';
+import { ArrowRight, Search, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { carBrands } from '@/data/carBrands';
 
@@ -18,6 +18,7 @@ const Cars = () => {
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   const cars = [
     {
@@ -179,12 +180,17 @@ const Cars = () => {
       <section className="py-8 bg-white border-b border-border">
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Category Filter - Ana səhifə stili */}
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t('cars.title')}
-            </h2>
-            
-            <div className="flex flex-wrap justify-start gap-2">
+          <Collapsible open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="w-full flex items-center justify-between mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  {t('cars.title')}
+                </h2>
+                <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="flex flex-wrap justify-start gap-2 pb-6">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory('all')}
@@ -248,8 +254,9 @@ const Cars = () => {
               >
                 Big Bus
               </Button>
-            </div>
-          </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Advanced Filters - Collapsible */}
           <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
@@ -355,19 +362,8 @@ const Cars = () => {
                 </div>
                 
                 <CardContent className="pt-6">
-                  <h3 className="text-xl font-bold mb-4">{car.name}</h3>
+                  <h3 className="text-xl font-bold mb-6">{car.name}</h3>
                   
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4" />
-                      <span>{car.seats} nəfər</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Fuel className="w-4 h-4" />
-                      <span>{car.fuel}</span>
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-3 gap-2 mb-6">
                     {/* Gün */}
                     <div className="rounded-lg p-3 text-center bg-[#7b1020]">
