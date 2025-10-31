@@ -72,6 +72,13 @@ const vehicleTypes = [
   { id: 'prestige', label: 'Prestige' },
 ];
 
+const locationOptions = [
+  { value: '', label: 'Seçin...' },
+  { value: 'office', label: 'Baş Ofis' },
+  { value: 'airport', label: 'Hava Limanı' },
+  { value: 'hotel', label: 'Bakıda istənilən otel' },
+];
+
 function HeroBookingPanel() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -79,9 +86,7 @@ function HeroBookingPanel() {
   const [pickup, setPickup] = useState('');
   const [dropoff, setDropoff] = useState('');
   const [pickupDate, setPickupDate] = useState('');
-  const [pickupTime, setPickupTime] = useState('');
   const [returnDate, setReturnDate] = useState('');
-  const [returnTime, setReturnTime] = useState('');
 
   return (
     <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
@@ -105,34 +110,34 @@ function HeroBookingPanel() {
       <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-sm text-white/80 mb-1">Pick Up Location</label>
-          <input value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Enter your pickup location" className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white placeholder-white/60" />
+          <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white">
+            {locationOptions.map((opt) => (
+              <option key={opt.value} value={opt.value} className="bg-slate-800">
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm text-white/80 mb-1">Drop Off Location</label>
-          <input value={dropoff} onChange={(e) => setDropoff(e.target.value)} placeholder="Enter your dropoff location" className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white placeholder-white/60" />
+          <select value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white">
+            {locationOptions.map((opt) => (
+              <option key={opt.value} value={opt.value} className="bg-slate-800">
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <div>
-            <label className="block text-sm text-white/80 mb-1">Pick Up Date</label>
-            <input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
-          </div>
-          <div>
-            <label className="block text-sm text-white/80 mb-1">Time</label>
-            <input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} className="w-28 h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
-          </div>
+        <div>
+          <label className="block text-sm text-white/80 mb-1">Pick Up Date</label>
+          <input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
         </div>
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <div>
-            <label className="block text-sm text-white/80 mb-1">Return Date</label>
-            <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
-          </div>
-          <div>
-            <label className="block text-sm text-white/80 mb-1">Time</label>
-            <input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} className="w-28 h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
-          </div>
+        <div>
+          <label className="block text-sm text-white/80 mb-1">Return Date</label>
+          <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
         </div>
       </div>
 
