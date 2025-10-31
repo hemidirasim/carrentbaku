@@ -13,12 +13,32 @@ import { carBrands } from '@/data/carBrands';
 const Cars = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  // URL-dən category parametrini oxu
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
+
+  // Category dəyişəndə URL-i yenilə
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category === 'all') {
+      searchParams.delete('category');
+    } else {
+      searchParams.set('category', category);
+    }
+    setSearchParams(searchParams, { replace: true });
+  };
 
   const cars = [
     {
@@ -195,63 +215,63 @@ const Cars = () => {
             <div className="flex flex-wrap justify-start gap-2">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('all')}
+                onClick={() => handleCategoryChange('all')}
                 className={selectedCategory === 'all' ? 'bg-gradient-primary' : ''}
               >
                 Hamısı
               </Button>
               <Button
                 variant={selectedCategory === 'ekonomik' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('ekonomik')}
+                onClick={() => handleCategoryChange('ekonomik')}
                 className={selectedCategory === 'ekonomik' ? 'bg-gradient-primary' : ''}
               >
                 Ekonom
               </Button>
               <Button
                 variant={selectedCategory === 'medium-sedan' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('medium-sedan')}
+                onClick={() => handleCategoryChange('medium-sedan')}
                 className={selectedCategory === 'medium-sedan' ? 'bg-gradient-primary' : ''}
               >
                 Medium Sedan
               </Button>
               <Button
                 variant={selectedCategory === 'biznes' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('biznes')}
+                onClick={() => handleCategoryChange('biznes')}
                 className={selectedCategory === 'biznes' ? 'bg-gradient-primary' : ''}
               >
                 Biznes
               </Button>
               <Button
                 variant={selectedCategory === 'premium' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('premium')}
+                onClick={() => handleCategoryChange('premium')}
                 className={selectedCategory === 'premium' ? 'bg-gradient-primary' : ''}
               >
                 Premium
               </Button>
               <Button
                 variant={selectedCategory === 'suv' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('suv')}
+                onClick={() => handleCategoryChange('suv')}
                 className={selectedCategory === 'suv' ? 'bg-gradient-primary' : ''}
               >
                 SUV
               </Button>
               <Button
                 variant={selectedCategory === 'minivan' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('minivan')}
+                onClick={() => handleCategoryChange('minivan')}
                 className={selectedCategory === 'minivan' ? 'bg-gradient-primary' : ''}
               >
                 Minivan
               </Button>
               <Button
                 variant={selectedCategory === 'luxury' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('luxury')}
+                onClick={() => handleCategoryChange('luxury')}
                 className={selectedCategory === 'luxury' ? 'bg-gradient-primary' : ''}
               >
                 Luxury
               </Button>
               <Button
                 variant={selectedCategory === 'big-bus' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('big-bus')}
+                onClick={() => handleCategoryChange('big-bus')}
                 className={selectedCategory === 'big-bus' ? 'bg-gradient-primary' : ''}
               >
                 Big Bus

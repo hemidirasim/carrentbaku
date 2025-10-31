@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, Globe, ChevronDown, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -11,12 +11,25 @@ const Header = () => {
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const languages: Array<{ code: 'az' | 'ru' | 'en' | 'ar'; label: string }> = [
     { code: 'az', label: 'AZ' },
     { code: 'ru', label: 'RU' },
     { code: 'en', label: 'EN' },
     { code: 'ar', label: 'AR' },
+  ];
+
+  const carCategories = [
+    { id: 'all', label: 'Hamısı' },
+    { id: 'ekonomik', label: 'Ekonom' },
+    { id: 'medium-sedan', label: 'Medium Sedan' },
+    { id: 'biznes', label: 'Biznes' },
+    { id: 'premium', label: 'Premium' },
+    { id: 'suv', label: 'SUV' },
+    { id: 'minivan', label: 'Minivan' },
+    { id: 'luxury', label: 'Luxury' },
+    { id: 'big-bus', label: 'Big Bus' },
   ];
 
   const navItems = [
@@ -29,6 +42,12 @@ const Header = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleCategorySelect = (categoryId: string) => {
+    const url = categoryId === 'all' ? '/cars' : `/cars?category=${categoryId}`;
+    navigate(url);
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
@@ -46,19 +65,52 @@ const Header = () => {
 
           {/* Desktop Navigation (visible on xl and up) */}
           <nav className="hidden xl:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-secondary'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              if (item.path === '/cars') {
+                return (
+                  <DropdownMenu key={item.path}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+                          isActive(item.path) || location.pathname.startsWith('/cars')
+                            ? 'bg-primary text-primary-foreground'
+                            : 'hover:bg-secondary'
+                        }`}
+                      >
+                        {item.label}
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="bg-background min-w-[200px]">
+                      {carCategories.map((category) => (
+                        <DropdownMenuItem
+                          key={category.id}
+                          onClick={() => handleCategorySelect(category.id)}
+                          className={location.search.includes(`category=${category.id}`) || 
+                            (category.id === 'all' && location.pathname === '/cars' && !location.search)
+                              ? 'bg-primary text-primary-foreground' : ''}
+                        >
+                          {category.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'bg-primary text-primary-foreground'
+                      : 'hover:bg-secondary'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right Section */}
@@ -115,20 +167,51 @@ const Header = () => {
         {/* Mobile Menu (shown below xl) */}
         {isMenuOpen && (
           <div className="xl:hidden py-4 space-y-2 border-t border-border">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-secondary'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              if (item.path === '/cars') {
+                return (
+                  <div key={item.path} className="space-y-1">
+                    <div className={`px-4 py-2 rounded-md text-sm font-medium ${
+                      isActive(item.path) || location.pathname.startsWith('/cars')
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground'
+                    }`}>
+                      {item.label}
+                    </div>
+                    <div className="pl-4 space-y-1">
+                      {carCategories.map((category) => (
+                        <button
+                          key={category.id}
+                          onClick={() => handleCategorySelect(category.id)}
+                          className={`block w-full text-left px-4 py-2 rounded-md text-sm transition-colors ${
+                            location.search.includes(`category=${category.id}`) || 
+                            (category.id === 'all' && location.pathname === '/cars' && !location.search)
+                              ? 'bg-primary/20 text-primary font-medium'
+                              : 'hover:bg-secondary text-muted-foreground'
+                          }`}
+                        >
+                          {category.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'bg-primary text-primary-foreground'
+                      : 'hover:bg-secondary'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             {/* Language quick switch in mobile */}
             <div className="px-4 py-2">
               <div className="flex items-center space-x-1 bg-secondary rounded-lg p-1">
