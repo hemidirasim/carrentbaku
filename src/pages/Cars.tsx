@@ -158,106 +158,132 @@ const Cars = () => {
       </section>
 
       {/* Filters */}
-      <section className="py-8 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={t('cars.search')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+      <section className="py-12 bg-white border-b border-border">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4">Filterlər</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Search */}
+              <div className="relative lg:col-span-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder={t('cars.search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Category */}
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('cars.filter.all')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
+                  <SelectItem value="ekonomik">{t('cars.filter.ekonomik')}</SelectItem>
+                  <SelectItem value="biznes">{t('cars.filter.biznes')}</SelectItem>
+                  <SelectItem value="premium">{t('cars.filter.premium')}</SelectItem>
+                  <SelectItem value="suv">{t('cars.filter.suv')}</SelectItem>
+                  <SelectItem value="minivan">{t('cars.filter.minivan')}</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Price Range */}
+              <Select value={priceRange} onValueChange={setPriceRange}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('cars.price')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('cars.price.all')}</SelectItem>
+                  <SelectItem value="low">0-70 AZN</SelectItem>
+                  <SelectItem value="medium">70-120 AZN</SelectItem>
+                  <SelectItem value="high">120+ AZN</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Category */}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('cars.filter.all')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
-                <SelectItem value="ekonomik">{t('cars.filter.ekonomik')}</SelectItem>
-                <SelectItem value="biznes">{t('cars.filter.biznes')}</SelectItem>
-                <SelectItem value="premium">{t('cars.filter.premium')}</SelectItem>
-                <SelectItem value="suv">{t('cars.filter.suv')}</SelectItem>
-                <SelectItem value="minivan">{t('cars.filter.minivan')}</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap items-center gap-3 mt-4">
+              {/* Brand Filter */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground font-medium">Brend:</span>
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder={t('cars.filter.brand')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
+                    {carBrands.map(brand => (
+                      <SelectItem key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Brand */}
-            <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('cars.filter.brand')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('cars.filter.all')}</SelectItem>
-                {carBrands.map(brand => (
-                  <SelectItem key={brand.id} value={brand.id}>
-                    {brand.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Price Range */}
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('cars.price')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('cars.price.all')}</SelectItem>
-                <SelectItem value="low">0-70 AZN</SelectItem>
-                <SelectItem value="medium">70-120 AZN</SelectItem>
-                <SelectItem value="high">120+ AZN</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Reset */}
-            <Button 
-              variant="outline"
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory('all');
-                setSelectedBrand('all');
-                setPriceRange('all');
-              }}
-            >
-              {t('cars.reset')}
-            </Button>
+              {/* Reset Button */}
+              {(searchQuery || selectedCategory !== 'all' || selectedBrand !== 'all' || priceRange !== 'all') && (
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                    setSelectedBrand('all');
+                    setPriceRange('all');
+                  }}
+                >
+                  {t('cars.reset')}
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Brand Logos */}
-          <div className="flex flex-wrap justify-center gap-4">
-            {carBrands.map(brand => (
-              <button
-                key={brand.id}
-                onClick={() => setSelectedBrand(brand.id)}
-                className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-md ${
-                  selectedBrand === brand.id ? 'border-primary' : 'border-transparent'
-                }`}
-              >
-                <img 
-                  src={brand.logo} 
-                  alt={brand.name} 
-                  className="h-8 w-auto grayscale hover:grayscale-0 transition-all"
-                />
-              </button>
-            ))}
+          <div className="pt-6 border-t border-border">
+            <p className="text-sm text-muted-foreground mb-4 font-medium">Brend seçin:</p>
+            <div className="flex flex-wrap justify-start gap-3">
+              {carBrands.map(brand => (
+                <button
+                  key={brand.id}
+                  onClick={() => setSelectedBrand(brand.id)}
+                  className={`p-3 bg-background rounded-lg border-2 transition-all hover:shadow-elegant ${
+                    selectedBrand === brand.id 
+                      ? 'border-primary shadow-glow bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <img 
+                    src={brand.logo} 
+                    alt={brand.name} 
+                    className={`h-8 w-auto transition-all ${
+                      selectedBrand === brand.id ? 'grayscale-0' : 'grayscale hover:grayscale-0'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Cars Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {filteredCars.length > 0 && (
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-muted-foreground">
+                <span className="font-semibold text-foreground">{filteredCars.length}</span> avtomobil tapıldı
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCars.map((car) => (
               <Card 
                 key={car.id}
-                className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
+                className="group overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
               >
                 <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '280px' }}>
                   <img 
@@ -265,8 +291,9 @@ const Cars = () => {
                     alt={car.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <Badge 
-                    className="absolute top-4 right-4 bg-accent text-accent-foreground"
+                    className="absolute top-4 right-4 bg-accent text-accent-foreground shadow-lg"
                   >
                     {car.year}
                   </Badge>
@@ -275,24 +302,24 @@ const Cars = () => {
                 <CardContent className="pt-6">
                   <h3 className="text-xl font-bold mb-4">{car.name}</h3>
                   
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center space-x-1">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
+                    <div className="flex items-center space-x-2">
                       <Users className="w-4 h-4" />
                       <span>{car.seats} nəfər</span>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       <Fuel className="w-4 h-4" />
                       <span>{car.fuel}</span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col">
+                  <div className="flex flex-col mb-6">
                     <span className="text-3xl font-bold text-primary">{car.price}</span>
                     <span className="text-sm text-muted-foreground">AZN / {t('cars.perDay')}</span>
                   </div>
                 </CardContent>
 
-                <CardFooter>
+                <CardFooter className="pt-0">
                   <Button 
                     className="w-full bg-gradient-primary group"
                     onClick={() => navigate(`/cars/${car.id}`)}
@@ -306,8 +333,25 @@ const Cars = () => {
           </div>
 
           {filteredCars.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">{t('cars.noResults')}</p>
+            <div className="text-center py-16">
+              <div className="inline-block p-6 bg-muted rounded-full mb-4">
+                <Search className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <p className="text-xl font-semibold text-foreground mb-2">Nəticə tapılmadı</p>
+              <p className="text-muted-foreground mb-6">
+                Filterləri dəyişdirərək yenidən axtarış edin
+              </p>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  setSelectedBrand('all');
+                  setPriceRange('all');
+                }}
+              >
+                {t('cars.reset')}
+              </Button>
             </div>
           )}
         </div>
