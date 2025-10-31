@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Users, Fuel, Calendar, Shield, ChevronLeft, Check } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from '@/components/ui/carousel';
+import { Users, Fuel, Calendar, Shield, ChevronLeft, Check, ZoomIn } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReservationDialog from '@/components/ReservationDialog';
 
@@ -13,6 +15,20 @@ const CarDetail = () => {
   const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState(0);
   const [reservationOpen, setReservationOpen] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomImageIndex, setZoomImageIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+
+  // Carousel API-dən seçilmiş şəkili yenilə
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on('select', () => {
+      setSelectedImage(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   // Mock data - in production, this would come from an API
   const cars = [
@@ -180,25 +196,68 @@ const CarDetail = () => {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Image Gallery */}
             <div className="space-y-4">
-              <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
-                <img
-                  src={car.images[selectedImage]}
-                  alt={car.name}
-                  className="w-full h-full object-cover"
-                />
-                <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
-                  {car.year}
-                </Badge>
-              </div>
+              <Carousel 
+                setApi={setApi}
+                className="w-full"
+                opts={{
+                  align: 'start',
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {car.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative w-full rounded-lg overflow-hidden cursor-zoom-in" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
+                        <img
+                          src={image}
+                          alt={`${car.name} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onClick={() => {
+                            setZoomImageIndex(index);
+                            setZoomOpen(true);
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                        <div className="absolute top-4 right-4 flex items-center gap-2">
+                          <Badge className="bg-accent text-accent-foreground">
+                            {car.year}
+                          </Badge>
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className="bg-background/80 backdrop-blur hover:bg-background"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setZoomImageIndex(index);
+                              setZoomOpen(true);
+                            }}
+                          >
+                            <ZoomIn className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {car.images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-4" />
+                    <CarouselNext className="right-4" />
+                  </>
+                )}
+              </Carousel>
               
               {car.images.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {car.images.map((image, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImage(index)}
+                      onClick={() => {
+                        setSelectedImage(index);
+                        api?.scrollTo(index);
+                      }}
                       className={`h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === index ? 'border-primary' : 'border-transparent'
+                        selectedImage === index ? 'border-primary' : 'border-transparent hover:border-primary/50'
                       }`}
                     >
                       <img src={image} alt={`${car.name} ${index + 1}`} className="w-full h-full object-cover" />
@@ -207,6 +266,39 @@ const CarDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* Zoom Dialog */}
+            <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+              <DialogContent className="max-w-7xl w-full p-0 bg-black/95">
+                <Carousel 
+                  className="w-full"
+                  opts={{
+                    startIndex: zoomImageIndex,
+                    loop: true,
+                  }}
+                >
+                  <CarouselContent>
+                    {car.images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="relative w-full" style={{ aspectRatio: '16 / 9', minHeight: '500px' }}>
+                          <img
+                            src={image}
+                            alt={`${car.name} ${index + 1}`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {car.images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="left-4 bg-background/80 hover:bg-background" />
+                      <CarouselNext className="right-4 bg-background/80 hover:bg-background" />
+                    </>
+                  )}
+                </Carousel>
+              </DialogContent>
+            </Dialog>
 
             {/* Car Info */}
             <div className="space-y-6">
