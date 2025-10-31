@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +9,17 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
+
+interface ReviewCard {
+  type: 'text' | 'video';
+  title: string;
+  text: string;
+  name: string;
+  location: string;
+  image: string;
+  rating: number;
+  videoUrl?: string;
+}
 
 const Reviews = () => {
   const { t } = useLanguage();
@@ -28,8 +39,9 @@ const Reviews = () => {
     });
   }, [api]);
 
-  const cards = [
+  const cards: ReviewCard[] = [
     {
+      type: 'text',
       title: t('reviews.card1.title'),
       text:
         'The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together.',
@@ -39,6 +51,7 @@ const Reviews = () => {
       rating: 5,
     },
     {
+      type: 'video',
       title: t('reviews.card2.title'),
       text:
         "I've used many car rental platforms before, but our booking system is hands down the best! The process is so smooth and straightforward.",
@@ -46,8 +59,10 @@ const Reviews = () => {
       location: 'New York',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sophia',
       rating: 5,
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
     {
+      type: 'text',
       title: t('reviews.card3.title'),
       text:
         'Everything is laid out clearly, and there are multiple payment options, which makes things super convenient.',
@@ -57,6 +72,7 @@ const Reviews = () => {
       rating: 5,
     },
     {
+      type: 'video',
       title: t('reviews.card1.title'),
       text:
         'Great communication and quick pickup. The car was clean and fuel-efficient. Will rent again on my next trip.',
@@ -64,8 +80,10 @@ const Reviews = () => {
       location: 'Baku',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Ali',
       rating: 5,
+      videoUrl: 'https://www.youtube.com/embed/jNQXAC9IVRw',
     },
     {
+      type: 'text',
       title: t('reviews.card2.title'),
       text:
         'Booking took less than two minutes and everything matched the description. Support was friendly and helpful.',
@@ -75,6 +93,7 @@ const Reviews = () => {
       rating: 5,
     },
     {
+      type: 'video',
       title: t('reviews.card3.title'),
       text:
         'Multiple payment choices and clear policies. Returning the vehicle was seamless and super convenient.',
@@ -82,8 +101,10 @@ const Reviews = () => {
       location: 'Dubai',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Omar',
       rating: 5,
+      videoUrl: 'https://www.youtube.com/embed/9bZkp7q19f0',
     },
     {
+      type: 'text',
       title: t('reviews.card1.title'),
       text:
         'Perfect for a weekend getaway. The whole experience felt easy and well-organized from start to finish.',
@@ -93,6 +114,7 @@ const Reviews = () => {
       rating: 5,
     },
     {
+      type: 'video',
       title: t('reviews.card2.title'),
       text:
         'Fast pickup at the airport and the car exceeded expectations. Excellent value for money.',
@@ -100,6 +122,7 @@ const Reviews = () => {
       location: 'Istanbul',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Mehmet',
       rating: 5,
+      videoUrl: 'https://www.youtube.com/embed/kJQP7kiw5Fk',
     },
   ];
 
@@ -138,7 +161,22 @@ const Reviews = () => {
             <CarouselContent>
               {cards.map((c, i) => (
                 <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="border-border">
+                  <Card className="border-border overflow-hidden">
+                    {c.type === 'video' && c.videoUrl ? (
+                      <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+                        <iframe
+                          src={c.videoUrl}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={`${c.name} review video`}
+                        />
+                        <div className="absolute top-2 right-2 bg-primary/80 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                          <Play className="w-3 h-3" />
+                          Video
+                        </div>
+                      </div>
+                    ) : null}
                     <CardContent className="p-6">
                       <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
                       <p className="text-muted-foreground mb-6">{c.text}</p>
