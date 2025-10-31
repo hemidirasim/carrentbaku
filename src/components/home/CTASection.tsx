@@ -75,7 +75,7 @@ const CTASection = () => {
                 HAVA PROQNOZU
               </h2>
               <p className="text-slate-900 font-extrabold leading-relaxed mb-6">
-                Planlarınız havadan asılı deyil — biz sizi hər havada təhlükəsiz və rahat yola çıxarırıq.
+                Planlarınız havadan asılı deyil — biz sizi hər şəraitdə təhlükəsiz və rahat yola çıxarırıq.
               </p>
 
               {/* Live Weather */}
