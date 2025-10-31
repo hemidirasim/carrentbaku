@@ -302,7 +302,7 @@ const Cars = () => {
                 <CardContent className="pt-6">
                   <h3 className="text-xl font-bold mb-4">{car.name}</h3>
                   
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <div className="flex items-center space-x-2">
                       <Users className="w-4 h-4" />
                       <span>{car.seats} nəfər</span>
@@ -313,9 +313,31 @@ const Cars = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col mb-6">
-                    <span className="text-3xl font-bold text-primary">{car.price}</span>
-                    <span className="text-sm text-muted-foreground">AZN / {t('cars.perDay')}</span>
+                  <div className="grid grid-cols-3 gap-2 mb-6">
+                    {/* Gün */}
+                    <div className="rounded-lg p-3 text-center bg-[#7b1020]">
+                      <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-lg md:text-xl font-bold text-white">{car.price}</span>
+                        <span className="text-xs font-semibold text-white/90">AZN</span>
+                      </div>
+                    </div>
+                    {/* Həftə */}
+                    <div className="rounded-lg p-3 text-center border border-border">
+                      <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-base md:text-lg font-bold text-slate-900">{car.price * 7}</span>
+                        <span className="text-xs font-semibold text-slate-700">AZN</span>
+                      </div>
+                    </div>
+                    {/* Ay */}
+                    <div className="rounded-lg p-3 text-center border border-border">
+                      <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-base md:text-lg font-extrabold text-slate-900">{car.price * 30}</span>
+                        <span className="text-xs font-semibold text-slate-700">AZN</span>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
 
