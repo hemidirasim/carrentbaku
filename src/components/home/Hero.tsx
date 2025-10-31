@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -52,16 +51,6 @@ const Hero = () => {
             <p className="mt-6 text-white/90 text-lg max-w-xl">
               Embark on unforgettable adventures and discover the world in unparalleled comfort and style with our fleet of exceptionally comfortable cars.
             </p>
-            <div className="mt-8">
-              <Button 
-                size="lg"
-                onClick={() => navigate('/cars')}
-                className="bg-accent hover:bg-accent-light text-white shadow-glow hover:shadow-elegant transition-all text-lg px-8 py-6 group"
-              >
-                {t('hero.selectCar')}
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
           </div>
 
           {/* Right booking widget */}
@@ -84,6 +73,7 @@ const vehicleTypes = [
 ];
 
 function HeroBookingPanel() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [vehicle, setVehicle] = useState('car');
   const [pickup, setPickup] = useState('');
@@ -147,7 +137,7 @@ function HeroBookingPanel() {
       </div>
 
       <Button onClick={() => navigate('/cars')} className="w-full bg-green-500 hover:bg-green-600 text-white h-12 text-base font-semibold">
-        Find a Vehicle
+        {t('hero.selectCar')}
       </Button>
     </div>
   );
