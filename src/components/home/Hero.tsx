@@ -132,11 +132,27 @@ function HeroBookingPanel() {
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm text-white/80 mb-1">Pick Up Date</label>
-          <input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          <input 
+            type="date" 
+            value={pickupDate} 
+            onChange={(e) => {
+              setPickupDate(e.target.value);
+              if (returnDate && e.target.value > returnDate) {
+                setReturnDate(e.target.value);
+              }
+            }}
+            className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" 
+          />
         </div>
         <div>
           <label className="block text-sm text-white/80 mb-1">Return Date</label>
-          <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" />
+          <input 
+            type="date" 
+            value={returnDate} 
+            onChange={(e) => setReturnDate(e.target.value)}
+            min={pickupDate || undefined}
+            className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white" 
+          />
         </div>
       </div>
 
