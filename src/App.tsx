@@ -15,6 +15,8 @@ import Services from "./pages/Services";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
+import BlogDetail from "./pages/BlogDetail";
+import ServiceDetail from "./pages/ServiceDetail";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -60,7 +62,9 @@ const App = () => (
                       <Route path="/cars" element={<Cars />} />
                       <Route path="/cars/:id" element={<CarDetail />} />
                       <Route path="/services" element={<Services />} />
+                      <Route path="/services/:id" element={<ServiceDetail />} />
                       <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:id" element={<BlogDetail />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="*" element={<NotFound />} />

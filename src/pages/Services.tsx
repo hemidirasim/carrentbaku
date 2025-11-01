@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Services = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const services = [
     {
@@ -71,7 +73,8 @@ const Services = () => {
             {services.map((service, i) => (
               <Card 
                 key={i} 
-                className="overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 group"
+                className="overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 group cursor-pointer"
+                onClick={() => navigate(`/services/${i + 1}`)}
               >
                 <div className="relative h-52 overflow-hidden">
                   <img 
@@ -86,7 +89,13 @@ const Services = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-base mb-4">{service.desc}</CardDescription>
-                  <Button className="w-full bg-gradient-primary group/btn">
+                  <Button 
+                    className="w-full bg-gradient-primary group/btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/services/${i + 1}`);
+                    }}
+                  >
                     {t('common.viewDetails')}
                   </Button>
                 </CardContent>

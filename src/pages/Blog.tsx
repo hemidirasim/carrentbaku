@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -6,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const Blog = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -190,6 +192,7 @@ const Blog = () => {
                     variant="ghost" 
                     size="sm"
                     className="text-sm hover:bg-gray-100"
+                    onClick={() => navigate(`/blog/${post.id}`)}
                   >
                     {t('blog.keepReading')}
                   </Button>
