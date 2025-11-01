@@ -169,7 +169,7 @@ const Contact = () => {
               ))}
 
               {/* WhatsApp */}
-              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-elegant transition-all">
+              <Card className="bg-gradient-primary text-white hover:shadow-elegant transition-all">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -178,7 +178,7 @@ const Contact = () => {
                     </div>
                     <Button 
                       size="lg"
-                      className="bg-white text-green-600 hover:bg-white/90"
+                      className="bg-white text-primary hover:bg-white/90"
                       onClick={() => window.open('https://wa.me/994501234567', '_blank')}
                     >
                       WhatsApp
