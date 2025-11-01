@@ -269,7 +269,8 @@ const FeaturedCars = () => {
           {filteredCars.map((car) => (
             <Card 
               key={car.id}
-              className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
+              className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+              onClick={() => navigate(`/cars/${car.id}`)}
             >
               <div className="relative w-full" style={{ aspectRatio: '16 / 9', minHeight: '220px' }}>
                 <img 
