@@ -11,7 +11,6 @@ import { Calendar as CalendarIcon, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ReservationDialogProps {
@@ -25,7 +24,6 @@ interface ReservationDialogProps {
 const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0 }: ReservationDialogProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
@@ -167,25 +165,26 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('reservation.startDate')} *</Label>
-              {isMobile ? (
-                <Input
-                  type="date"
-                  value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      const date = new Date(e.target.value);
-                      setStartDate(date);
-                      // Reset end date if it's before or equal to new start date
-                      if (endDate && date >= endDate) {
-                        setEndDate(undefined);
-                      }
+              {/* Mobile: Native date input */}
+              <Input
+                type="date"
+                value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const date = new Date(e.target.value);
+                    setStartDate(date);
+                    // Reset end date if it's before or equal to new start date
+                    if (endDate && date >= endDate) {
+                      setEndDate(undefined);
                     }
-                  }}
-                  min={format(new Date(), 'yyyy-MM-dd')}
-                  className="w-full"
-                  required
-                />
-              ) : (
+                  }
+                }}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                className="w-full sm:hidden"
+                required
+              />
+              {/* Desktop: Calendar popover */}
+              <div className="hidden sm:block">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -217,27 +216,28 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
                     />
                   </PopoverContent>
                 </Popover>
-              )}
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label>{t('reservation.endDate')} *</Label>
-              {isMobile ? (
-                <Input
-                  type="date"
-                  value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      const date = new Date(e.target.value);
-                      setEndDate(date);
-                    }
-                  }}
-                  min={startDate ? format(new Date(startDate.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                  disabled={!startDate}
-                  className="w-full"
-                  required
-                />
-              ) : (
+              {/* Mobile: Native date input */}
+              <Input
+                type="date"
+                value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const date = new Date(e.target.value);
+                    setEndDate(date);
+                  }
+                }}
+                min={startDate ? format(new Date(startDate.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                disabled={!startDate}
+                className="w-full sm:hidden"
+                required
+              />
+              {/* Desktop: Calendar popover */}
+              <div className="hidden sm:block">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -269,7 +269,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
                     />
                   </PopoverContent>
                 </Popover>
-              )}
+              </div>
             </div>
           </div>
 
