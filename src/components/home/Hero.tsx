@@ -9,7 +9,7 @@ const Hero = () => {
   
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-10 pb-10 sm:pt-0 sm:pb-0">
       {/* Background YouTube Video (cover) */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
