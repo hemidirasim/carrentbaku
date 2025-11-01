@@ -60,10 +60,10 @@ const About = () => {
                   {t('about.description')}
                 </p>
                 <p>
-                  2016-cı ildən Bakıda avtomobil kirayə sektorunda fəaliyyət göstərərək, minlərlə müştəriyə xidmət göstərmişik. İlk günündən başlayaraq məqsədimiz müştərilərə ən yüksək keyfiyyətli xidmət və ən etibarlı avtomobilləri təqdim etmək olub.
+                  2016-cı ildən Bakıda avtomobil icarə sektorunda fəaliyyət göstərərək, minlərlə müştəriyə xidmət göstərmişik. İlk günündən başlayaraq məqsədimiz müştərilərə ən yüksək keyfiyyətli xidmət və ən etibarlı avtomobilləri təqdim etmək olub.
                 </p>
                 <p>
-                  Bu gün 100-dən çox müxtəlif sinifdən avtomobillə, peşəkar komandamız və 24/7 dəstək xidmətimizlə Bakının ən etibarlı avtomobil kirayə şirkətlərindən biriyik.
+                  Bu gün 100-dən çox müxtəlif sinifdən avtomobillə, peşəkar komandamız və 24/7 dəstək xidmətimizlə Bakının ən etibarlı avtomobil icarə şirkətlərindən biriyik.
                 </p>
               </div>
             </div>
