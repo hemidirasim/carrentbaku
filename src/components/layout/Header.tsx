@@ -9,6 +9,7 @@ import ReservationDialog from '@/components/ReservationDialog';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const [isCarsMenuOpen, setIsCarsMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -171,29 +172,35 @@ const Header = () => {
               if (item.path === '/cars') {
                 return (
                   <div key={item.path} className="space-y-1">
-                    <div className={`px-4 py-2 rounded-md text-sm font-medium ${
-                      isActive(item.path) || location.pathname.startsWith('/cars')
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground'
-                    }`}>
-                      {item.label}
-                    </div>
-                    <div className="pl-4 space-y-1">
-                      {carCategories.map((category) => (
-                        <button
-                          key={category.id}
-                          onClick={() => handleCategorySelect(category.id)}
-                          className={`block w-full text-left px-4 py-2 rounded-md text-sm transition-colors ${
-                            location.search.includes(`category=${category.id}`) || 
-                            (category.id === 'all' && location.pathname === '/cars' && !location.search)
-                              ? 'bg-primary/20 text-primary font-medium'
-                              : 'hover:bg-secondary text-muted-foreground'
-                          }`}
-                        >
-                          {category.label}
-                        </button>
-                      ))}
-                    </div>
+                    <button
+                      onClick={() => setIsCarsMenuOpen(!isCarsMenuOpen)}
+                      className={`w-full flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive(item.path) || location.pathname.startsWith('/cars')
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground hover:bg-secondary'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isCarsMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isCarsMenuOpen && (
+                      <div className="pl-4 space-y-1">
+                        {carCategories.map((category) => (
+                          <button
+                            key={category.id}
+                            onClick={() => handleCategorySelect(category.id)}
+                            className={`block w-full text-left px-4 py-2 rounded-md text-sm transition-colors ${
+                              location.search.includes(`category=${category.id}`) || 
+                              (category.id === 'all' && location.pathname === '/cars' && !location.search)
+                                ? 'bg-primary/20 text-primary font-medium'
+                                : 'hover:bg-secondary text-muted-foreground'
+                            }`}
+                          >
+                            {category.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               }
