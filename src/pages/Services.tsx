@@ -49,7 +49,7 @@ const Services = () => {
             {t('services.title')}
           </h1>
           <p className="text-white/90 text-center text-lg max-w-2xl mx-auto">
-            Səyahətlərinizə dəyər qatan,sürüş zövqünüzü yüksəldən xidmətlər
+            {t('services.subtitle')}
           </p>
         </div>
       </section>
@@ -108,47 +108,62 @@ const Services = () => {
       {/* Additional Benefits */}
       <section className="py-16 bg-gradient-card">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Niyə Biz?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t('services.whyUs.title')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border">
+            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1600" 
+                  alt={t('services.whyUs.cleanCars.title')}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                  <span className="text-2xl">✓</span>
-                </div>
-                <CardTitle className="text-xl">100% Təmiz Avtomobillər</CardTitle>
+                <CardTitle className="text-xl">{t('services.whyUs.cleanCars.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Hər avtomobil təhvil verilməzdən əvvəl detallı təmizlənir və dezinfeksiya edilir
+                  {t('services.whyUs.cleanCars.desc')}
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border">
+            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1600" 
+                  alt={t('services.whyUs.fastDelivery.title')}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                  <span className="text-2xl">⚡</span>
-                </div>
-                <CardTitle className="text-xl">Sürətli Təhvil</CardTitle>
+                <CardTitle className="text-xl">{t('services.whyUs.fastDelivery.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Minimum rəsmiləşdirmə və 30 dəqiqə ərzində avtomobil təhvili
+                  {t('services.whyUs.fastDelivery.desc')}
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border">
+            <Card className="text-center hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-border overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1600" 
+                  alt={t('services.whyUs.fullInsurance.title')}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                  <span className="text-2xl">🛡️</span>
-                </div>
-                <CardTitle className="text-xl">Tam Sığorta</CardTitle>
+                <CardTitle className="text-xl">{t('services.whyUs.fullInsurance.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Bütün avtomobillərimiz tam KASKO sığortası ilə təchiz edilmişdir
+                  {t('services.whyUs.fullInsurance.desc')}
                 </CardDescription>
               </CardContent>
             </Card>
