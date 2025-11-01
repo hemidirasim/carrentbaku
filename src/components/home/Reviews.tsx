@@ -16,7 +16,6 @@ interface ReviewCard {
   text: string;
   name: string;
   location: string;
-  image: string;
   rating: number;
   videoUrl?: string;
 }
@@ -46,7 +45,6 @@ const Reviews = () => {
       text: t('reviews.review1.text'),
       name: 'Sara Mohamed',
       location: 'Jakarta',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sara',
       rating: 5,
     },
     {
@@ -55,7 +53,6 @@ const Reviews = () => {
       text: t('reviews.review2.text'),
       name: 'Sophia Moore',
       location: 'New York',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sophia',
       rating: 5,
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     },
@@ -65,7 +62,6 @@ const Reviews = () => {
       text: t('reviews.review3.text'),
       name: 'Atend John',
       location: 'Tokyo',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= John',
       rating: 5,
     },
     {
@@ -74,7 +70,6 @@ const Reviews = () => {
       text: t('reviews.review4.text'),
       name: 'Ali Rzayev',
       location: 'Baku',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Ali',
       rating: 5,
       videoUrl: 'https://www.youtube.com/embed/jNQXAC9IVRw',
     },
@@ -84,7 +79,6 @@ const Reviews = () => {
       text: t('reviews.review5.text'),
       name: 'Elena Petrova',
       location: 'Saint Petersburg',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Elena',
       rating: 5,
     },
     {
@@ -93,7 +87,6 @@ const Reviews = () => {
       text: t('reviews.review6.text'),
       name: 'Omar Al-Khaled',
       location: 'Dubai',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Omar',
       rating: 5,
       videoUrl: 'https://www.youtube.com/embed/9bZkp7q19f0',
     },
@@ -103,7 +96,6 @@ const Reviews = () => {
       text: t('reviews.review7.text'),
       name: 'Leyla Aliyeva',
       location: 'Ganja',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Leyla',
       rating: 5,
     },
     {
@@ -112,7 +104,6 @@ const Reviews = () => {
       text: t('reviews.review8.text'),
       name: 'Mehmet Yilmaz',
       location: 'Istanbul',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Mehmet',
       rating: 5,
       videoUrl: 'https://www.youtube.com/embed/kJQP7kiw5Fk',
     },
@@ -162,7 +153,6 @@ const Reviews = () => {
                             <p className="text-muted-foreground mb-6">{c.text}</p>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
-                                <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
                                 <div>
                                   <div className="font-semibold">{c.name}</div>
                                   <div className="text-sm text-muted-foreground">{c.location}</div>
@@ -196,7 +186,6 @@ const Reviews = () => {
                         <p className="text-muted-foreground mb-6">{c.text}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <img src={c.image} alt={c.name} className="w-12 h-12 rounded-full" />
                             <div>
                               <div className="font-semibold">{c.name}</div>
                               <div className="text-sm text-muted-foreground">{c.location}</div>
