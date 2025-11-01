@@ -56,12 +56,11 @@ const Header = () => {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-lg">
-              <Car className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold text-primary hidden lg:block">
-              CARRENTBAKU.AZ
-            </span>
+            <img 
+              src="https://urgm6grvtgvrhleh.public.blob.vercel-storage.com/Screenshot_2025-10-30_at_13.06.09-removebg-preview-nghUWyHPbnpxsh3CjJa0aJwEI0phc5.png"
+              alt="Logo"
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation (visible on xl and up) */}
