@@ -52,6 +52,157 @@ const BlogDetail = () => {
         <p>Traveling on a budget doesn't mean sacrificing comfort or quality. Here are our top tips for budget-conscious adventurers.</p>
         <p>Plan ahead and book early to get the best rates. Consider traveling during off-peak seasons for better prices and fewer crowds.</p>
         <p>Pack smart and avoid unnecessary expenses. Bring reusable items and snacks to save money during your trip.</p>
+        <h2>Top Tips</h2>
+        <ul>
+          <li>Book in advance for better rates</li>
+          <li>Travel during off-peak seasons</li>
+          <li>Pack efficiently</li>
+          <li>Look for package deals</li>
+        </ul>
+      `,
+    },
+    {
+      id: 3,
+      title: 'Top 10 Travel Hacks for Budget-Conscious Adventurers',
+      image: 'https://images.unsplash.com/photo-1436262513933-a0b06755c784?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'roadTrips',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>Road trips are one of the best ways to explore new destinations. Here's everything you need to know to make your next road trip unforgettable.</p>
+        <p>Planning is key to a successful road trip. Make sure to check your vehicle, plan your route, and pack all essentials.</p>
+        <h2>Essential Items</h2>
+        <ul>
+          <li>First aid kit</li>
+          <li>Road maps and GPS</li>
+          <li>Emergency kit</li>
+          <li>Comfortable clothing</li>
+        </ul>
+      `,
+    },
+    {
+      id: 4,
+      title: 'Top 10 Travel Hacks for Budget-Conscious Adventurers',
+      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'carReview',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>In this comprehensive review, we take a closer look at the latest models and their features.</p>
+        <p>Our team of experts has tested various vehicles to help you make the best choice for your needs.</p>
+        <h2>Review Criteria</h2>
+        <ul>
+          <li>Performance and handling</li>
+          <li>Comfort and interior</li>
+          <li>Fuel efficiency</li>
+          <li>Safety features</li>
+        </ul>
+      `,
+    },
+    {
+      id: 5,
+      title: 'Top 10 Travel Hacks for Budget-Conscious Adventurers',
+      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'carReview',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>Discover the latest trends and innovations in the automotive industry.</p>
+        <p>From electric vehicles to autonomous driving, the future of transportation is here.</p>
+        <h2>Innovation Highlights</h2>
+        <ul>
+          <li>Electric vehicle technology</li>
+          <li>Autonomous driving features</li>
+          <li>Sustainable materials</li>
+          <li>Smart connectivity</li>
+        </ul>
+      `,
+    },
+    {
+      id: 6,
+      title: 'The Continued Growth of Delivery and Ride share-2024',
+      image: 'https://images.unsplash.com/photo-1531572753322-ad063cecc140?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'discovery',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>Explore hidden gems and discover new destinations with our guide to the best travel experiences.</p>
+        <p>From local attractions to cultural experiences, there's always something new to discover.</p>
+        <h2>Discovery Tips</h2>
+        <ul>
+          <li>Talk to locals for insider tips</li>
+          <li>Explore beyond tourist areas</li>
+          <li>Try local cuisine</li>
+          <li>Immerse in local culture</li>
+        </ul>
+      `,
+    },
+    {
+      id: 7,
+      title: 'The Continued Growth of Delivery and Ride share-2024',
+      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'industryNews',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>Stay updated with the latest news and developments in the car rental industry.</p>
+        <p>From regulatory changes to market trends, we keep you informed about what matters most.</p>
+        <h2>Industry Updates</h2>
+        <ul>
+          <li>Market trends and analysis</li>
+          <li>Regulatory changes</li>
+          <li>Technology advancements</li>
+          <li>Customer insights</li>
+        </ul>
+      `,
+    },
+    {
+      id: 8,
+      title: 'Top 10 Travel Hacks for Budget-Conscious Adventurers',
+      image: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000',
+      date: '18 Sep 2024',
+      readTime: '6 mins',
+      comments: 38,
+      category: 'travelTips',
+      author: {
+        name: t('blog.author'),
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+      },
+      content: `
+        <p>Make the most of your travels with these expert tips and tricks.</p>
+        <p>Whether you're a first-time traveler or a seasoned explorer, these tips will help enhance your experience.</p>
+        <h2>Travel Tips</h2>
+        <ul>
+          <li>Research destinations in advance</li>
+          <li>Pack light and efficiently</li>
+          <li>Keep important documents safe</li>
+          <li>Stay connected but disconnect</li>
+        </ul>
       `,
     },
   ];
