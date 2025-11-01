@@ -1,9 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const cards = [
     {
@@ -64,7 +66,12 @@ const Services = () => {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base mb-4">{c.desc}</CardDescription>
-                <Button className="bg-accent hover:bg-accent-light text-white">{t('common.viewDetails')}</Button>
+                <Button 
+                  className="bg-accent hover:bg-accent-light text-white"
+                  onClick={() => navigate(`/services/${i + 1}`)}
+                >
+                  {t('common.viewDetails')}
+                </Button>
               </CardContent>
             </Card>
           ))}
