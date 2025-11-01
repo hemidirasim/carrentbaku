@@ -244,10 +244,10 @@ const CarDetail = () => {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen">
       {/* Header */}
       <section className="bg-gradient-primary py-6 sm:py-8">
-        <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
+        <div className="container mx-auto px-4">
           <Button
             variant="ghost"
             onClick={() => navigate('/cars')}
@@ -264,7 +264,7 @@ const CarDetail = () => {
 
       {/* Main Content */}
       <section className="py-6 sm:py-8 md:py-12">
-        <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
             {/* Image Gallery with Fancybox */}
             <div className="space-y-3 sm:space-y-4">
