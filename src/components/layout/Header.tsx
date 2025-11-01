@@ -53,7 +53,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full max-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border overflow-x-hidden">
       <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-auto py-2.5 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
