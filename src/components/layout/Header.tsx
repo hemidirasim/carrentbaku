@@ -50,8 +50,8 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
-      <div className="container mx-auto px-4">
+    <header className="sticky top-0 z-50 w-full max-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border overflow-x-hidden">
+      <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
@@ -213,23 +213,6 @@ const Header = () => {
               );
             })}
             {/* Language quick switch in mobile */}
-            <div className="px-4 py-2">
-              <div className="flex items-center space-x-1 bg-secondary rounded-lg p-1">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    className={`flex-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
-                      language === lang.code
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-background'
-                    }`}
-                  >
-                    {lang.label}
-                  </button>
-                ))}
-              </div>
-            </div>
             <div className="px-4 py-2">
               <div className="flex items-center space-x-1 bg-secondary rounded-lg p-1">
                 {languages.map((lang) => (

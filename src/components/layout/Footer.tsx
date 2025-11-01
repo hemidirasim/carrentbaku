@@ -6,8 +6,8 @@ const Footer = () => {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-gradient-card border-t border-border">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-gradient-card border-t border-border w-full max-w-full overflow-x-hidden">
+      <div className="container mx-auto px-4 py-12 max-w-full overflow-x-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
