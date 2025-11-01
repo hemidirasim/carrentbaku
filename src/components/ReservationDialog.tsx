@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,17 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
+
+  // Prevent body scroll when dialog is open on mobile
+  useEffect(() => {
+    if (open) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [open]);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -102,7 +113,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">{t('nav.reserve')}</DialogTitle>
           <DialogDescription>
@@ -110,7 +121,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 overflow-x-hidden">
           <div className="space-y-2">
             <Label htmlFor="name">{t('contact.name')} *</Label>
             <Input
@@ -151,7 +162,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('reservation.startDate')} *</Label>
               <Popover>
@@ -199,7 +210,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('reservation.pickupLocation')} *</Label>
               <Select value={formData.pickupLocation} onValueChange={(value) => setFormData({ ...formData, pickupLocation: value })}>
