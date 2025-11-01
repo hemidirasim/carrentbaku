@@ -49,7 +49,7 @@ const Services = () => {
             {t('services.title')}
           </h1>
           <p className="text-white/90 text-center text-lg max-w-2xl mx-auto">
-            Premium avtomobil kirayə və əlavə xidmətlərimiz ilə tanış olun
+            Səyahətlərinizə dəyər qatan,sürüş zövqünüzü yüksəldən xidmətlər
           </p>
         </div>
       </section>
