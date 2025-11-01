@@ -179,11 +179,6 @@ const Blog = () => {
                 <CardFooter className="pt-0 pb-6 flex items-center justify-between">
                   {/* Author */}
                   <div className="flex items-center gap-2">
-                    <img
-                      src={post.author.avatar}
-                      alt={post.author.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
                     <span className="text-sm font-medium">{post.author.name}</span>
                   </div>
 

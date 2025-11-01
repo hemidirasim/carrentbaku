@@ -266,11 +266,6 @@ const BlogDetail = () => {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{post.title}</h1>
             <div className="flex items-center gap-4">
-              <img
-                src={post.author.avatar}
-                alt={post.author.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
               <div>
                 <p className="font-semibold">{post.author.name}</p>
                 <p className="text-sm text-muted-foreground">{getCategoryLabel(post.category)}</p>
