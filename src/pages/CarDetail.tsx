@@ -244,32 +244,32 @@ const CarDetail = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden w-full max-w-full">
       {/* Header */}
-      <section className="bg-gradient-primary py-8">
-        <div className="container mx-auto px-4">
+      <section className="bg-gradient-primary py-6 sm:py-8">
+        <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
           <Button
             variant="ghost"
             onClick={() => navigate('/cars')}
-            className="text-white hover:bg-white/10 mb-4"
+            className="text-white hover:bg-white/10 mb-3 sm:mb-4 text-sm sm:text-base"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             {t('cars.viewAll')}
           </Button>
-          <h1 className="text-4xl md:text-5xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
             {car.name}
           </h1>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-8">
+      <section className="py-6 sm:py-8 md:py-12">
+        <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
             {/* Image Gallery with Fancybox */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Main Image - Fancybox Gallery */}
-              <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
+              <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '200px', maxHeight: '400px' }}>
                 {/* All images in gallery for Fancybox */}
                 {car.images.map((image, index) => (
                   <a
@@ -293,7 +293,7 @@ const CarDetail = () => {
               
               {/* Thumbnail Navigation */}
               {car.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-2 sm:gap-2">
                   {car.images.map((image, index) => (
                     <a
                       key={index}
@@ -304,7 +304,7 @@ const CarDetail = () => {
                         setSelectedImage(index);
                         // Let Fancybox handle the click
                       }}
-                      className={`h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer block ${
+                      className={`h-16 sm:h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer block ${
                         selectedImage === index ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-primary/50'
                       }`}
                     >
@@ -320,86 +320,86 @@ const CarDetail = () => {
             </div>
 
             {/* Car Info */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <Card>
-                <CardContent className="pt-6">
-                  <h2 className="text-2xl font-bold mb-4">{t('detail.specs')}</h2>
+                <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4">{t('detail.specs')}</h2>
                   
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Users className="w-6 h-6 text-primary" />
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{t('detail.seats')}</p>
-                        <p className="font-semibold">{car.seats}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Calendar className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{t('detail.year')}</p>
-                        <p className="font-semibold">{car.year}</p>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.seats')}</p>
+                        <p className="font-semibold text-sm sm:text-base">{car.seats}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Fuel className="w-6 h-6 text-primary" />
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{t('detail.fuel')}</p>
-                        <p className="font-semibold">{car.fuel}</p>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.year')}</p>
+                        <p className="font-semibold text-sm sm:text-base">{car.year}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Shield className="w-6 h-6 text-primary" />
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Fuel className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{t('detail.deposit')}</p>
-                        <p className="font-semibold">{car.deposit} AZN</p>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.fuel')}</p>
+                        <p className="font-semibold text-sm sm:text-base truncate">{car.fuel}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.deposit')}</p>
+                        <p className="font-semibold text-sm sm:text-base">{car.deposit} AZN</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="border-t pt-6">
-                    <div className="mb-6">
-                      <p className="text-sm text-muted-foreground mb-4">{t('detail.price')}</p>
-                      <div className="grid grid-cols-3 gap-2">
+                  <div className="border-t pt-4 sm:pt-6">
+                    <div className="mb-4 sm:mb-6">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{t('detail.price')}</p>
+                      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                         {/* Gün */}
-                        <div className="rounded-lg p-3 text-center bg-[#7b1020]">
-                          <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
+                        <div className="rounded-lg p-2 sm:p-3 text-center bg-[#7b1020]">
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-lg md:text-xl font-bold text-white">{car.price}</span>
-                            <span className="text-xs font-semibold text-white/90">AZN</span>
+                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white">{car.price}</span>
+                            <span className="text-[10px] sm:text-xs font-semibold text-white/90">AZN</span>
                           </div>
                         </div>
                         {/* Həftə */}
-                        <div className="rounded-lg p-3 text-center border border-border">
-                          <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
+                        <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-base md:text-lg font-bold text-slate-900">{car.price * 7}</span>
-                            <span className="text-xs font-semibold text-slate-700">AZN</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price * 7}</span>
+                            <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
                         {/* Ay */}
-                        <div className="rounded-lg p-3 text-center border border-border">
-                          <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
+                        <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-base md:text-lg font-extrabold text-slate-900">{car.price * 30}</span>
-                            <span className="text-xs font-semibold text-slate-700">AZN</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price * 30}</span>
+                            <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <Button 
-                      className="w-full bg-gradient-primary text-lg py-6"
+                      className="w-full bg-gradient-primary text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6"
                       onClick={() => setReservationOpen(true)}
                     >
                       {t('detail.reserve')}
@@ -410,13 +410,13 @@ const CarDetail = () => {
 
               {/* Features */}
               <Card>
-                <CardContent className="pt-6">
-                  <h2 className="text-xl font-bold mb-4">{t('detail.features')}</h2>
-                  <div className="grid grid-cols-2 gap-3">
+                <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+                  <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{t('detail.features')}</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {car.features.map((feature, index) => (
                       <div key={index} className="flex items-center space-x-2">
-                        <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
