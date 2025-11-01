@@ -15,38 +15,43 @@ const CarDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const thumbnailRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  // Fancybox-i init et (lazy load)
+  // Fancybox-i init et (lazy load - client-side only)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     let Fancybox: any;
     const initFancybox = async () => {
       try {
-        const fancyboxModule = await import("@fancyapps/ui");
+        // Dynamic import with string literal to avoid build-time analysis
+        const fancyboxModule = await import(/* @vite-ignore */ "@fancyapps/ui");
         Fancybox = fancyboxModule.Fancybox;
-        await import("@fancyapps/ui/dist/fancybox/fancybox.css");
+        await import(/* @vite-ignore */ "@fancyapps/ui/dist/fancybox/fancybox.css");
         
-        Fancybox.bind("[data-fancybox='gallery']", {
-          Toolbar: {
-            display: {
-              left: ["infobar"],
-              middle: [],
-              right: ["slideshow", "download", "thumbs", "close"],
+        if (Fancybox) {
+          Fancybox.bind("[data-fancybox='gallery']", {
+            Toolbar: {
+              display: {
+                left: ["infobar"],
+                middle: [],
+                right: ["slideshow", "download", "thumbs", "close"],
+              },
             },
-          },
-          Thumbs: {
-            autoStart: false,
-          },
-          Image: {
-            zoom: true,
-          },
-          Swipe: {
-            threshold: 50,
-          },
-          on: {
-            reveal: (fancybox: any, slide: any) => {
-              setSelectedImage(slide.index);
+            Thumbs: {
+              autoStart: false,
             },
-          },
-        });
+            Image: {
+              zoom: true,
+            },
+            Swipe: {
+              threshold: 50,
+            },
+            on: {
+              reveal: (fancybox: any, slide: any) => {
+                setSelectedImage(slide.index);
+              },
+            },
+          });
+        }
       } catch (error) {
         console.error("Failed to load Fancybox:", error);
       }
@@ -55,7 +60,7 @@ const CarDetail = () => {
     initFancybox();
 
     return () => {
-      if (Fancybox) {
+      if (Fancybox && typeof Fancybox.destroy === 'function') {
         Fancybox.destroy();
       }
     };
