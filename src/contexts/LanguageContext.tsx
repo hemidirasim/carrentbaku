@@ -29,6 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.headline.part2': 'ölkəmizi kəşf edin',
     'hero.description': 'Unudulmaz səyahətlərə çıxın və bizim xüsusi rahat avtomobillərimiz ilə ölkəmizi misilsiz rahatlıqla kəşf edin.',
     'hero.booking.question': 'Hansı növ avtomobil icarə etmək istəyirsiniz?',
+    'hero.booking.vehicleType': 'Avtomobil növü',
     'hero.booking.pickupLocation': 'Götürmə Yeri',
     'hero.booking.dropoffLocation': 'Qaytarma Yeri',
     'hero.booking.pickupDate': 'Götürmə Tarixi',
@@ -200,10 +201,15 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.namePlaceholder': 'Adınız və soyadınız',
     
     // Car Categories
+    'cars.filter.all': 'Hamısı',
     'cars.filter.ekonomik': 'Ekonomik avtomobillər',
+    'cars.filter.mediumSedan': 'Medium Sedan',
     'cars.filter.biznes': 'Biznes avtomobilləri',
+    'cars.filter.premium': 'Premium',
     'cars.filter.suv': 'SUV tipli avtomobillər',
     'cars.filter.minivan': 'Minivanlar',
+    'cars.filter.luxury': 'Luxury',
+    'cars.filter.bigBus': 'Big Bus',
     
     // FAQ
     'faq.title': 'Tez-tez verilən suallar',
@@ -283,6 +289,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.headline.part2': 'на комфортном автомобиле',
     'hero.description': 'Отправляйтесь в незабываемые приключения и открывайте страну в непревзойдённом комфорте и стиле с нашим парком исключительно комфортных автомобилей.',
     'hero.booking.question': 'Какой тип автомобиля вы хотели бы арендовать?',
+    'hero.booking.vehicleType': 'Тип автомобиля',
     'hero.booking.pickupLocation': 'Место получения',
     'hero.booking.dropoffLocation': 'Место возврата',
     'hero.booking.pickupDate': 'Дата получения',

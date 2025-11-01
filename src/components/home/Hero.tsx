@@ -75,10 +75,15 @@ function HeroBookingPanel() {
   const [returnDate, setReturnDate] = useState('');
 
   const vehicleTypes = [
+    { id: 'all', label: t('cars.filter.all') },
     { id: 'ekonomik', label: t('cars.filter.ekonomik') },
+    { id: 'medium-sedan', label: t('cars.filter.mediumSedan') },
     { id: 'biznes', label: t('cars.filter.biznes') },
-    { id: 'suv', label: t('cars.filter.suv') },
     { id: 'premium', label: t('cars.filter.premium') },
+    { id: 'suv', label: t('cars.filter.suv') },
+    { id: 'minivan', label: t('cars.filter.minivan') },
+    { id: 'luxury', label: t('cars.filter.luxury') },
+    { id: 'big-bus', label: t('cars.filter.bigBus') },
   ];
 
   const locationOptions = [
@@ -90,20 +95,19 @@ function HeroBookingPanel() {
   return (
     <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
       <h3 className="text-white font-semibold mb-4">{t('hero.booking.question')}</h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {vehicleTypes.map((vt) => (
-          <button
-            key={vt.id}
-            onClick={() => setVehicle(vt.id)}
-            className={`rounded-xl py-4 text-center font-semibold transition-all ${
-              vehicle === vt.id
-                ? 'bg-accent text-white shadow-lg'
-                : 'bg-white/10 text-white hover:bg-white/20'
-            }`}
-          >
-            {vt.label}
-          </button>
-        ))}
+      <div className="mb-6">
+        <label className="block text-sm text-white/80 mb-2">{t('hero.booking.vehicleType')}</label>
+        <select 
+          value={vehicle} 
+          onChange={(e) => setVehicle(e.target.value)}
+          className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white"
+        >
+          {vehicleTypes.map((vt) => (
+            <option key={vt.id} value={vt.id} className="bg-slate-800">
+              {vt.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-4">
