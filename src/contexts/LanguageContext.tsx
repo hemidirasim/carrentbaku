@@ -109,6 +109,7 @@ const translations: Record<Language, Record<string, string>> = {
     // About
     'about.title': 'Haqqımızda',
     'about.subtitle': '2016-cı ildən etibar və keyfiyyət',
+    'about.tagline': 'Səyahətiniz bizə əmanətdir- 2016cı ildən etibarlı xidmət, keyfiyyətli avtomobillər və məmnuniyyət zəmanəti ilə',
     'about.description': 'CARRENTBAKU.AZ olaraq, 2016-cı ildən Bakıda premium avtomobil kirayə xidməti təqdim edirik. Müştəri məmnuniyyəti bizim prioritetimizdir.',
     
     // CTA
@@ -303,6 +304,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     'about.title': 'О нас',
     'about.subtitle': 'Доверие и качество с 2016 года',
+    'about.tagline': 'Ваше путешествие - наше доверие - с 2016 года надежный сервис, качественные автомобили и гарантия удовлетворенности',
     'about.description': 'CARRENTBAKU.AZ предоставляет премиум услуги аренды автомобилей в Баку с 2016 года. Удовлетворенность клиентов - наш приоритет.',
     
     'cta.title': 'Выберите идеальный автомобиль',
@@ -495,6 +497,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     'about.title': 'About Us',
     'about.subtitle': 'Trust and quality since 2016',
+    'about.tagline': 'Your journey is our trust - since 2016 reliable service, quality cars and satisfaction guarantee',
     'about.description': 'CARRENTBAKU.AZ has been providing premium car rental services in Baku since 2016. Customer satisfaction is our priority.',
     
     'cta.title': 'Choose Your Perfect Car',
@@ -687,6 +690,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     'about.title': 'عن الشركة',
     'about.subtitle': 'الثقة والجودة منذ 2016',
+    'about.tagline': 'رحلتك هي أمانتنا - منذ 2016 خدمة موثوقة، سيارات عالية الجودة وضمان الرضا',
     'about.description': 'تقدم CARRENTBAKU.AZ خدمات تأجير سيارات فاخرة في باكو منذ عام 2016. رضا العملاء هو أولويتنا.',
     
     'cta.title': 'اختر سيارتك المثالية',

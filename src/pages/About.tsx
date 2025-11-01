@@ -43,8 +43,8 @@ const About = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
             {t('about.title')}
           </h1>
-          <p className="text-white/90 text-center text-lg">
-            {t('about.subtitle')}
+          <p className="text-white/90 text-center text-lg md:text-xl max-w-4xl mx-auto">
+            {t('about.tagline')}
           </p>
         </div>
       </section>
