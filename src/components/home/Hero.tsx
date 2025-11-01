@@ -89,7 +89,7 @@ function HeroBookingPanel() {
 
   return (
     <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
-      <h3 className="text-white font-semibold mb-4">What is your vehicle type?</h3>
+      <h3 className="text-white font-semibold mb-4">What type of car would you like to rent?</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {vehicleTypes.map((t) => (
           <button
