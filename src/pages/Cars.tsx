@@ -23,49 +23,77 @@ const Cars = () => {
     }
   }, [location.search]);
 
-  // Fancybox-i init et (lazy load - client-side only)
+  // Fancybox-i init et (CDN-dən yüklə)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    let Fancybox: any;
-    const initFancybox = async () => {
-      try {
-        // Use string variable to prevent Rollup from analyzing the import
-        const modulePath = "@fancyapps/ui";
-        const cssPath = "@fancyapps/ui/dist/fancybox/fancybox.css";
-        
-        const fancyboxModule = await import(/* @vite-ignore */ modulePath);
-        Fancybox = fancyboxModule.Fancybox;
-        await import(/* @vite-ignore */ cssPath);
-        
-        if (Fancybox) {
-          Fancybox.bind("[data-fancybox]", {
-            Toolbar: {
-              display: {
-                left: ["infobar"],
-                middle: [],
-                right: ["slideshow", "download", "thumbs", "close"],
+    // CDN-dən Fancybox yüklə
+    const loadFancybox = () => {
+      // CSS yüklə
+      if (!document.querySelector('link[href*="fancybox"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css';
+        document.head.appendChild(link);
+      }
+
+      // Script yüklə
+      if (!(window as any).Fancybox) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js';
+        script.async = true;
+        script.onload = () => {
+          const Fancybox = (window as any).Fancybox;
+          if (Fancybox) {
+            Fancybox.bind("[data-fancybox]", {
+              Toolbar: {
+                display: {
+                  left: ["infobar"],
+                  middle: [],
+                  right: ["slideshow", "download", "thumbs", "close"],
+                },
               },
+              Thumbs: {
+                autoStart: false,
+              },
+              Image: {
+                zoom: true,
+              },
+              Swipe: {
+                threshold: 50,
+              },
+            });
+          }
+        };
+        document.head.appendChild(script);
+      } else {
+        // Əgər artıq yüklənibsə, dərhal bind et
+        const Fancybox = (window as any).Fancybox;
+        Fancybox.bind("[data-fancybox]", {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: [],
+              right: ["slideshow", "download", "thumbs", "close"],
             },
-            Thumbs: {
-              autoStart: false,
-            },
-            Image: {
-              zoom: true,
-            },
-            Swipe: {
-              threshold: 50,
-            },
-          });
-        }
-      } catch (error) {
-        console.error("Failed to load Fancybox:", error);
+          },
+          Thumbs: {
+            autoStart: false,
+          },
+          Image: {
+            zoom: true,
+          },
+          Swipe: {
+            threshold: 50,
+          },
+        });
       }
     };
 
-    initFancybox();
+    loadFancybox();
 
     return () => {
+      const Fancybox = (window as any).Fancybox;
       if (Fancybox && typeof Fancybox.destroy === 'function') {
         Fancybox.destroy();
       }
