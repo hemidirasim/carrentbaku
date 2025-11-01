@@ -175,12 +175,24 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
                     {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-background" align="start">
+                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
-                    disabled={(date) => date < new Date()}
+                    onSelect={(date) => {
+                      if (date) {
+                        setStartDate(date);
+                        // Reset end date if it's before or equal to new start date
+                        if (endDate && date >= endDate) {
+                          setEndDate(undefined);
+                        }
+                      }
+                    }}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today;
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -193,17 +205,29 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
                   <Button
                     variant="outline"
                     className="w-full justify-start text-left font-normal"
+                    disabled={!startDate}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-background" align="start">
+                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
-                    disabled={(date) => !startDate || date <= startDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setEndDate(date);
+                      }
+                    }}
+                    disabled={(date) => {
+                      if (!startDate) return true;
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const start = new Date(startDate);
+                      start.setHours(0, 0, 0, 0);
+                      return date < today || date <= start;
+                    }}
                   />
                 </PopoverContent>
               </Popover>
