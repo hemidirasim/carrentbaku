@@ -171,125 +171,81 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('reservation.startDate')} *</Label>
-              {/* Mobile: Native date input */}
-              <Input
-                type="date"
-                value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const date = new Date(e.target.value);
-                    setStartDate(date);
-                    // Reset end date if it's before or equal to new start date
-                    if (endDate && date >= endDate) {
-                      setEndDate(undefined);
-                    }
-                  }
-                }}
-                min={format(new Date(), 'yyyy-MM-dd')}
-                className="w-full sm:hidden"
-                required
-              />
-              {/* Desktop: Calendar popover */}
-              <div className="hidden sm:block">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => {
-                        if (date) {
-                          setStartDate(date);
-                          // Reset end date if it's before or equal to new start date
-                          if (endDate && date >= endDate) {
+              {/* Datepicker for Pick Up Date */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setStartDate(date);
+                        // Reset end date if it's before or equal to new start date
+                        if (endDate) {
+                          const end = new Date(endDate);
+                          end.setHours(0, 0, 0, 0);
+                          const start = new Date(date);
+                          start.setHours(0, 0, 0, 0);
+                          if (start >= end) {
                             setEndDate(undefined);
                           }
                         }
-                      }}
-                      disabled={(date) => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                      }
+                    }}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today;
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
               <Label>{t('reservation.endDate')} *</Label>
-              {/* Mobile: Native date input */}
-              <Input
-                type="date"
-                value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const selectedDate = new Date(e.target.value + 'T00:00:00');
-                    const minDate = startDate ? new Date(startDate.getTime() + 86400000) : new Date();
-                    minDate.setHours(0, 0, 0, 0);
-                    
-                    // Validate that end date is after start date
-                    if (startDate && selectedDate <= startDate) {
-                      toast({
-                        title: t('reservation.error'),
-                        description: 'Return date must be after pick up date',
-                        variant: 'destructive',
-                      });
-                      return;
-                    }
-                    setEndDate(selectedDate);
-                  } else {
-                    setEndDate(undefined);
-                  }
-                }}
-                min={startDate ? format(new Date(startDate.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                disabled={!startDate}
-                className="w-full sm:hidden"
-                required
-              />
-              {/* Desktop: Calendar popover */}
-              <div className="hidden sm:block">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                      disabled={!startDate}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        if (date) {
-                          setEndDate(date);
-                        }
-                      }}
-                      disabled={(date) => {
-                        if (!startDate) return true;
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        const start = new Date(startDate);
-                        start.setHours(0, 0, 0, 0);
-                        return date < today || date <= start;
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              {/* Datepicker for Return Date */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                    disabled={!startDate}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setEndDate(date);
+                      }
+                    }}
+                    disabled={(date) => {
+                      if (!startDate) return true;
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const start = new Date(startDate);
+                      start.setHours(0, 0, 0, 0);
+                      // Only allow dates that are STRICTLY greater than start date (not equal)
+                      return date < today || date <= start;
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
