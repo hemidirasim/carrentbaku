@@ -53,7 +53,7 @@ const translations: Record<Language, Record<string, string>> = {
     // New Services (Comprehensive)
     'services.comprehensive.title.part1': 'Geniş',
     'services.comprehensive.title.part2': 'Avtomobil İcarəsi',
-    'services.comprehensive.title.part3': 'Bütün Ehtiyaclarınızı Ödəyən Xidmətlər',
+    'services.comprehensive.title.part3': 'Ehtiyaclarınızı Ödəyən Xidmətlər',
     'services.comprehensive.subtitle': 'Günlük icarəsindən uzunmüddətli həllərə qədər, hər ehtiyac və büdcəyə uyğun geniş avtomobil və xidmət çeşidimiz var.',
     'services.dailyWeekly.title': 'Günlük və Həftəlik Avtomobil İcarəsi',
     'services.dailyWeekly.desc': 'Qısa müddətli və həftəlik ehtiyaclar üçün məlumatlı icarəsi variantları, tətil və ya iş səfərləri üçün idealdır.',
