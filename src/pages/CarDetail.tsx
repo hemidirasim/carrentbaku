@@ -289,11 +289,6 @@ const CarDetail = () => {
                   </a>
                 ))}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-10">
-                  <Badge className="bg-accent text-accent-foreground">
-                    {car.year}
-                  </Badge>
-                </div>
               </div>
               
               {/* Thumbnail Navigation */}
