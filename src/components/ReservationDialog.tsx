@@ -11,6 +11,7 @@ import { Calendar as CalendarIcon, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ReservationDialogProps {
@@ -24,6 +25,7 @@ interface ReservationDialogProps {
 const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0 }: ReservationDialogProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
@@ -165,72 +167,109 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('reservation.startDate')} *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        setStartDate(date);
-                        // Reset end date if it's before or equal to new start date
-                        if (endDate && date >= endDate) {
-                          setEndDate(undefined);
-                        }
+              {isMobile ? (
+                <Input
+                  type="date"
+                  value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      const date = new Date(e.target.value);
+                      setStartDate(date);
+                      // Reset end date if it's before or equal to new start date
+                      if (endDate && date >= endDate) {
+                        setEndDate(undefined);
                       }
-                    }}
-                    disabled={(date) => {
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      return date < today;
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+                    }
+                  }}
+                  min={format(new Date(), 'yyyy-MM-dd')}
+                  className="w-full"
+                  required
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setStartDate(date);
+                          // Reset end date if it's before or equal to new start date
+                          if (endDate && date >= endDate) {
+                            setEndDate(undefined);
+                          }
+                        }
+                      }}
+                      disabled={(date) => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        return date < today;
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label>{t('reservation.endDate')} *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                    disabled={!startDate}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        setEndDate(date);
-                      }
-                    }}
-                    disabled={(date) => {
-                      if (!startDate) return true;
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      const start = new Date(startDate);
-                      start.setHours(0, 0, 0, 0);
-                      return date < today || date <= start;
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <Input
+                  type="date"
+                  value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      const date = new Date(e.target.value);
+                      setEndDate(date);
+                    }
+                  }}
+                  min={startDate ? format(new Date(startDate.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                  disabled={!startDate}
+                  className="w-full"
+                  required
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                      disabled={!startDate}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background max-w-[calc(100vw-3rem)] sm:max-w-none" align="start" side="bottom" sideOffset={4}>
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEndDate(date);
+                        }
+                      }}
+                      disabled={(date) => {
+                        if (!startDate) return true;
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const start = new Date(startDate);
+                        start.setHours(0, 0, 0, 0);
+                        return date < today || date <= start;
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
 
