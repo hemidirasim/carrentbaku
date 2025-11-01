@@ -135,24 +135,6 @@ const About = () => {
           </div>
         </div>
       </section>
-
-      {/* Certifications */}
-      <section className="py-16 bg-gradient-card">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Sertifikatlar və Mükafatlar</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="p-6 flex items-center justify-center hover:shadow-elegant transition-all">
-                <div className="text-center">
-                  <Award className="w-12 h-12 mx-auto mb-2 text-accent" />
-                  <p className="text-sm font-medium">Sertifikat {i}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
