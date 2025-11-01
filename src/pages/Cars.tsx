@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { ArrowRight, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 const Cars = () => {
   const { t } = useLanguage();
@@ -21,6 +25,32 @@ const Cars = () => {
       setSelectedCategory('all');
     }
   }, [location.search]);
+
+  // Fancybox-i init et
+  useEffect(() => {
+    Fancybox.bind("[data-fancybox]", {
+      Toolbar: {
+        display: {
+          left: ["infobar"],
+          middle: [],
+          right: ["slideshow", "download", "thumbs", "close"],
+        },
+      },
+      Thumbs: {
+        autoStart: false,
+      },
+      Image: {
+        zoom: true,
+      },
+      Swipe: {
+        threshold: 50,
+      },
+    });
+
+    return () => {
+      Fancybox.destroy();
+    };
+  }, []);
 
   // Category dəyişəndə URL-i yenilə
   const handleCategoryChange = (category: string) => {
@@ -42,6 +72,12 @@ const Cars = () => {
       category: 'ekonomik',
       brand: 'Hyundai',
       image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
+        'https://images.unsplash.com/photo-1619767886463-eca0bc90544a?q=80&w=1000',
+        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 55,
       seats: 5,
       fuel: 'Petrol',
@@ -53,6 +89,12 @@ const Cars = () => {
       category: 'biznes',
       brand: 'Toyota',
       image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
+        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 85,
       seats: 5,
       fuel: 'Hybrid',
@@ -64,6 +106,12 @@ const Cars = () => {
       category: 'premium',
       brand: 'Mercedes-Benz',
       image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
+        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
+        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 150,
       seats: 5,
       fuel: 'Diesel',
@@ -75,6 +123,12 @@ const Cars = () => {
       category: 'ekonomik',
       brand: 'Kia',
       image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
+      ],
       price: 50,
       seats: 5,
       fuel: 'Petrol',
@@ -86,6 +140,12 @@ const Cars = () => {
       category: 'premium',
       brand: 'BMW',
       image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
+        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
+        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 180,
       seats: 5,
       fuel: 'Diesel',
@@ -97,6 +157,12 @@ const Cars = () => {
       category: 'biznes',
       brand: 'Honda',
       image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
+      ],
       price: 80,
       seats: 5,
       fuel: 'Petrol',
@@ -108,6 +174,12 @@ const Cars = () => {
       category: 'ekonomik',
       brand: 'Nissan',
       image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
+        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+      ],
       price: 60,
       seats: 5,
       fuel: 'Petrol',
@@ -119,6 +191,12 @@ const Cars = () => {
       category: 'premium',
       brand: 'Audi',
       image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
+        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
+        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 170,
       seats: 5,
       fuel: 'Diesel',
@@ -130,6 +208,12 @@ const Cars = () => {
       category: 'suv',
       brand: 'Toyota',
       image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1000',
+        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 200,
       seats: 7,
       fuel: 'Diesel',
@@ -141,6 +225,12 @@ const Cars = () => {
       category: 'minivan',
       brand: 'Mercedes-Benz',
       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000',
+      images: [
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000',
+        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
+        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
+      ],
       price: 180,
       seats: 8,
       fuel: 'Diesel',
@@ -274,13 +364,45 @@ const Cars = () => {
                 key={car.id}
                 className="group overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
               >
+                {/* Image Gallery with Swipe Slider and Fancybox */}
                 <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '280px' }}>
-                  <img 
-                    src={car.image} 
-                    alt={car.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {/* Swipe Slider for Images */}
+                  {car.images && car.images.length > 0 ? (
+                    <Carousel
+                      className="w-full h-full"
+                      opts={{
+                        align: 'start',
+                        loop: true,
+                        dragFree: true,
+                      }}
+                    >
+                      <CarouselContent className="h-full">
+                        {car.images.map((image, index) => (
+                          <CarouselItem key={index} className="h-full pl-0">
+                            <a
+                              href={image}
+                              data-fancybox={`car-${car.id}`}
+                              data-caption={`${car.name} - ${index + 1}`}
+                              className="block w-full h-full cursor-zoom-in"
+                            >
+                              <img 
+                                src={image} 
+                                alt={`${car.name} ${index + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              />
+                            </a>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
+                  ) : (
+                    <img 
+                      src={car.image} 
+                      alt={car.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
                 </div>
                 
                 <CardContent className="pt-6">
