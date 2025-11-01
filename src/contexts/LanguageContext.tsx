@@ -27,7 +27,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.tagline': 'Avtomobil icarə etmək üçün sürətli və asan yol',
     'hero.headline.part1': 'Rahat avtomobil ilə',
     'hero.headline.part2': 'ölkəmizi kəşf edin',
-    'hero.description': 'Unudulmaz səyahətlərə çıxın və bizim xüsusi rahat avtomobillərimiz ilə ölkəmizi misilsiz rahatlıq və üslubda kəşf edin ilə.',
+    'hero.description': 'Unudulmaz səyahətlərə çıxın və bizim xüsusi rahat avtomobillərimiz ilə ölkəmizi misilsiz rahatlıq və üslubda kəşf edin.',
     'hero.booking.question': 'Hansı növ avtomobil icarə etmək istəyirsiniz?',
     'hero.booking.pickupLocation': 'Götürmə Yeri',
     'hero.booking.dropoffLocation': 'Qaytarma Yeri',
