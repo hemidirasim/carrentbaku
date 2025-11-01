@@ -47,6 +47,12 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
     videoRecorder: false,
   });
 
+  const handleReset = () => {
+    setFormData({ name: '', phone: '', email: '', pickupLocation: '', dropoffLocation: '', childSeat: false, videoRecorder: false });
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -227,8 +233,22 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
                 value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
                 onChange={(e) => {
                   if (e.target.value) {
-                    const date = new Date(e.target.value);
-                    setEndDate(date);
+                    const selectedDate = new Date(e.target.value + 'T00:00:00');
+                    const minDate = startDate ? new Date(startDate.getTime() + 86400000) : new Date();
+                    minDate.setHours(0, 0, 0, 0);
+                    
+                    // Validate that end date is after start date
+                    if (startDate && selectedDate <= startDate) {
+                      toast({
+                        title: t('reservation.error'),
+                        description: 'Return date must be after pick up date',
+                        variant: 'destructive',
+                      });
+                      return;
+                    }
+                    setEndDate(selectedDate);
+                  } else {
+                    setEndDate(undefined);
                   }
                 }}
                 min={startDate ? format(new Date(startDate.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
@@ -333,8 +353,16 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
             </div>
           </div>
 
-          <DialogFooter>
-            <Button type="submit" className="w-full bg-gradient-primary">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleReset}
+              className="w-full sm:w-auto"
+            >
+              {t('cars.reset')}
+            </Button>
+            <Button type="submit" className="w-full sm:flex-1 bg-gradient-primary">
               {t('reservation.submit')}
             </Button>
           </DialogFooter>
