@@ -176,12 +176,7 @@ const Blog = () => {
                   </h3>
                 </CardContent>
 
-                <CardFooter className="pt-0 pb-6 flex items-center justify-between">
-                  {/* Author */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{post.author.name}</span>
-                  </div>
-
+                <CardFooter className="pt-0 pb-6 flex items-center justify-end">
                   {/* Keep Reading Button */}
                   <Button 
                     variant="ghost" 
