@@ -176,7 +176,7 @@ const Blog = () => {
                   </h3>
                 </CardContent>
 
-                <CardFooter className="pt-0 pb-6 flex items-center justify-end">
+                <CardFooter className="pt-0 pb-6 flex items-center justify-start">
                   {/* Keep Reading Button */}
                   <Button 
                     variant="ghost" 
