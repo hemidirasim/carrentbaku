@@ -174,7 +174,7 @@ const FeedbackForm = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-emerald-500 text-white hover:bg-emerald-600 font-bold text-lg py-4 rounded-lg shadow-lg transition-all hover:shadow-xl"
+                className="w-full bg-primary text-white hover:bg-primary/90 font-bold text-lg py-4 rounded-lg shadow-lg transition-all hover:shadow-xl"
               >
                 {t('contact.submit')}
               </Button>
