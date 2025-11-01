@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Blog = () => {
@@ -122,19 +121,6 @@ const Blog = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentPosts = blogPosts.slice(startIndex, endIndex);
 
-  const getCategoryLabel = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      carUpdates: t('blog.category.carUpdates'),
-      rentalAdvice: t('blog.category.rentalAdvice'),
-      roadTrips: t('blog.category.roadTrips'),
-      carReview: t('blog.category.carReview'),
-      discovery: t('blog.category.discovery'),
-      industryNews: t('blog.category.industryNews'),
-      travelTips: t('blog.category.travelTips'),
-    };
-    return categoryMap[category] || category;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
@@ -155,7 +141,7 @@ const Blog = () => {
                 key={post.id}
                 className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 bg-white"
               >
-                {/* Image with Category Badge */}
+                {/* Image */}
                 <div className="relative overflow-hidden">
                   <div 
                     className="w-full overflow-hidden rounded-t-lg"
@@ -167,13 +153,6 @@ const Blog = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
-                  {/* Category Badge - positioned at bottom-right of image */}
-                  <Badge 
-                    className="absolute bottom-4 right-4 bg-green-500/90 text-white hover:bg-green-500 border-none"
-                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.9)' }}
-                  >
-                    {getCategoryLabel(post.category)}
-                  </Badge>
                 </div>
 
                 <CardContent className="pt-6 pb-4">
@@ -186,10 +165,6 @@ const Blog = () => {
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       <span>{post.readTime}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle className="w-4 h-4" />
-                      <span>{post.comments} {t('blog.meta.comments')}</span>
                     </div>
                   </div>
 
