@@ -14,12 +14,12 @@ const Services = () => {
       desc: t('services.dailyWeekly.desc'),
     },
     {
-      image: 'https://images.unsplash.com/photo-1619767886777-a38c46a5e8d6?q=80&w=1600',
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600',
       title: t('services.longTerm.title'),
       desc: t('services.longTerm.desc'),
     },
     {
-      image: 'https://images.unsplash.com/photo-1552519507-88aa1e2c1c4d?q=80&w=1600',
+      image: 'https://images.unsplash.com/photo-1596995804697-5d4f4a5d1a96?q=80&w=1600',
       title: t('services.luxury.title'),
       desc: t('services.luxury.desc'),
     },
