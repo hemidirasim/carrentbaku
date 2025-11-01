@@ -43,8 +43,7 @@ const Reviews = () => {
     {
       type: 'text',
       title: t('reviews.card1.title'),
-      text:
-        'The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together.',
+      text: t('reviews.review1.text'),
       name: 'Sara Mohamed',
       location: 'Jakarta',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sara',
@@ -53,8 +52,7 @@ const Reviews = () => {
     {
       type: 'video',
       title: t('reviews.card2.title'),
-      text:
-        "I've used many car rental platforms before, but our booking system is hands down the best! The process is so smooth and straightforward.",
+      text: t('reviews.review2.text'),
       name: 'Sophia Moore',
       location: 'New York',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Sophia',
@@ -64,8 +62,7 @@ const Reviews = () => {
     {
       type: 'text',
       title: t('reviews.card3.title'),
-      text:
-        'Everything is laid out clearly, and there are multiple payment options, which makes things super convenient.',
+      text: t('reviews.review3.text'),
       name: 'Atend John',
       location: 'Tokyo',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= John',
@@ -74,8 +71,7 @@ const Reviews = () => {
     {
       type: 'video',
       title: t('reviews.card1.title'),
-      text:
-        'Great communication and quick pickup. The car was clean and fuel-efficient. Will rent again on my next trip.',
+      text: t('reviews.review4.text'),
       name: 'Ali Rzayev',
       location: 'Baku',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Ali',
@@ -85,8 +81,7 @@ const Reviews = () => {
     {
       type: 'text',
       title: t('reviews.card2.title'),
-      text:
-        'Booking took less than two minutes and everything matched the description. Support was friendly and helpful.',
+      text: t('reviews.review5.text'),
       name: 'Elena Petrova',
       location: 'Saint Petersburg',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Elena',
@@ -95,8 +90,7 @@ const Reviews = () => {
     {
       type: 'video',
       title: t('reviews.card3.title'),
-      text:
-        'Multiple payment choices and clear policies. Returning the vehicle was seamless and super convenient.',
+      text: t('reviews.review6.text'),
       name: 'Omar Al-Khaled',
       location: 'Dubai',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Omar',
@@ -106,8 +100,7 @@ const Reviews = () => {
     {
       type: 'text',
       title: t('reviews.card1.title'),
-      text:
-        'Perfect for a weekend getaway. The whole experience felt easy and well-organized from start to finish.',
+      text: t('reviews.review7.text'),
       name: 'Leyla Aliyeva',
       location: 'Ganja',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Leyla',
@@ -116,8 +109,7 @@ const Reviews = () => {
     {
       type: 'video',
       title: t('reviews.card2.title'),
-      text:
-        'Fast pickup at the airport and the car exceeded expectations. Excellent value for money.',
+      text: t('reviews.review8.text'),
       name: 'Mehmet Yilmaz',
       location: 'Istanbul',
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed= Mehmet',
@@ -193,7 +185,7 @@ const Reviews = () => {
                             />
                             <div className="absolute top-2 right-2 bg-primary/80 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
                               <Play className="w-3 h-3" />
-                              Video
+                              {t('reviews.video')}
                             </div>
                           </div>
                         </div>
