@@ -19,7 +19,7 @@ const Services = () => {
       desc: t('services.longTerm.desc'),
     },
     {
-      image: 'https://images.unsplash.com/photo-1596995804697-5d4f4a5d1a96?q=80&w=1600',
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1600',
       title: t('services.luxury.title'),
       desc: t('services.luxury.desc'),
     },
