@@ -19,6 +19,15 @@ export default defineConfig(({ mode }) => ({
     exclude: ["@fancyapps/ui"],
   },
   build: {
+    rollupOptions: {
+      external: (id) => {
+        // Don't externalize @fancyapps/ui, but let dynamic imports work
+        return false;
+      },
+      output: {
+        manualChunks: undefined,
+      },
+    },
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true,

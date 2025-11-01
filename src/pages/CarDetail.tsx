@@ -22,10 +22,13 @@ const CarDetail = () => {
     let Fancybox: any;
     const initFancybox = async () => {
       try {
-        // Dynamic import with string literal to avoid build-time analysis
-        const fancyboxModule = await import(/* @vite-ignore */ "@fancyapps/ui");
+        // Use string variable to prevent Rollup from analyzing the import
+        const modulePath = "@fancyapps/ui";
+        const cssPath = "@fancyapps/ui/dist/fancybox/fancybox.css";
+        
+        const fancyboxModule = await import(/* @vite-ignore */ modulePath);
         Fancybox = fancyboxModule.Fancybox;
-        await import(/* @vite-ignore */ "@fancyapps/ui/dist/fancybox/fancybox.css");
+        await import(/* @vite-ignore */ cssPath);
         
         if (Fancybox) {
           Fancybox.bind("[data-fancybox='gallery']", {
