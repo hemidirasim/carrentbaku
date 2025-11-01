@@ -75,10 +75,10 @@ function HeroBookingPanel() {
   const [returnDate, setReturnDate] = useState('');
 
   const vehicleTypes = [
-    { id: 'car', label: t('hero.booking.vehicle.car') },
-    { id: 'van', label: t('hero.booking.vehicle.van') },
-    { id: 'minibus', label: t('hero.booking.vehicle.minibus') },
-    { id: 'prestige', label: t('hero.booking.vehicle.prestige') },
+    { id: 'ekonomik', label: t('cars.filter.ekonomik') },
+    { id: 'biznes', label: t('cars.filter.biznes') },
+    { id: 'suv', label: t('cars.filter.suv') },
+    { id: 'premium', label: t('cars.filter.premium') },
   ];
 
   const locationOptions = [
