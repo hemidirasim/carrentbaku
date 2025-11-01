@@ -59,7 +59,7 @@ const Header = () => {
             <img 
               src="https://urgm6grvtgvrhleh.public.blob.vercel-storage.com/Screenshot_2025-10-30_at_13.06.09-removebg-preview-nghUWyHPbnpxsh3CjJa0aJwEI0phc5.png"
               alt="Logo"
-              className="h-12 w-auto object-contain"
+              className="h-24 w-auto object-contain"
             />
           </Link>
 
