@@ -68,7 +68,7 @@ export default Hero;
 function HeroBookingPanel() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [vehicle, setVehicle] = useState('car');
+  const [vehicle, setVehicle] = useState('ekonomik');
   const [pickup, setPickup] = useState('office');
   const [dropoff, setDropoff] = useState('office');
   const [pickupDate, setPickupDate] = useState('');
