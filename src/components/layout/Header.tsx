@@ -55,13 +55,20 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-auto py-2.5 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <a 
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = '/';
+            }}
+            className="flex items-center space-x-3 cursor-pointer"
+          >
             <img 
               src="https://urgm6grvtgvrhleh.public.blob.vercel-storage.com/Screenshot_2025-10-30_at_13.06.09-removebg-preview-nghUWyHPbnpxsh3CjJa0aJwEI0phc5.png"
               alt="Logo"
               className="h-24 w-auto object-contain"
             />
-          </Link>
+          </a>
 
           {/* Desktop Navigation (visible on xl and up) */}
           <nav className="hidden xl:flex items-center space-x-1">
