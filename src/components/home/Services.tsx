@@ -67,7 +67,7 @@ const Services = () => {
               <CardContent>
                 <CardDescription className="text-base mb-4">{c.desc}</CardDescription>
                 <Button 
-                  className="bg-accent hover:bg-accent-light text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                   onClick={() => navigate(`/services/${i + 1}`)}
                 >
                   {t('common.viewDetails')}

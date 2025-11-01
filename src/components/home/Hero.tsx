@@ -156,7 +156,7 @@ function HeroBookingPanel() {
         </div>
       </div>
 
-      <Button onClick={() => navigate('/cars')} className="w-full bg-green-500 hover:bg-green-600 text-white h-12 text-base font-semibold">
+      <Button onClick={() => navigate('/cars')} className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold">
         {t('hero.selectCar')}
       </Button>
     </div>

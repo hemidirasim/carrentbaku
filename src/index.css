@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover-foreground: 220 15% 15%;
 
     /* Premium blue - main brand color */
-    --primary: 220 85% 35%;
+    --primary: 203 100% 35%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 220 75% 55%;
-    --primary-glow: 220 85% 65%;
+    --primary-light: 203 80% 50%;
+    --primary-glow: 203 90% 55%;
 
     /* Premium gold/orange accent */
     --accent: 38 92% 50%;
@@ -39,18 +39,18 @@ All colors MUST be HSL.
 
     --border: 220 15% 88%;
     --input: 220 15% 88%;
-    --ring: 220 85% 35%;
+    --ring: 203 100% 35%;
 
     --radius: 0.75rem;
 
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 85% 35%) 0%, hsl(220 75% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 85% 35%) 0%, hsl(220 75% 45%) 50%, hsl(38 92% 50%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(203 100% 35%) 0%, hsl(203 80% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(203 100% 35%) 0%, hsl(203 80% 45%) 50%, hsl(38 92% 50%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 15% 98%) 100%);
     
     /* Elegant shadows */
-    --shadow-elegant: 0 10px 40px -10px hsl(220 85% 35% / 0.15);
-    --shadow-glow: 0 0 40px hsl(220 85% 65% / 0.2);
+    --shadow-elegant: 0 10px 40px -10px hsl(203 100% 35% / 0.15);
+    --shadow-glow: 0 0 40px hsl(203 90% 55% / 0.2);
     --shadow-card: 0 4px 20px hsl(220 15% 15% / 0.08);
     
     /* Smooth transitions */
@@ -67,10 +67,10 @@ All colors MUST be HSL.
     --popover: 220 20% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 220 85% 55%;
+    --primary: 203 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 220 75% 65%;
-    --primary-glow: 220 85% 75%;
+    --primary-light: 203 80% 60%;
+    --primary-glow: 203 90% 65%;
 
     --accent: 38 92% 55%;
     --accent-foreground: 0 0% 100%;
@@ -87,14 +87,14 @@ All colors MUST be HSL.
 
     --border: 220 20% 22%;
     --input: 220 20% 22%;
-    --ring: 220 85% 55%;
+    --ring: 203 100% 50%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(220 85% 45%) 0%, hsl(220 75% 60%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 85% 40%) 0%, hsl(220 75% 50%) 50%, hsl(38 92% 55%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(203 100% 45%) 0%, hsl(203 80% 60%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(203 100% 40%) 0%, hsl(203 80% 50%) 50%, hsl(38 92% 55%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(220 20% 12%) 0%, hsl(220 20% 15%) 100%);
     
-    --shadow-elegant: 0 10px 40px -10px hsl(220 85% 20% / 0.4);
-    --shadow-glow: 0 0 40px hsl(220 85% 50% / 0.3);
+    --shadow-elegant: 0 10px 40px -10px hsl(203 100% 20% / 0.4);
+    --shadow-glow: 0 0 40px hsl(203 100% 50% / 0.3);
     --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.3);
   }
 }
