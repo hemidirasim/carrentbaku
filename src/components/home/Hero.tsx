@@ -42,14 +42,14 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Left text */}
           <div className="text-left max-w-2xl">
-            <div className="text-accent font-semibold tracking-wide mb-2">Fast and Easy Way to Rent a Car</div>
+            <div className="text-accent font-semibold tracking-wide mb-2">{t('hero.tagline')}</div>
             <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-lg">
-              Explore the world with
+              {t('hero.headline.part1')}
               <br />
-              comfortable car
+              {t('hero.headline.part2')}
             </h1>
             <p className="mt-6 text-white/90 text-lg max-w-xl">
-              Embark on unforgettable adventures and discover the world in unparalleled comfort and style with our fleet of exceptionally comfortable cars.
+              {t('hero.description')}
             </p>
           </div>
 
@@ -65,19 +65,6 @@ const Hero = () => {
 export default Hero;
 
 // Inline booking panel component to match reference layout
-const vehicleTypes = [
-  { id: 'car', label: 'Car' },
-  { id: 'van', label: 'Van' },
-  { id: 'minibus', label: 'Minibus' },
-  { id: 'prestige', label: 'Prestige' },
-];
-
-const locationOptions = [
-  { value: 'office', label: 'Baş Ofis' },
-  { value: 'airport', label: 'Hava Limanı' },
-  { value: 'hotel', label: 'Bakıda istənilən otel' },
-];
-
 function HeroBookingPanel() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -87,28 +74,41 @@ function HeroBookingPanel() {
   const [pickupDate, setPickupDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
 
+  const vehicleTypes = [
+    { id: 'car', label: t('hero.booking.vehicle.car') },
+    { id: 'van', label: t('hero.booking.vehicle.van') },
+    { id: 'minibus', label: t('hero.booking.vehicle.minibus') },
+    { id: 'prestige', label: t('hero.booking.vehicle.prestige') },
+  ];
+
+  const locationOptions = [
+    { value: 'office', label: t('hero.booking.location.office') },
+    { value: 'airport', label: t('hero.booking.location.airport') },
+    { value: 'hotel', label: t('hero.booking.location.hotel') },
+  ];
+
   return (
     <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
-      <h3 className="text-white font-semibold mb-4">What type of car would you like to rent?</h3>
+      <h3 className="text-white font-semibold mb-4">{t('hero.booking.question')}</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {vehicleTypes.map((t) => (
+        {vehicleTypes.map((vt) => (
           <button
-            key={t.id}
-            onClick={() => setVehicle(t.id)}
+            key={vt.id}
+            onClick={() => setVehicle(vt.id)}
             className={`rounded-xl py-4 text-center font-semibold transition-all ${
-              vehicle === t.id
+              vehicle === vt.id
                 ? 'bg-accent text-white shadow-lg'
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            {t.label}
+            {vt.label}
           </button>
         ))}
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm text-white/80 mb-1">Pick Up Location</label>
+          <label className="block text-sm text-white/80 mb-1">{t('hero.booking.pickupLocation')}</label>
           <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white">
             {locationOptions.map((opt) => (
               <option key={opt.value} value={opt.value} className="bg-slate-800">
@@ -118,7 +118,7 @@ function HeroBookingPanel() {
           </select>
         </div>
         <div>
-          <label className="block text-sm text-white/80 mb-1">Drop Off Location</label>
+          <label className="block text-sm text-white/80 mb-1">{t('hero.booking.dropoffLocation')}</label>
           <select value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="w-full h-11 rounded-lg px-3 bg-white/10 border border-white/20 text-white">
             {locationOptions.map((opt) => (
               <option key={opt.value} value={opt.value} className="bg-slate-800">
@@ -131,7 +131,7 @@ function HeroBookingPanel() {
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm text-white/80 mb-1">Pick Up Date</label>
+          <label className="block text-sm text-white/80 mb-1">{t('hero.booking.pickupDate')}</label>
           <input 
             type="date" 
             value={pickupDate} 
@@ -145,7 +145,7 @@ function HeroBookingPanel() {
           />
         </div>
         <div>
-          <label className="block text-sm text-white/80 mb-1">Return Date</label>
+          <label className="block text-sm text-white/80 mb-1">{t('hero.booking.returnDate')}</label>
           <input 
             type="date" 
             value={returnDate} 

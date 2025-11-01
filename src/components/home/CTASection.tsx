@@ -42,7 +42,7 @@ const CTASection = () => {
           setWeatherData(map);
         }
       } catch (e: any) {
-        if (!isCancelled) setError('Weather data could not be loaded');
+        if (!isCancelled) setError(t('cta.weather.error'));
       } finally {
         if (!isCancelled) setLoading(false);
       }
@@ -72,16 +72,16 @@ const CTASection = () => {
           <div className="flex flex-col justify-center">
             <div className="rounded-2xl p-0 lg:p-0">
               <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-slate-900 tracking-wide">
-                HAVA PROQNOZU
+                {t('cta.weather.title')}
               </h2>
               <p className="text-slate-900 font-extrabold leading-relaxed mb-6">
-                Planlarınız havadan asılı deyil — biz sizi hər şəraitdə təhlükəsiz və rahat yola çıxarırıq.
+                {t('cta.weather.description')}
               </p>
 
               {/* Live Weather */}
               <div className="space-y-3">
                 {loading && (
-                  <div className="text-sm text-slate-600">Yüklənir...</div>
+                  <div className="text-sm text-slate-600">{t('cta.weather.loading')}</div>
                 )}
                 {error && (
                   <div className="text-sm text-red-600">{error}</div>
@@ -96,7 +96,7 @@ const CTASection = () => {
                           {data ? (
                             <div className="text-slate-700 text-sm">
                               <span className="font-bold text-slate-900">{Math.round(data.temperature)}°C</span>
-                              <span className="ml-2 text-slate-600">külək {Math.round(data.windspeed)} km/s</span>
+                              <span className="ml-2 text-slate-600">{t('cta.weather.wind')} {Math.round(data.windspeed)} km/s</span>
                             </div>
                           ) : (
                             <div className="text-slate-500 text-sm">—</div>
