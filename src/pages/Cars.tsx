@@ -5,8 +5,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { ArrowRight, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Fancybox } from "@fancyapps/ui";
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 const Cars = () => {
   const { t } = useLanguage();
@@ -25,29 +23,44 @@ const Cars = () => {
     }
   }, [location.search]);
 
-  // Fancybox-i init et
+  // Fancybox-i init et (lazy load)
   useEffect(() => {
-    Fancybox.bind("[data-fancybox]", {
-      Toolbar: {
-        display: {
-          left: ["infobar"],
-          middle: [],
-          right: ["slideshow", "download", "thumbs", "close"],
-        },
-      },
-      Thumbs: {
-        autoStart: false,
-      },
-      Image: {
-        zoom: true,
-      },
-      Swipe: {
-        threshold: 50,
-      },
-    });
+    let Fancybox: any;
+    const initFancybox = async () => {
+      try {
+        const fancyboxModule = await import("@fancyapps/ui");
+        Fancybox = fancyboxModule.Fancybox;
+        await import("@fancyapps/ui/dist/fancybox/fancybox.css");
+        
+        Fancybox.bind("[data-fancybox]", {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: [],
+              right: ["slideshow", "download", "thumbs", "close"],
+            },
+          },
+          Thumbs: {
+            autoStart: false,
+          },
+          Image: {
+            zoom: true,
+          },
+          Swipe: {
+            threshold: 50,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to load Fancybox:", error);
+      }
+    };
+
+    initFancybox();
 
     return () => {
-      Fancybox.destroy();
+      if (Fancybox) {
+        Fancybox.destroy();
+      }
     };
   }, []);
 

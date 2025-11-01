@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from '@/components/ui/carousel';
-import { Users, Fuel, Calendar, Shield, ChevronLeft, Check, ZoomIn } from 'lucide-react';
+import { Users, Fuel, Calendar, Shield, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReservationDialog from '@/components/ReservationDialog';
 
@@ -13,22 +11,55 @@ const CarDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [selectedImage, setSelectedImage] = useState(0);
   const [reservationOpen, setReservationOpen] = useState(false);
-  const [zoomOpen, setZoomOpen] = useState(false);
-  const [zoomImageIndex, setZoomImageIndex] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
+  const [selectedImage, setSelectedImage] = useState(0);
+  const thumbnailRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  // Carousel API-dən seçilmiş şəkili yenilə
+  // Fancybox-i init et (lazy load)
   useEffect(() => {
-    if (!api) {
-      return;
-    }
+    let Fancybox: any;
+    const initFancybox = async () => {
+      try {
+        const fancyboxModule = await import("@fancyapps/ui");
+        Fancybox = fancyboxModule.Fancybox;
+        await import("@fancyapps/ui/dist/fancybox/fancybox.css");
+        
+        Fancybox.bind("[data-fancybox='gallery']", {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: [],
+              right: ["slideshow", "download", "thumbs", "close"],
+            },
+          },
+          Thumbs: {
+            autoStart: false,
+          },
+          Image: {
+            zoom: true,
+          },
+          Swipe: {
+            threshold: 50,
+          },
+          on: {
+            reveal: (fancybox: any, slide: any) => {
+              setSelectedImage(slide.index);
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Failed to load Fancybox:", error);
+      }
+    };
 
-    api.on('select', () => {
-      setSelectedImage(api.selectedScrollSnap());
-    });
-  }, [api]);
+    initFancybox();
+
+    return () => {
+      if (Fancybox) {
+        Fancybox.destroy();
+      }
+    };
+  }, [id]);
 
   // Mock data - in production, this would come from an API
   const cars = [
@@ -194,111 +225,63 @@ const CarDetail = () => {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Image Gallery */}
+            {/* Image Gallery with Fancybox */}
             <div className="space-y-4">
-              <Carousel 
-                setApi={setApi}
-                className="w-full"
-                opts={{
-                  align: 'start',
-                  loop: true,
-                }}
-              >
-                <CarouselContent>
-                  {car.images.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <div className="relative w-full rounded-lg overflow-hidden cursor-zoom-in" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
-                        <img
-                          src={image}
-                          alt={`${car.name} ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onClick={() => {
-                            setZoomImageIndex(index);
-                            setZoomOpen(true);
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                        <div className="absolute top-4 right-4 flex items-center gap-2">
-                          <Badge className="bg-accent text-accent-foreground">
-                            {car.year}
-                          </Badge>
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="bg-background/80 backdrop-blur hover:bg-background"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setZoomImageIndex(index);
-                              setZoomOpen(true);
-                            }}
-                          >
-                            <ZoomIn className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {car.images.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-4" />
-                    <CarouselNext className="right-4" />
-                  </>
-                )}
-              </Carousel>
+              {/* Main Image - Fancybox Gallery */}
+              <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '2.5 / 1', minHeight: '300px' }}>
+                {/* All images in gallery for Fancybox */}
+                {car.images.map((image, index) => (
+                  <a
+                    key={index}
+                    href={image}
+                    data-fancybox="gallery"
+                    data-caption={`${car.name} - ${index + 1}`}
+                    className={index === selectedImage ? "block w-full h-full" : "hidden"}
+                  >
+                    {index === selectedImage && (
+                      <img
+                        src={image}
+                        alt={`${car.name} ${index + 1}`}
+                        className="w-full h-full object-cover cursor-zoom-in"
+                      />
+                    )}
+                  </a>
+                ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-10">
+                  <Badge className="bg-accent text-accent-foreground">
+                    {car.year}
+                  </Badge>
+                </div>
+              </div>
               
+              {/* Thumbnail Navigation */}
               {car.images.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {car.images.map((image, index) => (
-                    <button
+                    <a
                       key={index}
-                      onClick={() => {
+                      href={image}
+                      data-fancybox="gallery"
+                      data-caption={`${car.name} - ${index + 1}`}
+                      onClick={(e) => {
                         setSelectedImage(index);
-                        api?.scrollTo(index);
+                        // Let Fancybox handle the click
                       }}
-                      className={`h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === index ? 'border-primary' : 'border-transparent hover:border-primary/50'
+                      className={`h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer block ${
+                        selectedImage === index ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-primary/50'
                       }`}
                     >
-                      <img src={image} alt={`${car.name} ${index + 1}`} className="w-full h-full object-cover" />
-                    </button>
+                      <img 
+                        src={image} 
+                        alt={`${car.name} thumbnail ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </a>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Zoom Dialog */}
-            <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
-              <DialogContent className="max-w-7xl w-full p-0 bg-black/95">
-                <Carousel 
-                  className="w-full"
-                  opts={{
-                    startIndex: zoomImageIndex,
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {car.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="relative w-full" style={{ aspectRatio: '16 / 9', minHeight: '500px' }}>
-                          <img
-                            src={image}
-                            alt={`${car.name} ${index + 1}`}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {car.images.length > 1 && (
-                    <>
-                      <CarouselPrevious className="left-4 bg-background/80 hover:bg-background" />
-                      <CarouselNext className="right-4 bg-background/80 hover:bg-background" />
-                    </>
-                  )}
-                </Carousel>
-              </DialogContent>
-            </Dialog>
 
             {/* Car Info */}
             <div className="space-y-6">
