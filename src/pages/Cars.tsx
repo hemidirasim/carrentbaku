@@ -315,7 +315,7 @@ const Cars = () => {
             {t('nav.cars')}
           </h1>
           <p className="text-white/90 text-center text-lg">
-            {t('cars.header')}
+            Sürüş azadlığını yaşayın-avtomobilinizi indi seçin
           </p>
         </div>
       </section>
