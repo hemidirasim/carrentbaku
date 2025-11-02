@@ -112,7 +112,7 @@ const Reviews = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center text-center mb-10 max-w-4xl mx-auto">
+        <div className="flex flex-col items-start text-left mb-10 max-w-4xl">
           <h2 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
             {t('reviews.comprehensive.title.part1')} <span className="text-accent">{t('reviews.comprehensive.title.part2')}</span>
           </h2>

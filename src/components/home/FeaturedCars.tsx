@@ -245,7 +245,7 @@ const FeaturedCars = () => {
   return (
     <section className="py-20" style={{ backgroundColor: 'aliceblue' }}>
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center text-center mb-12 max-w-4xl mx-auto">
+        <div className="flex flex-col items-start text-left mb-12 max-w-4xl">
           <h2 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
             {t('cars.comprehensive.title.part1')} <span className="text-accent">{t('cars.comprehensive.title.part2')}</span>
           </h2>
@@ -254,7 +254,7 @@ const FeaturedCars = () => {
           </p>
           
           {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-start gap-2">
             {categories.map((category) => (
               <Button
                 key={category.id}
