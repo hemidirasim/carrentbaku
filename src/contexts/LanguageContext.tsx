@@ -11,7 +11,7 @@ interface LanguageContextType {
 const translations: Record<Language, Record<string, string>> = {
   az: {
     // Header
-    'nav.home': 'Ana Səhifə',
+    'nav.home': 'Əsas Səhifə',
     'nav.cars': 'Avtomobillər',
     'nav.services': 'Xidmətlər',
     'nav.about': 'Haqqımızda',
@@ -84,7 +84,7 @@ const translations: Record<Language, Record<string, string>> = {
     'services.whyUs.fullInsurance.desc': 'Bütün avtomobillərimiz tam KASKO sığortası ilə təchiz edilmişdir',
     
     // Cars
-    'cars.title': 'Populyar Avtomobillərimiz',
+    'cars.title': 'Avtomobillərimiz',
     'cars.perDay': 'gün',
     'cars.viewAll': 'Bütün Avtomobilləri Gör',
     'cars.viewDetails': 'Ətraflı Bax',
