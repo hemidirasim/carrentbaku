@@ -85,11 +85,6 @@ const translations: Record<Language, Record<string, string>> = {
     'cars.perDay': 'gün',
     'cars.viewAll': 'Bütün Avtomobilləri Gör',
     'cars.viewDetails': 'Ətraflı Bax',
-    'cars.filter.all': 'Hamısı',
-    'cars.filter.economy': 'Ekonom',
-    'cars.filter.comfort': 'Komfort',
-    'cars.filter.premium': 'Premium',
-    'cars.filter.brand': 'Brend',
     'cars.search': 'Avtomobil axtar...',
     'cars.price': 'Qiymət aralığı',
     'cars.price.all': 'Bütün qiymətlər',
@@ -443,12 +438,6 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.successMsg': 'Ваше бронирование принято. Мы свяжемся с вами в ближайшее время.',
     'reservation.namePlaceholder': 'Ваше имя и фамилия',
     
-    // Car Categories
-    'cars.filter.ekonomik': 'Эконом автомобили',
-    'cars.filter.biznes': 'Бизнес автомобили',
-    'cars.filter.suv': 'Автомобили типа SUV',
-    'cars.filter.minivan': 'Минивэны',
-    
     // FAQ
     'faq.title': 'Часто задаваемые вопросы',
     'faq.q1': 'Какие документы нужны для аренды автомобиля?',
@@ -681,12 +670,6 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.successMsg': 'Your reservation has been received. We will contact you shortly.',
     'reservation.namePlaceholder': 'Your full name',
     
-    // Car Categories
-    'cars.filter.ekonomik': 'Economy Cars',
-    'cars.filter.biznes': 'Business Cars',
-    'cars.filter.suv': 'SUV Type Cars',
-    'cars.filter.minivan': 'Minivans',
-    
     // FAQ
     'faq.title': 'Frequently Asked Questions',
     'faq.q1': 'What documents are required to rent a car?',
@@ -918,12 +901,6 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.success': 'نجاح!',
     'reservation.successMsg': 'تم استلام حجزك. سنتصل بك قريبًا.',
     'reservation.namePlaceholder': 'اسمك الكامل',
-    
-    // Car Categories
-    'cars.filter.ekonomik': 'سيارات اقتصادية',
-    'cars.filter.biznes': 'سيارات الأعمال',
-    'cars.filter.suv': 'سيارات SUV',
-    'cars.filter.minivan': 'ميني فان',
     
     // FAQ
     'faq.title': 'الأسئلة المتكررة',
