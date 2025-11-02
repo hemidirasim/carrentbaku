@@ -23,82 +23,6 @@ const Cars = () => {
     }
   }, [location.search]);
 
-  // Fancybox-i init et (CDN-dən yüklə)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    // CDN-dən Fancybox yüklə
-    const loadFancybox = () => {
-      // CSS yüklə
-      if (!document.querySelector('link[href*="fancybox"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css';
-        document.head.appendChild(link);
-      }
-
-      // Script yüklə
-      if (!(window as any).Fancybox) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js';
-        script.async = true;
-        script.onload = () => {
-          const Fancybox = (window as any).Fancybox;
-          if (Fancybox) {
-            Fancybox.bind("[data-fancybox]", {
-              Toolbar: {
-                display: {
-                  left: ["infobar"],
-                  middle: [],
-                  right: ["slideshow", "download", "thumbs", "close"],
-                },
-              },
-              Thumbs: {
-                autoStart: false,
-              },
-              Image: {
-                zoom: true,
-              },
-              Swipe: {
-                threshold: 50,
-              },
-            });
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        // Əgər artıq yüklənibsə, dərhal bind et
-        const Fancybox = (window as any).Fancybox;
-        Fancybox.bind("[data-fancybox]", {
-          Toolbar: {
-            display: {
-              left: ["infobar"],
-              middle: [],
-              right: ["slideshow", "download", "thumbs", "close"],
-            },
-          },
-          Thumbs: {
-            autoStart: false,
-          },
-          Image: {
-            zoom: true,
-          },
-          Swipe: {
-            threshold: 50,
-          },
-        });
-      }
-    };
-
-    loadFancybox();
-
-    return () => {
-      const Fancybox = (window as any).Fancybox;
-      if (Fancybox && typeof Fancybox.destroy === 'function') {
-        Fancybox.destroy();
-      }
-    };
-  }, []);
 
   // Category dəyişəndə URL-i yenilə
   const handleCategoryChange = (category: string) => {
@@ -427,18 +351,11 @@ const Cars = () => {
                       <CarouselContent className="h-full">
                         {car.images.map((image, index) => (
                           <CarouselItem key={index} className="h-full pl-0">
-                            <a
-                              href={image}
-                              data-fancybox={`car-${car.id}`}
-                              data-caption={`${car.name} - ${index + 1}`}
-                              className="block w-full h-full cursor-zoom-in"
-                            >
-                              <img 
-                                src={image} 
-                                alt={`${car.name} ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </a>
+                            <img 
+                              src={image} 
+                              alt={`${car.name} ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
                           </CarouselItem>
                         ))}
                       </CarouselContent>
