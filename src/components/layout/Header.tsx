@@ -155,7 +155,7 @@ const Header = () => {
 
             {/* Reserve Button */}
             <Button 
-              onClick={() => setIsReservationOpen(true)}
+              onClick={() => navigate('/cars')}
               className="hidden xl:flex bg-gradient-primary shadow-glow hover:shadow-elegant transition-all"
             >
               {t('nav.reserve')}
@@ -246,7 +246,7 @@ const Header = () => {
             <div className="px-4 pt-2">
               <Button 
                 onClick={() => {
-                  setIsReservationOpen(true);
+                  navigate('/cars');
                   setIsMenuOpen(false);
                 }}
                 className="w-full bg-gradient-primary"
