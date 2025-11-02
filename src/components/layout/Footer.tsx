@@ -125,6 +125,9 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">
             {t('footer.rights')}
           </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Created by <a href="https://midiya.az" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">midiya.az</a>
+          </p>
         </div>
       </div>
     </footer>
