@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { ArrowRight, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Cars = () => {
@@ -483,16 +483,6 @@ const Cars = () => {
                     </div>
                   </div>
                 </CardContent>
-
-                <CardFooter className="pt-0">
-                  <Button 
-                    className="w-full bg-gradient-primary group"
-                    onClick={() => navigate(`/cars/${car.id}`)}
-                  >
-                    {t('cars.viewDetails')}
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </CardFooter>
               </Card>
             ))}
           </div>
