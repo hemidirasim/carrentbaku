@@ -122,7 +122,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[21px] text-muted-foreground">
             Created by <a href="https://midiya.az" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">midiya.az</a>
           </p>
         </div>
