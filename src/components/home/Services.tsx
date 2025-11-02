@@ -49,7 +49,7 @@ const Services = () => {
             {t('services.comprehensive.title.part1')} <span className="text-accent">{t('services.comprehensive.title.part2')}</span><br/>
             {t('services.comprehensive.title.part3')}
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg text-center">
             {t('services.comprehensive.subtitle')}
           </p>
         </div>
