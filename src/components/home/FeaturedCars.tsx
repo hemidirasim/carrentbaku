@@ -279,7 +279,7 @@ const FeaturedCars = () => {
                 <img 
                   src={car.image} 
                   alt={car.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover"
                 />
                 {/* bottom gradient for text readability */}
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
