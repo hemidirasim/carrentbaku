@@ -334,7 +334,8 @@ const Cars = () => {
             {filteredCars.map((car) => (
               <Card 
                 key={car.id}
-                className="group overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2"
+                className="group overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+                onClick={() => navigate(`/cars/${car.id}`)}
               >
                 {/* Image Gallery with Swipe Slider and Fancybox */}
                 <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '280px' }}>
