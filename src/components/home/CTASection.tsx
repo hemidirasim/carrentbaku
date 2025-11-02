@@ -71,11 +71,11 @@ const CTASection = () => {
           {/* CTA Content replaced with Weather Message */}
           <div className="flex flex-col justify-center">
             <div className="rounded-2xl p-0 lg:p-0">
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-slate-900 tracking-wide">
-                {t('cta.weather.title')}
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 leading-tight">
+                <span className="text-slate-900">{t('cta.weather.comprehensive.title.part1')}</span> <span className="text-accent">{t('cta.weather.comprehensive.title.part2')}</span>
               </h2>
-              <p className="text-slate-900 font-extrabold leading-relaxed mb-6">
-                {t('cta.weather.description')}
+              <p className="text-slate-800 text-lg font-semibold leading-relaxed mb-6">
+                {t('cta.weather.comprehensive.subtitle')}
               </p>
 
               {/* Live Weather */}

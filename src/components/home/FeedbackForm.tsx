@@ -56,11 +56,11 @@ const FeedbackForm = () => {
             <div className="grid lg:grid-cols-2 gap-10 items-start">
               {/* Left: info */}
               <div>
-                <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-white">
-                  {t('contact.title')}
+                <h2 className="text-4xl md:text-5xl font-extrabold mb-6 text-white leading-tight">
+                  <span className="text-white">{t('contact.comprehensive.title.part1')}</span> <span className="text-accent">{t('contact.comprehensive.title.part2')}</span>
                 </h2>
-                <p className="text-white/80 mb-8 max-w-prose">
-                  {t('contact.subtitle') || 'Bizimlə əlaqə saxlayın — komandamız sizə məmnuniyyətlə kömək edəcək.'}
+                <p className="text-white/90 text-lg mb-8 max-w-prose">
+                  {t('contact.comprehensive.subtitle')}
                 </p>
 
                 {/* Contact Info */}

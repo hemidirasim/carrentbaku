@@ -112,31 +112,35 @@ const Reviews = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center text-center mb-10 max-w-4xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+            {t('reviews.comprehensive.title.part1')} <span className="text-accent">{t('reviews.comprehensive.title.part2')}</span>
+          </h2>
+          <p className="text-muted-foreground text-lg mb-8">
+            {t('reviews.comprehensive.subtitle')}
+          </p>
+        </div>
+        
         <div className="relative mb-10">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl md:text-4xl font-extrabold">
-              {t('reviews.title')}
-            </h2>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => api?.scrollPrev()}
-                disabled={!canScrollPrev}
-                className="bg-white border border-border text-slate-700 hover:bg-slate-50"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => api?.scrollNext()}
-                disabled={!canScrollNext}
-                className="bg-white border border-border text-slate-700 hover:bg-slate-50"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => api?.scrollPrev()}
+              disabled={!canScrollPrev}
+              className="bg-white border border-border text-slate-700 hover:bg-slate-50"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => api?.scrollNext()}
+              disabled={!canScrollNext}
+              className="bg-white border border-border text-slate-700 hover:bg-slate-50"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
         <div className="relative">

@@ -245,13 +245,16 @@ const FeaturedCars = () => {
   return (
     <section className="py-20" style={{ backgroundColor: 'aliceblue' }}>
       <div className="container mx-auto px-4">
-        <div className="text-left mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            {t('cars.title')}
+        <div className="flex flex-col items-center text-center mb-12 max-w-4xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+            {t('cars.comprehensive.title.part1')} <span className="text-accent">{t('cars.comprehensive.title.part2')}</span>
           </h2>
+          <p className="text-muted-foreground text-lg mb-8">
+            {t('cars.comprehensive.subtitle')}
+          </p>
           
           {/* Category Filter */}
-          <div className="flex flex-wrap justify-start gap-2 mt-8">
+          <div className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => (
               <Button
                 key={category.id}
