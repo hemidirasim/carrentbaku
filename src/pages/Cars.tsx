@@ -490,7 +490,7 @@ const Cars = () => {
                     onClick={() => navigate(`/cars/${car.id}`)}
                   >
                     {t('cars.viewDetails')}
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </CardFooter>
               </Card>
