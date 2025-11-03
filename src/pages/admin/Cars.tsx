@@ -53,6 +53,8 @@ const AdminCars = () => {
     year: new Date().getFullYear(),
     category: 'ekonomik',
     price_per_day: 0,
+    price_per_week: 0,
+    price_per_month: 0,
     fuel_type: 'petrol',
     transmission: 'automatic',
     seats: 5,
@@ -95,6 +97,8 @@ const AdminCars = () => {
         year: new Date().getFullYear(),
         category: 'ekonomik',
         price_per_day: 0,
+        price_per_week: 0,
+        price_per_month: 0,
         fuel_type: 'petrol',
         transmission: 'automatic',
         seats: 5,
@@ -115,6 +119,8 @@ const AdminCars = () => {
       year: car.year,
       category: car.category,
       price_per_day: car.price_per_day,
+      price_per_week: car.price_per_week || car.price_per_day * 7,
+      price_per_month: car.price_per_month || car.price_per_day * 30,
       fuel_type: car.fuel_type,
       transmission: car.transmission,
       seats: car.seats,
@@ -197,7 +203,7 @@ const AdminCars = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="year">Year</Label>
                       <Input
@@ -209,16 +215,6 @@ const AdminCars = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="price">Price per Day</Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        value={formData.price_per_day}
-                        onChange={(e) => setFormData({ ...formData, price_per_day: parseFloat(e.target.value) })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
                       <Label htmlFor="seats">Seats</Label>
                       <Input
                         id="seats"
@@ -226,6 +222,40 @@ const AdminCars = () => {
                         value={formData.seats}
                         onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
                         required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="price_day">Günlük qiymət (AZN)</Label>
+                      <Input
+                        id="price_day"
+                        type="number"
+                        step="0.01"
+                        value={formData.price_per_day}
+                        onChange={(e) => setFormData({ ...formData, price_per_day: parseFloat(e.target.value) || 0 })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="price_week">Həftəlik qiymət (AZN)</Label>
+                      <Input
+                        id="price_week"
+                        type="number"
+                        step="0.01"
+                        value={formData.price_per_week}
+                        onChange={(e) => setFormData({ ...formData, price_per_week: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="price_month">Aylıq qiymət (AZN)</Label>
+                      <Input
+                        id="price_month"
+                        type="number"
+                        step="0.01"
+                        value={formData.price_per_month}
+                        onChange={(e) => setFormData({ ...formData, price_per_month: parseFloat(e.target.value) || 0 })}
                       />
                     </div>
                   </div>

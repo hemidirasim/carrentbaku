@@ -41,6 +41,8 @@ model Car {
   year          Int
   category      String
   price_per_day Float
+  price_per_week Float?
+  price_per_month Float?
   fuel_type     String
   transmission  String
   seats         Int

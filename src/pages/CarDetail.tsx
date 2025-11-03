@@ -15,6 +15,8 @@ interface Car {
   category: string;
   image_url: string[] | string;
   price_per_day: number;
+  price_per_week?: number | null;
+  price_per_month?: number | null;
   seats: number;
   fuel_type: string;
   transmission: string;
@@ -221,21 +223,21 @@ const CarDetail = () => {
                 {/* All images in gallery for Fancybox */}
                 {images.length > 0 ? (
                   images.map((image, index) => (
-                    <a
-                      key={index}
-                      href={image}
-                      data-fancybox="gallery"
+                  <a
+                    key={index}
+                    href={image}
+                    data-fancybox="gallery"
                       data-caption={`${getCarName()} - ${index + 1}`}
-                      className={index === selectedImage ? "block w-full h-full" : "hidden"}
-                    >
-                      {index === selectedImage && (
-                        <img
-                          src={image}
+                    className={index === selectedImage ? "block w-full h-full" : "hidden"}
+                  >
+                    {index === selectedImage && (
+                      <img
+                        src={image}
                           alt={`${getCarName()} ${index + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
-                        />
-                      )}
-                    </a>
+                        className="w-full h-full object-cover cursor-zoom-in"
+                      />
+                    )}
+                  </a>
                   ))
                 ) : (
                   <img
@@ -339,7 +341,7 @@ const CarDetail = () => {
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
                           <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price_per_day * 7}</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price_per_week || car.price_per_day * 7}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
@@ -347,7 +349,7 @@ const CarDetail = () => {
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
                           <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price_per_day * 30}</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price_per_month || car.price_per_day * 30}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
@@ -367,19 +369,19 @@ const CarDetail = () => {
 
               {/* Features */}
               {car.features && car.features.length > 0 && (
-                <Card>
-                  <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
-                    <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{t('detail.features')}</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                      {car.features.map((feature, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+              <Card>
+                <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+                  <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{t('detail.features')}</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {car.features.map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
               )}
             </div>
           </div>

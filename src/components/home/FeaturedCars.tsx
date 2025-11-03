@@ -12,6 +12,8 @@ interface Car {
   category: string;
   image_url: string[] | string;
   price_per_day: number;
+  price_per_week?: number | null;
+  price_per_month?: number | null;
   seats: number;
   fuel_type: string;
   available: boolean;
@@ -159,7 +161,7 @@ const FeaturedCars = () => {
                   <div className="rounded-lg p-3 text-center border border-border">
                     <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
                     <div className="flex flex-col items-center">
-                      <span className="text-xl font-bold text-slate-900">{car.price_per_day * 7}</span>
+                      <span className="text-xl font-bold text-slate-900">{car.price_per_week || car.price_per_day * 7}</span>
                       <span className="text-xs font-semibold text-slate-700">AZN</span>
                     </div>
                   </div>
@@ -167,7 +169,7 @@ const FeaturedCars = () => {
                   <div className="rounded-lg p-3 text-center border border-border">
                     <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
                     <div className="flex flex-col items-center">
-                      <span className="text-xl font-extrabold text-slate-900">{car.price_per_day * 30}</span>
+                      <span className="text-xl font-extrabold text-slate-900">{car.price_per_month || car.price_per_day * 30}</span>
                       <span className="text-xs font-semibold text-slate-700">AZN</span>
                     </div>
                   </div>
