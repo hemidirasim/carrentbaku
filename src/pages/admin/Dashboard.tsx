@@ -32,9 +32,10 @@ const AdminDashboard = () => {
 
   const loadStats = async () => {
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
       const [carsRes, reservationsRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/cars`),
-        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/reservations`),
+        fetch(`${API_URL}/cars`),
+        fetch(`${API_URL}/reservations`),
       ]);
 
       const cars = await carsRes.json();
