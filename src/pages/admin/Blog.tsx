@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { 
   FileText, 
   Plus, 
@@ -323,10 +324,11 @@ const AdminBlog = () => {
                   </div>
 
                   <div>
-                    <Label>Şəkil URL</Label>
-                    <Input
+                    <ImageUpload
                       value={formData.image_url}
-                      onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                      onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                      folder="blog"
+                      label="Blog Şəkli"
                     />
                   </div>
 

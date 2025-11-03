@@ -2,36 +2,39 @@
 const BLOB_READ_WRITE_TOKEN = "vercel_blob_rw_UrgM6GRVtGvrhLeH_r4yaSYb8EP3sTh9Ne0uzT5qsMvPd9t";
 
 export const uploadImage = async (file: File, pathname?: string): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
+  const fileName = pathname || `${Date.now()}-${file.name}`;
   
-  if (pathname) {
-    formData.append('pathname', pathname);
-  }
-
-  const response = await fetch('https://api.vercel.com/blob', {
-    method: 'POST',
+  // Use PUT method to upload directly to Vercel Blob
+  const response = await fetch(`https://blob.vercel-storage.com/${fileName}`, {
+    method: 'PUT',
     headers: {
       'Authorization': `Bearer ${BLOB_READ_WRITE_TOKEN}`,
+      'Content-Type': file.type,
+      'x-content-type': file.type,
     },
-    body: formData,
+    body: file,
   });
 
   if (!response.ok) {
-    throw new Error('Failed to upload image');
+    const errorText = await response.text();
+    throw new Error(`Failed to upload image: ${errorText}`);
   }
 
-  const data = await response.json();
-  return data.url;
+  // The response body contains the URL
+  const url = await response.text();
+  return url.trim();
 };
 
 export const deleteImage = async (url: string): Promise<void> => {
-  const response = await fetch('https://api.vercel.com/blob', {
+  // Extract the blob path from URL
+  const urlObj = new URL(url);
+  const blobPath = urlObj.pathname;
+
+  const response = await fetch(`https://blob.vercel-storage.com${blobPath}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${BLOB_READ_WRITE_TOKEN}`,
     },
-    body: JSON.stringify({ url }),
   });
 
   if (!response.ok) {

@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { 
   Car, 
   Plus, 
@@ -281,6 +282,15 @@ const AdminCars = () => {
                         <SelectItem value="minivan">Minivan</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <ImageUpload
+                      value={formData.image_url}
+                      onChange={(url) => setFormData({ ...formData, image_url: url })}
+                      folder="cars"
+                      label="Avtomobil Şəkli"
+                    />
                   </div>
 
                   <div className="flex items-center space-x-2">
