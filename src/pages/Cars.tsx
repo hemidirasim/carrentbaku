@@ -5,12 +5,28 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { api } from '@/lib/api';
+
+interface Car {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  image_url: string[] | string;
+  price_per_day: number;
+  seats: number;
+  fuel_type: string;
+  available: boolean;
+  year: number;
+}
 
 const Cars = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // URL-dən category parametrini oxu
   useEffect(() => {
@@ -22,6 +38,24 @@ const Cars = () => {
       setSelectedCategory('all');
     }
   }, [location.search]);
+
+  useEffect(() => {
+    loadCars();
+  }, []);
+
+  const loadCars = async () => {
+    try {
+      setLoading(true);
+      const data = await api.cars.getAll();
+      // Filter only available cars
+      const availableCars = (data || []).filter((car: Car) => car.available);
+      setCars(availableCars);
+    } catch (error) {
+      console.error('Error loading cars:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   // Category dəyişəndə URL-i yenilə
@@ -37,12 +71,34 @@ const Cars = () => {
     navigate(`/cars${newSearch ? `?${newSearch}` : ''}`, { replace: true });
   };
 
-  const cars = [
-    {
-      id: 1,
-      name: 'Hyundai Elantra',
-      category: 'ekonomik',
-      brand: 'Hyundai',
+  // Parse Vercel Blob response if it's JSON
+  const parseImageUrl = (url: string | any): string => {
+    if (typeof url === 'string') {
+      try {
+        const parsed = JSON.parse(url);
+        return parsed.url || url;
+      } catch {
+        return url;
+      }
+    }
+    if (url && typeof url === 'object' && url.url) {
+      return url.url;
+    }
+    return url || '';
+  };
+
+  // Get images array from car
+  const getCarImages = (car: Car): string[] => {
+    if (Array.isArray(car.image_url)) {
+      return car.image_url.map(url => parseImageUrl(url)).filter(url => url);
+    }
+    const singleImage = parseImageUrl(car.image_url || '');
+    return singleImage ? [singleImage] : [];
+  };
+
+  const getCarName = (car: Car) => {
+    return `${car.brand} ${car.model}`;
+  };
       image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
       images: [
         'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
@@ -206,29 +262,9 @@ const Cars = () => {
       price: 180,
       seats: 8,
       fuel: 'Diesel',
-      year: 2023,
-    },
-  ];
-
-  const filteredCars = cars.filter(car => {
-    // Category mapping
-    const categoryMap: Record<string, string> = {
-      'ekonomik': 'ekonomik',
-      'medium-sedan': 'ekonomik', // map to existing categories
-      'biznes': 'biznes',
-      'premium': 'premium',
-      'suv': 'suv',
-      'minivan': 'minivan',
-      'luxury': 'premium', // map to premium
-      'big-bus': 'minivan', // map to minivan
-    };
-    
-    const matchesCategory = selectedCategory === 'all' || 
-      car.category === selectedCategory || 
-      car.category === categoryMap[selectedCategory];
-    
-    return matchesCategory;
-  });
+  const filteredCars = selectedCategory === 'all' 
+    ? cars 
+    : cars.filter(car => car.category === selectedCategory);
 
   return (
     <div className="min-h-screen">
@@ -322,6 +358,12 @@ const Cars = () => {
       {/* Cars Grid */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4 max-w-7xl">
+          {loading ? (
+            <div className="flex justify-center items-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <>
           {filteredCars.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <p className="text-muted-foreground">
@@ -337,49 +379,52 @@ const Cars = () => {
                 className="group overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                 onClick={() => navigate(`/cars/${car.id}`)}
               >
-                {/* Image Gallery with Swipe Slider and Fancybox */}
+                {/* Image Gallery with Swipe Slider */}
                 <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '280px' }}>
                   {/* Swipe Slider for Images */}
-                  {car.images && car.images.length > 0 ? (
-                    <Carousel
-                      className="w-full h-full"
-                      opts={{
-                        align: 'start',
-                        loop: true,
-                        dragFree: true,
-                      }}
-                    >
-                      <CarouselContent className="h-full">
-                        {car.images.map((image, index) => (
-                          <CarouselItem key={index} className="h-full pl-0">
-                            <img 
-                              src={image} 
-                              alt={`${car.name} ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                    </Carousel>
-                  ) : (
-                    <img 
-                      src={car.image} 
-                      alt={car.name}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
+                  {(() => {
+                    const images = getCarImages(car);
+                    return images.length > 0 ? (
+                      <Carousel
+                        className="w-full h-full"
+                        opts={{
+                          align: 'start',
+                          loop: true,
+                          dragFree: true,
+                        }}
+                      >
+                        <CarouselContent className="h-full">
+                          {images.map((image, index) => (
+                            <CarouselItem key={index} className="h-full pl-0">
+                              <img 
+                                src={image} 
+                                alt={`${getCarName(car)} ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                      </Carousel>
+                    ) : (
+                      <img 
+                        src="/placeholder.svg" 
+                        alt={getCarName(car)}
+                        className="w-full h-full object-cover"
+                      />
+                    );
+                  })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
                 </div>
                 
                 <CardContent className="pt-6">
-                  <h3 className="text-xl font-bold mb-6">{car.name}</h3>
+                  <h3 className="text-xl font-bold mb-6">{getCarName(car)}</h3>
                   
                   <div className="grid grid-cols-3 gap-2 mb-6">
                     {/* Gün */}
                     <div className="rounded-lg p-3 text-center bg-[#7b1020]">
                       <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
                       <div className="flex flex-col items-center">
-                        <span className="text-lg md:text-xl font-bold text-white">{car.price}</span>
+                        <span className="text-lg md:text-xl font-bold text-white">{car.price_per_day}</span>
                         <span className="text-xs font-semibold text-white/90">AZN</span>
                       </div>
                     </div>
@@ -387,7 +432,7 @@ const Cars = () => {
                     <div className="rounded-lg p-3 text-center border border-border">
                       <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
                       <div className="flex flex-col items-center">
-                        <span className="text-base md:text-lg font-bold text-slate-900">{car.price * 7}</span>
+                        <span className="text-base md:text-lg font-bold text-slate-900">{car.price_per_day * 7}</span>
                         <span className="text-xs font-semibold text-slate-700">AZN</span>
                       </div>
                     </div>
@@ -395,7 +440,7 @@ const Cars = () => {
                     <div className="rounded-lg p-3 text-center border border-border">
                       <div className="text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
                       <div className="flex flex-col items-center">
-                        <span className="text-base md:text-lg font-extrabold text-slate-900">{car.price * 30}</span>
+                        <span className="text-base md:text-lg font-extrabold text-slate-900">{car.price_per_day * 30}</span>
                         <span className="text-xs font-semibold text-slate-700">AZN</span>
                       </div>
                     </div>
@@ -424,6 +469,8 @@ const Cars = () => {
                 {t('cars.reset')}
               </Button>
             </div>
+          )}
+            </>
           )}
         </div>
       </section>

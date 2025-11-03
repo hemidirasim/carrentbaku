@@ -20,9 +20,16 @@ export const uploadImage = async (file: File, pathname?: string): Promise<string
     throw new Error(`Failed to upload image: ${errorText}`);
   }
 
-  // The response body contains the URL
-  const url = await response.text();
-  return url.trim();
+  // The response body contains the URL or JSON
+  const responseText = await response.text();
+  try {
+    // Try to parse as JSON first (Vercel Blob returns JSON)
+    const json = JSON.parse(responseText);
+    return json.url || responseText.trim();
+  } catch {
+    // If not JSON, return as-is
+    return responseText.trim();
+  }
 };
 
 export const deleteImage = async (url: string): Promise<void> => {

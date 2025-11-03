@@ -6,6 +6,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Users, Fuel, Calendar, Shield, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReservationDialog from '@/components/ReservationDialog';
+import { api } from '@/lib/api';
+
+interface Car {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  image_url: string[] | string;
+  price_per_day: number;
+  seats: number;
+  fuel_type: string;
+  transmission: string;
+  available: boolean;
+  year: number;
+  features: string[];
+}
 
 const CarDetail = () => {
   const { id } = useParams();
@@ -13,11 +29,63 @@ const CarDetail = () => {
   const { t } = useLanguage();
   const [reservationOpen, setReservationOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
   const thumbnailRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    if (id) {
+      loadCar();
+    }
+  }, [id]);
+
+  const loadCar = async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const data = await api.cars.getById(id);
+      setCar(data);
+    } catch (error) {
+      console.error('Error loading car:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Parse Vercel Blob response if it's JSON
+  const parseImageUrl = (url: string | any): string => {
+    if (typeof url === 'string') {
+      try {
+        const parsed = JSON.parse(url);
+        return parsed.url || url;
+      } catch {
+        return url;
+      }
+    }
+    if (url && typeof url === 'object' && url.url) {
+      return url.url;
+    }
+    return url || '';
+  };
+
+  // Get images array from car
+  const getCarImages = (): string[] => {
+    if (!car) return [];
+    if (Array.isArray(car.image_url)) {
+      return car.image_url.map(url => parseImageUrl(url)).filter(url => url);
+    }
+    const singleImage = parseImageUrl(car.image_url || '');
+    return singleImage ? [singleImage] : [];
+  };
+
+  const getCarName = () => {
+    if (!car) return '';
+    return `${car.brand} ${car.model}`;
+  };
 
   // Fancybox-i init et (CDN-dən yüklə)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !car) return;
     
     // CDN-dən Fancybox yüklə
     const loadFancybox = () => {
@@ -100,137 +168,15 @@ const CarDetail = () => {
         Fancybox.destroy();
       }
     };
-  }, [id]);
+  }, [car]);
 
-  // Mock data - in production, this would come from an API
-  const cars = [
-    {
-      id: 1,
-      name: 'Hyundai Elantra',
-      category: 'economy',
-      brand: 'Hyundai',
-      images: [
-        'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1619767886463-eca0bc90544a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=800',
-      ],
-      price: 55,
-      deposit: 200,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-      features: ['Bluetooth', 'Air Conditioning', 'GPS Navigation', 'USB Port', 'Backup Camera'],
-    },
-    {
-      id: 2,
-      name: 'Toyota Camry',
-      category: 'comfort',
-      brand: 'Toyota',
-      images: [
-        'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
-        'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=800',
-      ],
-      price: 85,
-      deposit: 300,
-      seats: 5,
-      fuel: 'Hybrid',
-      year: 2023,
-      features: ['Leather Seats', 'Sunroof', 'Bluetooth', 'Air Conditioning', 'GPS Navigation', 'Parking Sensors'],
-    },
-    {
-      id: 3,
-      name: 'Mercedes E-Class',
-      category: 'premium',
-      brand: 'Mercedes-Benz',
-      images: [
-        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
-        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800',
-      ],
-      price: 150,
-      deposit: 500,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-      features: ['Premium Leather', 'Panoramic Sunroof', 'Advanced Safety', 'Premium Sound', 'Heated Seats', 'Ambient Lighting'],
-    },
-    {
-      id: 4,
-      name: 'Kia Rio',
-      category: 'economy',
-      brand: 'Kia',
-      images: [
-        'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
-      ],
-      price: 50,
-      deposit: 180,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-      features: ['Bluetooth', 'Air Conditioning', 'USB Port'],
-    },
-    {
-      id: 5,
-      name: 'BMW 5 Series',
-      category: 'premium',
-      brand: 'BMW',
-      images: [
-        'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
-      ],
-      price: 180,
-      deposit: 550,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-      features: ['Sport Package', 'Premium Sound', 'Adaptive Cruise', 'Lane Assist', 'Parking Assistant'],
-    },
-    {
-      id: 6,
-      name: 'Honda Accord',
-      category: 'comfort',
-      brand: 'Honda',
-      images: [
-        'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
-      ],
-      price: 80,
-      deposit: 280,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-      features: ['Bluetooth', 'Sunroof', 'Air Conditioning', 'GPS Navigation'],
-    },
-    {
-      id: 7,
-      name: 'Nissan Sentra',
-      category: 'economy',
-      brand: 'Nissan',
-      images: [
-        'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
-      ],
-      price: 60,
-      deposit: 220,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-      features: ['Bluetooth', 'Air Conditioning', 'USB Port', 'Backup Camera'],
-    },
-    {
-      id: 8,
-      name: 'Audi A6',
-      category: 'premium',
-      brand: 'Audi',
-      images: [
-        'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
-      ],
-      price: 170,
-      deposit: 520,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-      features: ['Virtual Cockpit', 'Matrix LED', 'Premium Sound', 'Adaptive Suspension', 'Massage Seats'],
-    },
-  ];
-
-  const car = cars.find(c => c.id === Number(id));
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (!car) {
     return (
@@ -242,6 +188,8 @@ const CarDetail = () => {
       </div>
     );
   }
+
+  const images = getCarImages();
 
   return (
     <div className="min-h-screen">
@@ -257,7 +205,7 @@ const CarDetail = () => {
             {t('cars.viewAll')}
           </Button>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-            {car.name}
+            {getCarName()}
           </h1>
         </div>
       </section>
@@ -271,35 +219,43 @@ const CarDetail = () => {
               {/* Main Image - Fancybox Gallery */}
               <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: '16 / 9', minHeight: '200px', maxHeight: '400px' }}>
                 {/* All images in gallery for Fancybox */}
-                {car.images.map((image, index) => (
-                  <a
-                    key={index}
-                    href={image}
-                    data-fancybox="gallery"
-                    data-caption={`${car.name} - ${index + 1}`}
-                    className={index === selectedImage ? "block w-full h-full" : "hidden"}
-                  >
-                    {index === selectedImage && (
-                      <img
-                        src={image}
-                        alt={`${car.name} ${index + 1}`}
-                        className="w-full h-full object-cover cursor-zoom-in"
-                      />
-                    )}
-                  </a>
-                ))}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-              </div>
-              
-              {/* Thumbnail Navigation */}
-              {car.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2 sm:gap-2">
-                  {car.images.map((image, index) => (
+                {images.length > 0 ? (
+                  images.map((image, index) => (
                     <a
                       key={index}
                       href={image}
                       data-fancybox="gallery"
-                      data-caption={`${car.name} - ${index + 1}`}
+                      data-caption={`${getCarName()} - ${index + 1}`}
+                      className={index === selectedImage ? "block w-full h-full" : "hidden"}
+                    >
+                      {index === selectedImage && (
+                        <img
+                          src={image}
+                          alt={`${getCarName()} ${index + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                        />
+                      )}
+                    </a>
+                  ))
+                ) : (
+                  <img
+                    src="/placeholder.svg"
+                    alt={getCarName()}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              </div>
+              
+              {/* Thumbnail Navigation */}
+              {images.length > 1 && (
+                <div className="grid grid-cols-4 gap-2 sm:gap-2">
+                  {images.map((image, index) => (
+                    <a
+                      key={index}
+                      href={image}
+                      data-fancybox="gallery"
+                      data-caption={`${getCarName()} - ${index + 1}`}
                       onClick={(e) => {
                         setSelectedImage(index);
                         // Let Fancybox handle the click
@@ -310,7 +266,7 @@ const CarDetail = () => {
                     >
                       <img 
                         src={image} 
-                        alt={`${car.name} thumbnail ${index + 1}`} 
+                        alt={`${getCarName()} thumbnail ${index + 1}`} 
                         className="w-full h-full object-cover"
                       />
                     </a>
@@ -352,7 +308,7 @@ const CarDetail = () => {
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.fuel')}</p>
-                        <p className="font-semibold text-sm sm:text-base truncate">{car.fuel}</p>
+                        <p className="font-semibold text-sm sm:text-base truncate">{car.fuel_type}</p>
                       </div>
                     </div>
 
@@ -361,8 +317,8 @@ const CarDetail = () => {
                         <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs sm:text-sm text-muted-foreground">{t('detail.deposit')}</p>
-                        <p className="font-semibold text-sm sm:text-base">{car.deposit} AZN</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Transmission</p>
+                        <p className="font-semibold text-sm sm:text-base capitalize">{car.transmission}</p>
                       </div>
                     </div>
                   </div>
@@ -375,7 +331,7 @@ const CarDetail = () => {
                         <div className="rounded-lg p-2 sm:p-3 text-center bg-[#7b1020]">
                           <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white">{car.price}</span>
+                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white">{car.price_per_day}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-white/90">AZN</span>
                           </div>
                         </div>
@@ -383,7 +339,7 @@ const CarDetail = () => {
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
                           <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price * 7}</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price_per_day * 7}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
@@ -391,7 +347,7 @@ const CarDetail = () => {
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
                           <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
                           <div className="flex flex-col items-center">
-                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price * 30}</span>
+                            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price_per_day * 30}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
                           </div>
                         </div>
@@ -401,27 +357,30 @@ const CarDetail = () => {
                     <Button 
                       className="w-full bg-gradient-primary text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6"
                       onClick={() => setReservationOpen(true)}
+                      disabled={!car.available}
                     >
-                      {t('detail.reserve')}
+                      {car.available ? t('detail.reserve') : 'Mövcud deyil'}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Features */}
-              <Card>
-                <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
-                  <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{t('detail.features')}</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                    {car.features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                        <span className="text-xs sm:text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              {car.features && car.features.length > 0 && (
+                <Card>
+                  <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+                    <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{t('detail.features')}</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                      {car.features.map((feature, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                          <span className="text-xs sm:text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>
@@ -430,7 +389,7 @@ const CarDetail = () => {
       <ReservationDialog
         open={reservationOpen}
         onOpenChange={setReservationOpen}
-        carName={car.name}
+        carName={getCarName()}
       />
     </div>
   );
