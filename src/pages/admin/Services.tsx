@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { 
   Briefcase, 
@@ -32,7 +31,6 @@ interface Service {
   description_en?: string;
   description_ar?: string;
   image_url?: string;
-  category?: string;
   features?: string[];
   created_at: string;
   updated_at: string;
@@ -57,20 +55,10 @@ const AdminServices = () => {
     description_en: '',
     description_ar: '',
     image_url: '',
-    category: 'daily-weekly',
     features: [] as string[],
   });
 
   const [featureInput, setFeatureInput] = useState('');
-
-  const categories = [
-    { value: 'daily-weekly', label: 'Günlük və Həftəlik' },
-    { value: 'long-term', label: 'Uzun Müddətli' },
-    { value: 'luxury', label: 'Lüks' },
-    { value: 'airport', label: 'Hava Limanı' },
-    { value: 'driver', label: 'Şofer' },
-    { value: 'rental', label: 'Korporativ' },
-  ];
 
   useEffect(() => {
     loadServices();
@@ -112,7 +100,6 @@ const AdminServices = () => {
         description_en: '',
         description_ar: '',
         image_url: '',
-        category: 'daily-weekly',
         features: [],
       });
       setFeatureInput('');
@@ -135,7 +122,6 @@ const AdminServices = () => {
       description_en: service.description_en || '',
       description_ar: service.description_ar || '',
       image_url: service.image_url || '',
-      category: service.category || 'daily-weekly',
       features: service.features || [],
     });
     setFeatureInput('');
@@ -173,8 +159,7 @@ const AdminServices = () => {
   };
 
   const filteredServices = services.filter(service =>
-    service.title_az.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.category?.toLowerCase().includes(searchTerm.toLowerCase())
+    service.title_az.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -206,7 +191,6 @@ const AdminServices = () => {
                   description_en: '',
                   description_ar: '',
                   image_url: '',
-                  category: 'daily-weekly',
                   features: [],
                 });
                 setFeatureInput('');
@@ -226,25 +210,6 @@ const AdminServices = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label>Kateqoriya</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map(cat => (
-                          <SelectItem key={cat.value} value={cat.value}>
-                            {cat.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Başlıq (AZ) *</Label>
@@ -254,14 +219,15 @@ const AdminServices = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <ImageUpload
-                        value={formData.image_url}
-                        onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-                        folder="services"
-                        label="Xidmət Şəkli"
-                      />
-                    </div>
+                  </div>
+
+                  <div>
+                    <ImageUpload
+                      value={formData.image_url}
+                      onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                      folder="services"
+                      label="Xidmət Şəkli *"
+                    />
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
@@ -406,8 +372,8 @@ const AdminServices = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Şəkil</TableHead>
                   <TableHead>Başlıq</TableHead>
-                  <TableHead>Kateqoriya</TableHead>
                   <TableHead>Tarix</TableHead>
                   <TableHead className="text-right">Əməliyyatlar</TableHead>
                 </TableRow>
@@ -415,10 +381,20 @@ const AdminServices = () => {
               <TableBody>
                 {filteredServices.map((service) => (
                   <TableRow key={service.id}>
-                    <TableCell className="font-medium">{service.title_az}</TableCell>
                     <TableCell>
-                      {categories.find(c => c.value === service.category)?.label || service.category}
+                      {service.image_url ? (
+                        <img 
+                          src={service.image_url} 
+                          alt={service.title_az}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">Şəkil yoxdur</span>
+                        </div>
+                      )}
                     </TableCell>
+                    <TableCell className="font-medium">{service.title_az}</TableCell>
                     <TableCell>
                       {new Date(service.created_at).toLocaleDateString('az-AZ')}
                     </TableCell>

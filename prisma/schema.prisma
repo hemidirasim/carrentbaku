@@ -84,12 +84,9 @@ model Service {
   description_ar String?
   image_url     String?
   icon          String?
-  category      String?  // daily-weekly, long-term, luxury, airport, driver, rental
   features      String[] @default([])
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
-
-  @@index([category])
 }
 
 model BlogPost {

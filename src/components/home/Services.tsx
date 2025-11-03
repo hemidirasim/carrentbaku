@@ -17,7 +17,6 @@ interface Service {
   description_en?: string;
   description_ar?: string;
   image_url?: string;
-  category?: string;
   features?: string[];
 }
 
