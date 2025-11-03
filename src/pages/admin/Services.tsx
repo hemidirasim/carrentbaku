@@ -33,6 +33,7 @@ interface Service {
   description_ar?: string;
   image_url?: string;
   category?: string;
+  features?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -57,7 +58,10 @@ const AdminServices = () => {
     description_ar: '',
     image_url: '',
     category: 'daily-weekly',
+    features: [] as string[],
   });
+
+  const [featureInput, setFeatureInput] = useState('');
 
   const categories = [
     { value: 'daily-weekly', label: 'Günlük və Həftəlik' },
@@ -109,7 +113,9 @@ const AdminServices = () => {
         description_ar: '',
         image_url: '',
         category: 'daily-weekly',
+        features: [],
       });
+      setFeatureInput('');
       loadServices();
     } catch (error) {
       console.error('Error saving service:', error);
@@ -130,8 +136,27 @@ const AdminServices = () => {
       description_ar: service.description_ar || '',
       image_url: service.image_url || '',
       category: service.category || 'daily-weekly',
+      features: service.features || [],
     });
+    setFeatureInput('');
     setIsAddDialogOpen(true);
+  };
+
+  const addFeature = () => {
+    if (featureInput.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        features: [...prev.features, featureInput.trim()],
+      }));
+      setFeatureInput('');
+    }
+  };
+
+  const removeFeature = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      features: prev.features.filter((_, i) => i !== index),
+    }));
   };
 
   const handleDelete = async (id: string) => {
@@ -182,7 +207,9 @@ const AdminServices = () => {
                   description_ar: '',
                   image_url: '',
                   category: 'daily-weekly',
+                  features: [],
                 });
+                setFeatureInput('');
               }
             }}>
               <DialogTrigger asChild>
@@ -296,6 +323,46 @@ const AdminServices = () => {
                         rows={4}
                       />
                     </div>
+                  </div>
+
+                  {/* Features Section */}
+                  <div>
+                    <Label>Xüsusiyyətlər</Label>
+                    <div className="flex gap-2 mb-2">
+                      <Input
+                        value={featureInput}
+                        onChange={(e) => setFeatureInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addFeature();
+                          }
+                        }}
+                        placeholder="Xüsusiyyət əlavə et və Enter bas"
+                      />
+                      <Button type="button" onClick={addFeature}>
+                        Əlavə et
+                      </Button>
+                    </div>
+                    {formData.features.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {formData.features.map((feature, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
+                          >
+                            <span className="text-sm">{feature}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeFeature(index)}
+                              className="text-destructive hover:text-destructive/80"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-end space-x-2">

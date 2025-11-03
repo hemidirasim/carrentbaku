@@ -1,44 +1,65 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { api } from '@/lib/api';
+import { Check } from 'lucide-react';
+
+interface Service {
+  id: string;
+  title_az: string;
+  title_ru?: string;
+  title_en?: string;
+  title_ar?: string;
+  description_az: string;
+  description_ru?: string;
+  description_en?: string;
+  description_ar?: string;
+  image_url?: string;
+  category?: string;
+  features?: string[];
+}
 
 const Services = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const services = [
-    {
-      image: 'https://images.unsplash.com/photo-1493238792000-8113da705763?q=80&w=1600',
-      title: t('services.dailyWeekly.title'),
-      desc: t('services.dailyWeekly.desc'),
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1600',
-      title: t('services.longTerm.title'),
-      desc: t('services.longTerm.desc'),
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1600',
-      title: t('services.luxury.title'),
-      desc: t('services.luxury.desc'),
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1600',
-      title: t('services.airport'),
-      desc: t('services.airport.desc'),
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1600',
-      title: t('services.driver'),
-      desc: t('services.driver.desc'),
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1600',
-      title: t('services.rental'),
-      desc: t('services.rental.desc'),
-    },
-  ];
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      setLoading(true);
+      const data = await api.services.getAll();
+      setServices(data || []);
+    } catch (error) {
+      console.error('Error loading services:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getServiceTitle = (service: Service) => {
+    switch (language) {
+      case 'ru': return service.title_ru || service.title_az;
+      case 'en': return service.title_en || service.title_az;
+      case 'ar': return service.title_ar || service.title_az;
+      default: return service.title_az;
+    }
+  };
+
+  const getServiceDescription = (service: Service) => {
+    switch (language) {
+      case 'ru': return service.description_ru || service.description_az;
+      case 'en': return service.description_en || service.description_az;
+      case 'ar': return service.description_ar || service.description_az;
+      default: return service.description_az;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -69,39 +90,61 @@ const Services = () => {
           </div>
 
           {/* Cards grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, i) => (
-              <Card 
-                key={i} 
-                className="overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 group cursor-pointer"
-                onClick={() => navigate(`/services/${i + 1}`)}
-              >
-                <div className="relative h-52 overflow-hidden">
-                  <img 
-                    src={service.image} 
-                    alt={service.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-base md:text-lg">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base mb-4">{service.desc}</CardDescription>
-                  <Button 
-                    className="w-full bg-gradient-primary group/btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/services/${i + 1}`);
-                    }}
-                  >
-                    {t('common.viewDetails')}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">Yüklənir...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service) => (
+                <Card 
+                  key={service.id} 
+                  className="overflow-hidden border-border hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 group cursor-pointer"
+                  onClick={() => navigate(`/services/${service.id}`)}
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    <img 
+                      src={service.image_url || 'https://images.unsplash.com/photo-1493238792000-8113da705763?q=80&w=1600'} 
+                      alt={getServiceTitle(service)} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-base md:text-lg">{getServiceTitle(service)}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base mb-4">{getServiceDescription(service)}</CardDescription>
+                    {service.features && service.features.length > 0 && (
+                      <div className="mb-4 space-y-2">
+                        {service.features.slice(0, 3).map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Check className="w-4 h-4 text-primary" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                        {service.features.length > 3 && (
+                          <div className="text-sm text-muted-foreground">
+                            +{service.features.length - 3} daha...
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <Button 
+                      className="w-full bg-gradient-primary group/btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/services/${service.id}`);
+                      }}
+                    >
+                      {t('common.viewDetails')}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
