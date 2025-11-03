@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -67,12 +67,7 @@ const AdminCars = () => {
   const loadCars = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('cars')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
+      const data = await api.cars.getAll();
       setCars(data || []);
     } catch (error) {
       console.error('Error loading cars:', error);
@@ -85,18 +80,9 @@ const AdminCars = () => {
     e.preventDefault();
     try {
       if (editingCar) {
-        const { error } = await supabase
-          .from('cars')
-          .update(formData)
-          .eq('id', editingCar.id);
-        
-        if (error) throw error;
+        await api.cars.update(editingCar.id, formData);
       } else {
-        const { error } = await supabase
-          .from('cars')
-          .insert([formData]);
-        
-        if (error) throw error;
+        await api.cars.create(formData);
       }
       
       await loadCars();
@@ -142,12 +128,7 @@ const AdminCars = () => {
     if (!confirm('Are you sure you want to delete this car?')) return;
     
     try {
-      const { error } = await supabase
-        .from('cars')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await api.cars.delete(id);
       await loadCars();
     } catch (error) {
       console.error('Error deleting car:', error);
@@ -258,12 +239,12 @@ const AdminCars = () => {
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="gasoline">Gasoline</SelectItem>
-                          <SelectItem value="diesel">Diesel</SelectItem>
-                          <SelectItem value="electric">Electric</SelectItem>
-                          <SelectItem value="hybrid">Hybrid</SelectItem>
-                        </SelectContent>
+                      <SelectContent>
+                        <SelectItem value="petrol">Petrol</SelectItem>
+                        <SelectItem value="diesel">Diesel</SelectItem>
+                        <SelectItem value="electric">Electric</SelectItem>
+                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                      </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
