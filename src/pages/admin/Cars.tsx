@@ -28,6 +28,8 @@ interface CarData {
   year: number;
   category: string;
   price_per_day: number;
+  price_per_week?: number | null;
+  price_per_month?: number | null;
   fuel_type: string;
   transmission: string;
   seats: number;
