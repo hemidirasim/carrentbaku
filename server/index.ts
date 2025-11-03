@@ -107,7 +107,19 @@ app.get('/api/cars', async (req, res) => {
     const cars = await prisma.car.findMany({
       orderBy: { created_at: 'desc' },
     });
-    res.json(cars);
+    // Convert image_url from JSON string to array for frontend compatibility
+    const carsWithArrayImages = cars.map(car => ({
+      ...car,
+      image_url: car.image_url ? (() => {
+        try {
+          const parsed = JSON.parse(car.image_url);
+          return Array.isArray(parsed) ? parsed : [car.image_url];
+        } catch {
+          return [car.image_url];
+        }
+      })() : [],
+    }));
+    res.json(carsWithArrayImages);
   } catch (error) {
     console.error('Error fetching cars:', error);
     res.status(500).json({ error: 'Failed to fetch cars' });
@@ -122,7 +134,19 @@ app.get('/api/cars/:id', async (req, res) => {
     if (!car) {
       return res.status(404).json({ error: 'Car not found' });
     }
-    res.json(car);
+    // Convert image_url from JSON string to array for frontend compatibility
+    const carWithArrayImages = {
+      ...car,
+      image_url: car.image_url ? (() => {
+        try {
+          const parsed = JSON.parse(car.image_url);
+          return Array.isArray(parsed) ? parsed : [car.image_url];
+        } catch {
+          return [car.image_url];
+        }
+      })() : [],
+    };
+    res.json(carWithArrayImages);
   } catch (error) {
     console.error('Error fetching car:', error);
     res.status(500).json({ error: 'Failed to fetch car' });
@@ -131,10 +155,56 @@ app.get('/api/cars/:id', async (req, res) => {
 
 app.post('/api/cars', async (req, res) => {
   try {
+    // Handle image_url: if array, extract URLs and store as JSON string
+    // This allows us to store multiple images as JSON until we can migrate to array
+    let imageUrlValue: string | null = null;
+    if (req.body.image_url) {
+      if (Array.isArray(req.body.image_url) && req.body.image_url.length > 0) {
+        // Extract URLs from array
+        const urls = req.body.image_url.map((img: any) => {
+          if (typeof img === 'string') {
+            try {
+              // If it's a JSON string, parse it
+              const parsed = JSON.parse(img);
+              return parsed.url || img;
+            } catch {
+              return img;
+            }
+          } else if (typeof img === 'object' && img.url) {
+            return img.url;
+          }
+          return img;
+        });
+        // Store as JSON string for now
+        imageUrlValue = JSON.stringify(urls);
+      } else if (typeof req.body.image_url === 'string') {
+        imageUrlValue = req.body.image_url;
+      }
+    }
+    
+    const carData = {
+      ...req.body,
+      image_url: imageUrlValue,
+    };
+    
     const car = await prisma.car.create({
-      data: req.body,
+      data: carData,
     });
-    res.json(car);
+    
+    // Return with image_url as array for frontend compatibility
+    const response = {
+      ...car,
+      image_url: car.image_url ? (() => {
+        try {
+          const parsed = JSON.parse(car.image_url);
+          return Array.isArray(parsed) ? parsed : [car.image_url];
+        } catch {
+          return [car.image_url];
+        }
+      })() : [],
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error('Error creating car:', error);
     res.status(500).json({ error: 'Failed to create car' });
@@ -143,11 +213,59 @@ app.post('/api/cars', async (req, res) => {
 
 app.put('/api/cars/:id', async (req, res) => {
   try {
+    // Handle image_url: if array, extract URLs and store as JSON string
+    let imageUrlValue: string | null | undefined = undefined;
+    if (req.body.image_url !== undefined) {
+      if (Array.isArray(req.body.image_url)) {
+        if (req.body.image_url.length > 0) {
+          const urls = req.body.image_url.map((img: any) => {
+            if (typeof img === 'string') {
+              try {
+                const parsed = JSON.parse(img);
+                return parsed.url || img;
+              } catch {
+                return img;
+              }
+            } else if (typeof img === 'object' && img.url) {
+              return img.url;
+            }
+            return img;
+          });
+          imageUrlValue = JSON.stringify(urls);
+        } else {
+          imageUrlValue = null;
+        }
+      } else if (typeof req.body.image_url === 'string') {
+        imageUrlValue = req.body.image_url;
+      } else if (req.body.image_url === null) {
+        imageUrlValue = null;
+      }
+    }
+    
+    const carData = {
+      ...req.body,
+      image_url: imageUrlValue,
+    };
+    
     const car = await prisma.car.update({
       where: { id: req.params.id },
-      data: req.body,
+      data: carData,
     });
-    res.json(car);
+    
+    // Return with image_url as array for frontend compatibility
+    const response = {
+      ...car,
+      image_url: car.image_url ? (() => {
+        try {
+          const parsed = JSON.parse(car.image_url);
+          return Array.isArray(parsed) ? parsed : [car.image_url];
+        } catch {
+          return [car.image_url];
+        }
+      })() : [],
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error('Error updating car:', error);
     res.status(500).json({ error: 'Failed to update car' });
