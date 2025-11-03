@@ -57,7 +57,6 @@ const Cars = () => {
     }
   };
 
-
   // Category dəyişəndə URL-i yenilə
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -99,169 +98,7 @@ const Cars = () => {
   const getCarName = (car: Car) => {
     return `${car.brand} ${car.model}`;
   };
-      image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1619767886463-eca0bc90544a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 55,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-    },
-    {
-      id: 2,
-      name: 'Toyota Camry',
-      category: 'biznes',
-      brand: 'Toyota',
-      image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=1000',
-        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 85,
-      seats: 5,
-      fuel: 'Hybrid',
-      year: 2023,
-    },
-    {
-      id: 3,
-      name: 'Mercedes E-Class',
-      category: 'premium',
-      brand: 'Mercedes-Benz',
-      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000',
-        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
-        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 150,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-    },
-    {
-      id: 4,
-      name: 'Kia Rio',
-      category: 'ekonomik',
-      brand: 'Kia',
-      image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
-        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
-      ],
-      price: 50,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-    },
-    {
-      id: 5,
-      name: 'BMW 5 Series',
-      category: 'premium',
-      brand: 'BMW',
-      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000',
-        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
-        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 180,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-    },
-    {
-      id: 6,
-      name: 'Honda Accord',
-      category: 'biznes',
-      brand: 'Honda',
-      image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
-      ],
-      price: 80,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-    },
-    {
-      id: 7,
-      name: 'Nissan Sentra',
-      category: 'ekonomik',
-      brand: 'Nissan',
-      image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000',
-        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
-      ],
-      price: 60,
-      seats: 5,
-      fuel: 'Petrol',
-      year: 2023,
-    },
-    {
-      id: 8,
-      name: 'Audi A6',
-      category: 'premium',
-      brand: 'Audi',
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1000',
-        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
-        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 170,
-      seats: 5,
-      fuel: 'Diesel',
-      year: 2024,
-    },
-    {
-      id: 9,
-      name: 'Toyota Land Cruiser',
-      category: 'suv',
-      brand: 'Toyota',
-      image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1000',
-        'https://images.unsplash.com/photo-1494976687768-f8e4db6a8b6a?q=80&w=1000',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 200,
-      seats: 7,
-      fuel: 'Diesel',
-      year: 2024,
-    },
-    {
-      id: 10,
-      name: 'Mercedes-Benz V-Class',
-      category: 'minivan',
-      brand: 'Mercedes-Benz',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000',
-      images: [
-        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000',
-        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000',
-        'https://images.unsplash.com/photo-1617531653332-bd46c24f0068?q=80&w=1000',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-      ],
-      price: 180,
-      seats: 8,
-      fuel: 'Diesel',
+
   const filteredCars = selectedCategory === 'all' 
     ? cars 
     : cars.filter(car => car.category === selectedCategory);
@@ -450,7 +287,7 @@ const Cars = () => {
             ))}
           </div>
 
-          {filteredCars.length === 0 && (
+          {filteredCars.length === 0 && !loading && (
             <div className="text-center py-16">
               <div className="inline-block p-6 bg-muted rounded-full mb-4">
                 <Search className="w-12 h-12 text-muted-foreground" />
