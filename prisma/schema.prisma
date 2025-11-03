@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String?
+  name          String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  roles         UserRole[]
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  user_id   String
+  role      String   @default("user")
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+
+  @@unique([user_id, role])
+  @@index([user_id])
+}
+
+model Car {
+  id            String       @id @default(uuid())
+  brand         String
+  model         String
+  year          Int
+  category      String
+  price_per_day Float
+  fuel_type     String
+  transmission  String
+  seats         Int
+  image_url     String?
+  features      String[]     @default([])
+  available     Boolean      @default(true)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  reservations  Reservation[]
+}
+
+model Reservation {
+  id            String   @id @default(uuid())
+  car_id        String
+  car           Car      @relation(fields: [car_id], references: [id], onDelete: Cascade)
+  customer_name String
+  customer_email String
+  customer_phone String?
+  pickup_date   DateTime
+  return_date   DateTime
+  total_price   Float
+  status        String   @default("pending") // pending, confirmed, completed, cancelled
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([car_id])
+  @@index([status])
+}
