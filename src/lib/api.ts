@@ -76,6 +76,25 @@ export const api = {
   services: {
     getAll: () => fetch(`${API_URL}/services`).then(res => res.json()),
     getById: (id: string) => fetch(`${API_URL}/services/${id}`).then(res => res.json()),
+    create: (data: any) =>
+      authFetch(`${API_URL}/services`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    update: (id: string, data: any) =>
+      authFetch(`${API_URL}/services/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    delete: (id: string) =>
+      authFetch(`${API_URL}/services/${id}`, {
+        method: 'DELETE',
+      }).then(res => res.json()),
+  },
+  
+  // Categories
+  categories: {
+    getAll: () => fetch(`${API_URL}/categories`).then(res => res.json()),
   },
   
   // Blog
@@ -87,6 +106,20 @@ export const api = {
       return fetch(url).then(res => res.json());
     },
     getBySlug: (slug: string) => fetch(`${API_URL}/blog/${slug}`).then(res => res.json()),
+    create: (data: any) =>
+      authFetch(`${API_URL}/blog`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    update: (id: string, data: any) =>
+      authFetch(`${API_URL}/blog/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    delete: (id: string) =>
+      authFetch(`${API_URL}/blog/${id}`, {
+        method: 'DELETE',
+      }).then(res => res.json()),
   },
   
   // Reviews

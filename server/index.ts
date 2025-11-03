@@ -348,6 +348,97 @@ app.put('/api/contact/:id', async (req, res) => {
   }
 });
 
+// Blog management endpoints (admin only - needs auth middleware in production)
+app.post('/api/blog', async (req, res) => {
+  try {
+    const post = await prisma.blogPost.create({
+      data: req.body,
+    });
+    res.json(post);
+  } catch (error) {
+    console.error('Error creating blog post:', error);
+    res.status(500).json({ error: 'Failed to create blog post' });
+  }
+});
+
+app.put('/api/blog/:id', async (req, res) => {
+  try {
+    const post = await prisma.blogPost.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
+    res.json(post);
+  } catch (error) {
+    console.error('Error updating blog post:', error);
+    res.status(500).json({ error: 'Failed to update blog post' });
+  }
+});
+
+app.delete('/api/blog/:id', async (req, res) => {
+  try {
+    await prisma.blogPost.delete({
+      where: { id: req.params.id },
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting blog post:', error);
+    res.status(500).json({ error: 'Failed to delete blog post' });
+  }
+});
+
+// Service management endpoints
+app.post('/api/services', async (req, res) => {
+  try {
+    const service = await prisma.service.create({
+      data: req.body,
+    });
+    res.json(service);
+  } catch (error) {
+    console.error('Error creating service:', error);
+    res.status(500).json({ error: 'Failed to create service' });
+  }
+});
+
+app.put('/api/services/:id', async (req, res) => {
+  try {
+    const service = await prisma.service.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
+    res.json(service);
+  } catch (error) {
+    console.error('Error updating service:', error);
+    res.status(500).json({ error: 'Failed to update service' });
+  }
+});
+
+app.delete('/api/services/:id', async (req, res) => {
+  try {
+    await prisma.service.delete({
+      where: { id: req.params.id },
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting service:', error);
+    res.status(500).json({ error: 'Failed to delete service' });
+  }
+});
+
+// Car categories management (get categories from cars)
+app.get('/api/categories', async (req, res) => {
+  try {
+    const cars = await prisma.car.findMany({
+      select: { category: true },
+      distinct: ['category'],
+    });
+    const categories = cars.map(c => c.category).filter((v, i, a) => a.indexOf(v) === i);
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

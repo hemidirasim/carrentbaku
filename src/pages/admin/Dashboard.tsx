@@ -11,7 +11,10 @@ import {
   DollarSign, 
   Plus,
   Settings,
-  LogOut
+  LogOut,
+  FileText,
+  Briefcase,
+  Tag
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -196,17 +199,59 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Settings className="w-5 h-5 mr-2" />
-                Settings
+                <FileText className="w-5 h-5 mr-2" />
+                Blog & Xəbərlər
               </CardTitle>
               <CardDescription>
-                Configure your platform
+                Blog yazılarını idarə edin
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
-                <Settings className="w-4 h-4 mr-2" />
-                Platform Settings
+              <Button asChild className="w-full">
+                <Link to="/admin/blog">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Blog İdarəetməsi
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Briefcase className="w-5 h-5 mr-2" />
+                Xidmətlər
+              </CardTitle>
+              <CardDescription>
+                Xidmətləri idarə edin
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/admin/services">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Xidmətlər İdarəetməsi
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Tag className="w-5 h-5 mr-2" />
+                Kateqoriyalar
+              </CardTitle>
+              <CardDescription>
+                Avtomobil kateqoriyalarını idarə edin
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/admin/categories">
+                  <Tag className="w-4 h-4 mr-2" />
+                  Kateqoriyalar İdarəetməsi
+                </Link>
               </Button>
             </CardContent>
           </Card>

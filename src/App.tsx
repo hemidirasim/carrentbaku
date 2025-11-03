@@ -22,6 +22,9 @@ import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCars from "./pages/admin/Cars";
 import AdminReservations from "./pages/admin/Reservations";
+import AdminBlog from "./pages/admin/Blog";
+import AdminServices from "./pages/admin/Services";
+import AdminCategories from "./pages/admin/Categories";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +52,21 @@ const App = () => (
               <Route path="/admin/reservations" element={
                 <AdminRoute>
                   <AdminReservations />
+                </AdminRoute>
+              } />
+              <Route path="/admin/blog" element={
+                <AdminRoute>
+                  <AdminBlog />
+                </AdminRoute>
+              } />
+              <Route path="/admin/services" element={
+                <AdminRoute>
+                  <AdminServices />
+                </AdminRoute>
+              } />
+              <Route path="/admin/categories" element={
+                <AdminRoute>
+                  <AdminCategories />
                 </AdminRoute>
               } />
               
