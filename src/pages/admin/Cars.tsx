@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageGalleryUpload } from '@/components/ui/image-gallery-upload';
 import { 
   Car, 
   Plus, 
@@ -31,7 +31,7 @@ interface CarData {
   fuel_type: string;
   transmission: string;
   seats: number;
-  image_url: string | null;
+  image_url: string[];
   features: string[] | null;
   available: boolean;
   created_at: string;
@@ -56,7 +56,7 @@ const AdminCars = () => {
     fuel_type: 'petrol',
     transmission: 'automatic',
     seats: 5,
-    image_url: '',
+    image_url: [],
     features: [] as string[],
     available: true,
   });
@@ -98,7 +98,7 @@ const AdminCars = () => {
         fuel_type: 'petrol',
         transmission: 'automatic',
         seats: 5,
-        image_url: '',
+        image_url: [],
         features: [] as string[],
         available: true,
       });
@@ -118,7 +118,7 @@ const AdminCars = () => {
       fuel_type: car.fuel_type,
       transmission: car.transmission,
       seats: car.seats,
-      image_url: car.image_url || '',
+      image_url: Array.isArray(car.image_url) ? car.image_url : (car.image_url ? [car.image_url] : []),
       features: car.features || [],
       available: car.available,
     });
@@ -285,11 +285,12 @@ const AdminCars = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <ImageUpload
+                    <ImageGalleryUpload
                       value={formData.image_url}
-                      onChange={(url) => setFormData({ ...formData, image_url: url })}
+                      onChange={(urls) => setFormData({ ...formData, image_url: urls })}
                       folder="cars"
-                      label="Avtomobil Şəkli"
+                      label="Avtomobil Şəkilləri"
+                      maxImages={10}
                     />
                   </div>
 

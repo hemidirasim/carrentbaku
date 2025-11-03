@@ -44,7 +44,7 @@ model Car {
   fuel_type     String
   transmission  String
   seats         Int
-  image_url     String?
+  image_url     String[]     @default([])
   features      String[]     @default([])
   available     Boolean      @default(true)
   created_at    DateTime     @default(now())
