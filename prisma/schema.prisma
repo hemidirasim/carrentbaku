@@ -69,3 +69,89 @@ model Reservation {
   @@index([car_id])
   @@index([status])
 }
+
+model Service {
+  id            String   @id @default(uuid())
+  title_az      String
+  title_ru      String?
+  title_en      String?
+  title_ar      String?
+  description_az String
+  description_ru String?
+  description_en String?
+  description_ar String?
+  image_url     String?
+  icon          String?
+  category      String?  // daily-weekly, long-term, luxury, airport, driver, rental
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([category])
+}
+
+model BlogPost {
+  id            String   @id @default(uuid())
+  title_az      String
+  title_ru      String?
+  title_en      String?
+  title_ar      String?
+  slug          String   @unique
+  content_az    String   @db.Text
+  content_ru    String?  @db.Text
+  content_en    String?  @db.Text
+  content_ar    String?  @db.Text
+  excerpt_az    String?
+  excerpt_ru    String?
+  excerpt_en    String?
+  excerpt_ar    String?
+  image_url     String?
+  author        String?
+  published     Boolean  @default(false)
+  published_at  DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([slug])
+  @@index([published])
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  customer_name String
+  customer_location String?
+  rating        Int      @default(5) // 1-5
+  title_az      String
+  title_ru      String?
+  title_en      String?
+  title_ar      String?
+  content_az    String   @db.Text
+  content_ru    String?  @db.Text
+  content_en    String?  @db.Text
+  content_ar    String?  @db.Text
+  video_url     String?
+  review_type   String   @default("text") // text, video
+  verified      Boolean  @default(false)
+  featured      Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([rating])
+  @@index([featured])
+  @@index([review_type])
+}
+
+model ContactMessage {
+  id            String   @id @default(uuid())
+  first_name    String
+  last_name     String
+  email         String
+  phone         String?
+  subject       String?
+  message       String   @db.Text
+  status        String   @default("new") // new, read, replied, archived
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([status])
+  @@index([created_at])
+}

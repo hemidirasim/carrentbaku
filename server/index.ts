@@ -142,6 +142,119 @@ app.delete('/api/reservations/:id', async (req, res) => {
   }
 });
 
+// Services endpoints
+app.get('/api/services', async (req, res) => {
+  try {
+    const services = await prisma.service.findMany({
+      orderBy: { created_at: 'desc' },
+    });
+    res.json(services);
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    res.status(500).json({ error: 'Failed to fetch services' });
+  }
+});
+
+app.get('/api/services/:id', async (req, res) => {
+  try {
+    const service = await prisma.service.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+    res.json(service);
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    res.status(500).json({ error: 'Failed to fetch service' });
+  }
+});
+
+// Blog endpoints
+app.get('/api/blog', async (req, res) => {
+  try {
+    const published = req.query.published === 'true';
+    const where = published ? { published: true } : {};
+    const posts = await prisma.blogPost.findMany({
+      where,
+      orderBy: { published_at: 'desc' },
+    });
+    res.json(posts);
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    res.status(500).json({ error: 'Failed to fetch blog posts' });
+  }
+});
+
+app.get('/api/blog/:slug', async (req, res) => {
+  try {
+    const post = await prisma.blogPost.findUnique({
+      where: { slug: req.params.slug },
+    });
+    if (!post) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    res.status(500).json({ error: 'Failed to fetch blog post' });
+  }
+});
+
+// Reviews endpoints
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const featured = req.query.featured === 'true';
+    const where = featured ? { featured: true } : {};
+    const reviews = await prisma.review.findMany({
+      where,
+      orderBy: { created_at: 'desc' },
+    });
+    res.json(reviews);
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ error: 'Failed to fetch reviews' });
+  }
+});
+
+// Contact messages endpoints
+app.get('/api/contact', async (req, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { created_at: 'desc' },
+    });
+    res.json(messages);
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    res.status(500).json({ error: 'Failed to fetch contact messages' });
+  }
+});
+
+app.post('/api/contact', async (req, res) => {
+  try {
+    const message = await prisma.contactMessage.create({
+      data: req.body,
+    });
+    res.json(message);
+  } catch (error) {
+    console.error('Error creating contact message:', error);
+    res.status(500).json({ error: 'Failed to create contact message' });
+  }
+});
+
+app.put('/api/contact/:id', async (req, res) => {
+  try {
+    const message = await prisma.contactMessage.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
+    res.json(message);
+  } catch (error) {
+    console.error('Error updating contact message:', error);
+    res.status(500).json({ error: 'Failed to update contact message' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
