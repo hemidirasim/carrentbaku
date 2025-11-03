@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { user, logout } = useAdmin();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalCars: 0,
     totalReservations: 0,
@@ -29,17 +31,44 @@ const AdminDashboard = () => {
   }, []);
 
   const loadStats = async () => {
-    // TODO: Implement actual stats loading
-    setStats({
-      totalCars: 25,
-      totalReservations: 150,
-      activeReservations: 12,
-      revenue: 45000,
-    });
+    try {
+      const [carsRes, reservationsRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/cars`),
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/reservations`),
+      ]);
+
+      const cars = await carsRes.json();
+      const reservations = await reservationsRes.json();
+
+      const activeReservations = reservations.filter((r: any) => 
+        r.status === 'confirmed' || r.status === 'pending'
+      );
+
+      const revenue = reservations
+        .filter((r: any) => r.status === 'completed')
+        .reduce((sum: number, r: any) => sum + (r.total_price || 0), 0);
+
+      setStats({
+        totalCars: cars.length || 0,
+        totalReservations: reservations.length || 0,
+        activeReservations: activeReservations.length || 0,
+        revenue: revenue || 0,
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
+      // Fallback to defaults
+      setStats({
+        totalCars: 0,
+        totalReservations: 0,
+        activeReservations: 0,
+        revenue: 0,
+      });
+    }
   };
 
   const handleLogout = async () => {
     await logout();
+    navigate('/admin/login');
   };
 
   return (

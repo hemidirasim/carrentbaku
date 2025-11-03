@@ -1,9 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { User } from '@supabase/supabase-js';
+
+interface AdminUser {
+  id: string;
+  email: string;
+  name: string | null;
+}
 
 interface AdminContextType {
-  user: User | null;
+  user: AdminUser | null;
   loading: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
@@ -13,49 +17,46 @@ interface AdminContextType {
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 export const AdminProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminRole(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminRole(session.user.id);
-      } else {
-        setIsAdmin(false);
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // Check if user is already logged in (token in localStorage)
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      verifyToken(token);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  const checkAdminRole = async (userId: string) => {
+  const verifyToken = async (token: string) => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
-      
-      setIsAdmin(!!data);
+      const response = await fetch(`${API_URL}/auth/verify`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.user);
+          setIsAdmin(true);
+        } else {
+          localStorage.removeItem('admin_token');
+        }
+      } else {
+        localStorage.removeItem('admin_token');
+      }
     } catch (error) {
-      console.error('Error checking admin role:', error);
-      setIsAdmin(false);
+      console.error('Error verifying token:', error);
+      localStorage.removeItem('admin_token');
     } finally {
       setLoading(false);
     }
@@ -63,31 +64,37 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      
-      if (error) {
-        return { success: false, error: error.message };
-      }
-      
-      if (data.user) {
-        await checkAdminRole(data.user.id);
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Save token to localStorage
+        localStorage.setItem('admin_token', data.token);
+        setUser(data.user);
+        setIsAdmin(true);
         return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Login failed' };
       }
-      
-      return { success: false, error: 'Login failed' };
     } catch (error) {
-      return { success: false, error: 'Login failed' };
+      console.error('Login error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
     }
   };
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      localStorage.removeItem('admin_token');
       setUser(null);
       setIsAdmin(false);
+      // Redirect to login page will be handled by the component
     } catch (error) {
       console.error('Logout failed:', error);
     }

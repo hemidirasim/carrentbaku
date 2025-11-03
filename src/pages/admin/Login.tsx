@@ -20,15 +20,19 @@ const AdminLogin = () => {
     setLoading(true);
     setError('');
 
-    const result = await login(email, password);
-    
-    if (result.success) {
-      navigate('/admin/dashboard');
-    } else {
-      setError(result.error || 'Login failed');
+    try {
+      const result = await login(email, password);
+      
+      if (result.success) {
+        navigate('/admin/dashboard');
+      } else {
+        setError(result.error || 'Login failed');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
