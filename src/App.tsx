@@ -64,6 +64,16 @@ const App = () => (
                   <AdminServices />
                 </AdminRoute>
               } />
+              <Route path="/admin/services/new" element={
+                <AdminRoute>
+                  <AdminServiceForm />
+                </AdminRoute>
+              } />
+              <Route path="/admin/services/:id/edit" element={
+                <AdminRoute>
+                  <AdminServiceForm />
+                </AdminRoute>
+              } />
               <Route path="/admin/categories" element={
                 <AdminRoute>
                   <AdminCategories />
