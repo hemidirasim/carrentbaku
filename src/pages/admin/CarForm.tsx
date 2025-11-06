@@ -232,8 +232,16 @@ const CarForm = () => {
                   <Input
                     type="number"
                     step="0.01"
-                    value={formData.price_per_day}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price_per_day: parseFloat(e.target.value) || 0 }))}
+                    value={formData.price_per_day === 0 ? '' : formData.price_per_day}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                      setFormData(prev => ({ ...prev, price_per_day: value }));
+                    }}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        e.target.value = '';
+                      }
+                    }}
                     required
                   />
                 </div>
@@ -242,8 +250,16 @@ const CarForm = () => {
                   <Input
                     type="number"
                     step="0.01"
-                    value={formData.price_per_week}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price_per_week: parseFloat(e.target.value) || 0 }))}
+                    value={formData.price_per_week === 0 ? '' : formData.price_per_week}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                      setFormData(prev => ({ ...prev, price_per_week: value }));
+                    }}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        e.target.value = '';
+                      }
+                    }}
                   />
                 </div>
                 <div>
@@ -251,8 +267,16 @@ const CarForm = () => {
                   <Input
                     type="number"
                     step="0.01"
-                    value={formData.price_per_month}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price_per_month: parseFloat(e.target.value) || 0 }))}
+                    value={formData.price_per_month === 0 ? '' : formData.price_per_month}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                      setFormData(prev => ({ ...prev, price_per_month: value }));
+                    }}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        e.target.value = '';
+                      }
+                    }}
                   />
                 </div>
               </div>
