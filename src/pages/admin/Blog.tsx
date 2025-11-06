@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { api } from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ImageUpload } from '@/components/ui/image-upload';
 import { 
   FileText, 
   Plus, 
@@ -20,7 +15,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface BlogPost {
@@ -52,27 +47,6 @@ const AdminBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
-
-  const [formData, setFormData] = useState({
-    title_az: '',
-    title_ru: '',
-    title_en: '',
-    title_ar: '',
-    slug: '',
-    content_az: '',
-    content_ru: '',
-    content_en: '',
-    content_ar: '',
-    excerpt_az: '',
-    excerpt_ru: '',
-    excerpt_en: '',
-    excerpt_ar: '',
-    image_url: '',
-    author: 'Admin',
-    published: false,
-  });
 
   useEffect(() => {
     loadPosts();
@@ -91,97 +65,21 @@ const AdminBlog = () => {
     }
   };
 
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
-
-  const handleTitleChange = (value: string, lang: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [`title_${lang}`]: value,
-      slug: lang === 'az' ? generateSlug(value) : prev.slug,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const submitData = {
-        ...formData,
-        published_at: formData.published ? new Date().toISOString() : null,
-      };
-
-      if (editingPost) {
-        await api.blog.update(editingPost.id, submitData);
-        toast.success('Yazı yeniləndi');
-      } else {
-        await api.blog.create(submitData);
-        toast.success('Yazı yaradıldı');
-      }
-
-      setIsAddDialogOpen(false);
-      setEditingPost(null);
-      setFormData({
-        title_az: '',
-        title_ru: '',
-        title_en: '',
-        title_ar: '',
-        slug: '',
-        content_az: '',
-        content_ru: '',
-        content_en: '',
-        content_ar: '',
-        excerpt_az: '',
-        excerpt_ru: '',
-        excerpt_en: '',
-        excerpt_ar: '',
-        image_url: '',
-        author: 'Admin',
-        published: false,
-      });
-      loadPosts();
-    } catch (error) {
-      console.error('Error saving post:', error);
-      toast.error('Yazını saxlamaqda xəta baş verdi');
-    }
-  };
-
   const handleEdit = (post: BlogPost) => {
-    setEditingPost(post);
-    setFormData({
-      title_az: post.title_az || '',
-      title_ru: post.title_ru || '',
-      title_en: post.title_en || '',
-      title_ar: post.title_ar || '',
-      slug: post.slug || '',
-      content_az: post.content_az || '',
-      content_ru: post.content_ru || '',
-      content_en: post.content_en || '',
-      content_ar: post.content_ar || '',
-      excerpt_az: post.excerpt_az || '',
-      excerpt_ru: post.excerpt_ru || '',
-      excerpt_en: post.excerpt_en || '',
-      excerpt_ar: post.excerpt_ar || '',
-      image_url: post.image_url || '',
-      author: post.author || 'Admin',
-      published: post.published || false,
-    });
-    setIsAddDialogOpen(true);
+    navigate(`/admin/blog/${post.id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu yazını silmək istədiyinizə əminsiniz?')) return;
+    if (!window.confirm('Bu yazını silmək istədiyinizə əminsiniz?')) return;
 
     try {
       await api.blog.delete(id);
       toast.success('Yazı silindi');
-      loadPosts();
-    } catch (error) {
+      await loadPosts();
+    } catch (error: any) {
       console.error('Error deleting post:', error);
-      toast.error('Yazını silməkdə xəta baş verdi');
+      const errorMessage = error?.message || error?.error || 'Yazını silməkdə xəta baş verdi';
+      toast.error(errorMessage);
     }
   };
 
@@ -205,155 +103,10 @@ const AdminBlog = () => {
                 <p className="text-muted-foreground">Blog yazılarını idarə edin</p>
               </div>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-              setIsAddDialogOpen(open);
-              if (!open) {
-                setEditingPost(null);
-                setFormData({
-                  title_az: '',
-                  title_ru: '',
-                  title_en: '',
-                  title_ar: '',
-                  slug: '',
-                  content_az: '',
-                  content_ru: '',
-                  content_en: '',
-                  content_ar: '',
-                  excerpt_az: '',
-                  excerpt_ru: '',
-                  excerpt_en: '',
-                  excerpt_ar: '',
-                  image_url: '',
-                  author: 'Admin',
-                  published: false,
-                });
-              }
-            }}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Yeni Yazı
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>{editingPost ? 'Yazı Redaktə Et' : 'Yeni Yazı Yarat'}</DialogTitle>
-                  <DialogDescription>
-                    Blog yazısının məlumatlarını doldurun
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Başlıq (AZ)</Label>
-                      <Input
-                        value={formData.title_az}
-                        onChange={(e) => handleTitleChange(e.target.value, 'az')}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label>Slug (URL)</Label>
-                      <Input
-                        value={formData.slug}
-                        onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label>Başlıq (RU)</Label>
-                      <Input
-                        value={formData.title_ru}
-                        onChange={(e) => handleTitleChange(e.target.value, 'ru')}
-                      />
-                    </div>
-                    <div>
-                      <Label>Başlıq (EN)</Label>
-                      <Input
-                        value={formData.title_en}
-                        onChange={(e) => handleTitleChange(e.target.value, 'en')}
-                      />
-                    </div>
-                    <div>
-                      <Label>Başlıq (AR)</Label>
-                      <Input
-                        value={formData.title_ar}
-                        onChange={(e) => handleTitleChange(e.target.value, 'ar')}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Məzmun (AZ) *</Label>
-                    <Textarea
-                      value={formData.content_az}
-                      onChange={(e) => setFormData(prev => ({ ...prev, content_az: e.target.value }))}
-                      rows={6}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label>Məzmun (RU)</Label>
-                      <Textarea
-                        value={formData.content_ru}
-                        onChange={(e) => setFormData(prev => ({ ...prev, content_ru: e.target.value }))}
-                        rows={4}
-                      />
-                    </div>
-                    <div>
-                      <Label>Məzmun (EN)</Label>
-                      <Textarea
-                        value={formData.content_en}
-                        onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
-                        rows={4}
-                      />
-                    </div>
-                    <div>
-                      <Label>Məzmun (AR)</Label>
-                      <Textarea
-                        value={formData.content_ar}
-                        onChange={(e) => setFormData(prev => ({ ...prev, content_ar: e.target.value }))}
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <ImageUpload
-                      value={formData.image_url}
-                      onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-                      folder="blog"
-                      label="Blog Şəkli"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="published"
-                      checked={formData.published}
-                      onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
-                      className="w-4 h-4"
-                    />
-                    <Label htmlFor="published">Dərc et</Label>
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                      Ləğv et
-                    </Button>
-                    <Button type="submit">
-                      {editingPost ? 'Yenilə' : 'Yarat'}
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => navigate('/admin/blog/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Yeni Yazı
+            </Button>
           </div>
         </div>
       </header>
@@ -449,4 +202,3 @@ const AdminBlog = () => {
 };
 
 export default AdminBlog;
-

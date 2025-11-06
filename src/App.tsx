@@ -24,6 +24,7 @@ import AdminCars from "./pages/admin/Cars";
 import AdminCarForm from "./pages/admin/CarForm";
 import AdminReservations from "./pages/admin/Reservations";
 import AdminBlog from "./pages/admin/Blog";
+import AdminBlogForm from "./pages/admin/BlogForm";
 import AdminServices from "./pages/admin/Services";
 import AdminServiceForm from "./pages/admin/ServiceForm";
 import AdminCategories from "./pages/admin/Categories";
@@ -69,6 +70,16 @@ const App = () => (
               <Route path="/admin/blog" element={
                 <AdminRoute>
                   <AdminBlog />
+                </AdminRoute>
+              } />
+              <Route path="/admin/blog/new" element={
+                <AdminRoute>
+                  <AdminBlogForm />
+                </AdminRoute>
+              } />
+              <Route path="/admin/blog/:id/edit" element={
+                <AdminRoute>
+                  <AdminBlogForm />
                 </AdminRoute>
               } />
               <Route path="/admin/services" element={
