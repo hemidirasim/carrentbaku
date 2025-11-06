@@ -108,8 +108,9 @@ const AdminCars = () => {
         features: [] as string[],
         available: true,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving car:', error);
+      alert(error?.message || 'Avtomobil saxlanarkən xəta baş verdi');
     }
   };
 
