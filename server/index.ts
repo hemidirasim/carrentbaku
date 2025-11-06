@@ -359,7 +359,36 @@ app.get('/api/services', async (req, res) => {
     const services = await prisma.service.findMany({
       orderBy: { created_at: 'desc' },
     });
-    res.json(services);
+    
+    // Parse image_url and features from JSON strings
+    const parsedServices = services.map(service => {
+      let imageUrls: string[] = [];
+      if (service.image_url) {
+        try {
+          const parsed = JSON.parse(service.image_url);
+          imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+        } catch {
+          imageUrls = [service.image_url];
+        }
+      }
+
+      let features: { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] } = {};
+      if (service.features) {
+        try {
+          features = JSON.parse(service.features);
+        } catch {
+          features = {};
+        }
+      }
+
+      return {
+        ...service,
+        image_url: imageUrls,
+        features: features,
+      };
+    });
+    
+    res.json(parsedServices);
   } catch (error) {
     console.error('Error fetching services:', error);
     res.status(500).json({ error: 'Failed to fetch services' });
@@ -374,7 +403,32 @@ app.get('/api/services/:id', async (req, res) => {
     if (!service) {
       return res.status(404).json({ error: 'Service not found' });
     }
-    res.json(service);
+
+    // Parse image_url and features from JSON strings
+    let imageUrls: string[] = [];
+    if (service.image_url) {
+      try {
+        const parsed = JSON.parse(service.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+      } catch {
+        imageUrls = [service.image_url];
+      }
+    }
+
+    let features: { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] } = {};
+    if (service.features) {
+      try {
+        features = JSON.parse(service.features);
+      } catch {
+        features = {};
+      }
+    }
+
+    res.json({
+      ...service,
+      image_url: imageUrls,
+      features: features,
+    });
   } catch (error) {
     console.error('Error fetching service:', error);
     res.status(500).json({ error: 'Failed to fetch service' });
@@ -507,10 +561,36 @@ app.delete('/api/blog/:id', async (req, res) => {
 // Service management endpoints
 app.post('/api/services', async (req, res) => {
   try {
+    // image_url and features are already JSON strings from frontend
     const service = await prisma.service.create({
       data: req.body,
     });
-    res.json(service);
+    
+    // Parse for response
+    let imageUrls: string[] = [];
+    if (service.image_url) {
+      try {
+        const parsed = JSON.parse(service.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+      } catch {
+        imageUrls = [service.image_url];
+      }
+    }
+
+    let features: { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] } = {};
+    if (service.features) {
+      try {
+        features = JSON.parse(service.features);
+      } catch {
+        features = {};
+      }
+    }
+
+    res.json({
+      ...service,
+      image_url: imageUrls,
+      features: features,
+    });
   } catch (error) {
     console.error('Error creating service:', error);
     res.status(500).json({ error: 'Failed to create service' });
@@ -519,11 +599,37 @@ app.post('/api/services', async (req, res) => {
 
 app.put('/api/services/:id', async (req, res) => {
   try {
+    // image_url and features are already JSON strings from frontend
     const service = await prisma.service.update({
       where: { id: req.params.id },
       data: req.body,
     });
-    res.json(service);
+    
+    // Parse for response
+    let imageUrls: string[] = [];
+    if (service.image_url) {
+      try {
+        const parsed = JSON.parse(service.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+      } catch {
+        imageUrls = [service.image_url];
+      }
+    }
+
+    let features: { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] } = {};
+    if (service.features) {
+      try {
+        features = JSON.parse(service.features);
+      } catch {
+        features = {};
+      }
+    }
+
+    res.json({
+      ...service,
+      image_url: imageUrls,
+      features: features,
+    });
   } catch (error) {
     console.error('Error updating service:', error);
     res.status(500).json({ error: 'Failed to update service' });

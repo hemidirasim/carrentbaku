@@ -82,9 +82,9 @@ model Service {
   description_ru String?
   description_en String?
   description_ar String?
-  image_url     String?
+  image_url     String?  // JSON array of image URLs
   icon          String?
-  features      String[] @default([])
+  features      String?  // JSON: {"az": ["feature1"], "ru": ["feature1"], "en": ["feature1"], "ar": ["feature1"]}
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 }

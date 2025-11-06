@@ -16,8 +16,8 @@ interface Service {
   description_ru?: string;
   description_en?: string;
   description_ar?: string;
-  image_url?: string;
-  features?: string[];
+  image_url?: string | string[];
+  features?: string | { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] };
 }
 
 const Services = () => {
@@ -103,11 +103,29 @@ const Services = () => {
                   onClick={() => navigate(`/services/${service.id}`)}
                 >
                   <div className="relative h-52 overflow-hidden">
-                    <img 
-                      src={service.image_url || 'https://images.unsplash.com/photo-1493238792000-8113da705763?q=80&w=1600'} 
-                      alt={getServiceTitle(service)} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
-                    />
+                    {(() => {
+                      let imageUrls: string[] = [];
+                      if (service.image_url) {
+                        if (Array.isArray(service.image_url)) {
+                          imageUrls = service.image_url;
+                        } else if (typeof service.image_url === 'string') {
+                          try {
+                            const parsed = JSON.parse(service.image_url);
+                            imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+                          } catch {
+                            imageUrls = [service.image_url];
+                          }
+                        }
+                      }
+                      const firstImage = imageUrls.length > 0 ? imageUrls[0] : 'https://images.unsplash.com/photo-1493238792000-8113da705763?q=80&w=1600';
+                      return (
+                        <img 
+                          src={firstImage} 
+                          alt={getServiceTitle(service)} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                        />
+                      );
+                    })()}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
                   <CardHeader>
@@ -115,21 +133,36 @@ const Services = () => {
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="text-base mb-4">{getServiceDescription(service)}</CardDescription>
-                    {service.features && service.features.length > 0 && (
-                      <div className="mb-4 space-y-2">
-                        {service.features.slice(0, 3).map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Check className="w-4 h-4 text-primary" />
-                            <span>{feature}</span>
-                          </div>
-                        ))}
-                        {service.features.length > 3 && (
-                          <div className="text-sm text-muted-foreground">
-                            +{service.features.length - 3} daha...
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {(() => {
+                      let features: string[] = [];
+                      if (service.features) {
+                        if (typeof service.features === 'string') {
+                          try {
+                            const parsed = JSON.parse(service.features);
+                            features = parsed[language] || parsed.az || [];
+                          } catch {
+                            features = [];
+                          }
+                        } else if (typeof service.features === 'object') {
+                          features = service.features[language as keyof typeof service.features] || service.features.az || [];
+                        }
+                      }
+                      return features.length > 0 ? (
+                        <div className="mb-4 space-y-2">
+                          {features.slice(0, 3).map((feature, index) => (
+                            <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Check className="w-4 h-4 text-primary" />
+                              <span>{feature}</span>
+                            </div>
+                          ))}
+                          {features.length > 3 && (
+                            <div className="text-sm text-muted-foreground">
+                              +{features.length - 3} daha...
+                            </div>
+                          )}
+                        </div>
+                      ) : null;
+                    })()}
                     <Button 
                       className="w-full bg-gradient-primary group/btn"
                       onClick={(e) => {

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageGalleryUpload } from '@/components/ui/image-gallery-upload';
 import { 
   Briefcase, 
   Plus, 
@@ -30,8 +30,8 @@ interface Service {
   description_ru?: string;
   description_en?: string;
   description_ar?: string;
-  image_url?: string;
-  features?: string[];
+  image_url?: string | string[];
+  features?: string | { az?: string[]; ru?: string[]; en?: string[]; ar?: string[] };
   created_at: string;
   updated_at: string;
 }
@@ -54,11 +54,21 @@ const AdminServices = () => {
     description_ru: '',
     description_en: '',
     description_ar: '',
-    image_url: '',
-    features: [] as string[],
+    image_url: [] as string[],
+    features: {
+      az: [] as string[],
+      ru: [] as string[],
+      en: [] as string[],
+      ar: [] as string[],
+    },
   });
 
-  const [featureInput, setFeatureInput] = useState('');
+  const [featureInputs, setFeatureInputs] = useState({
+    az: '',
+    ru: '',
+    en: '',
+    ar: '',
+  });
 
   useEffect(() => {
     loadServices();
@@ -80,11 +90,25 @@ const AdminServices = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Convert features object to JSON string
+      const featuresJson = JSON.stringify(formData.features);
+      
+      // Convert image_url array to JSON string
+      const imageUrlJson = formData.image_url.length > 0 
+        ? JSON.stringify(formData.image_url) 
+        : null;
+
+      const submitData = {
+        ...formData,
+        image_url: imageUrlJson,
+        features: featuresJson,
+      };
+
       if (editingService) {
-        await api.services.update(editingService.id, formData);
+        await api.services.update(editingService.id, submitData);
         toast.success('Xidmət yeniləndi');
       } else {
-        await api.services.create(formData);
+        await api.services.create(submitData);
         toast.success('Xidmət yaradıldı');
       }
 
@@ -99,10 +123,20 @@ const AdminServices = () => {
         description_ru: '',
         description_en: '',
         description_ar: '',
-        image_url: '',
-        features: [],
+        image_url: [],
+        features: {
+          az: [],
+          ru: [],
+          en: [],
+          ar: [],
+        },
       });
-      setFeatureInput('');
+      setFeatureInputs({
+        az: '',
+        ru: '',
+        en: '',
+        ar: '',
+      });
       loadServices();
     } catch (error) {
       console.error('Error saving service:', error);
@@ -112,6 +146,52 @@ const AdminServices = () => {
 
   const handleEdit = (service: Service) => {
     setEditingService(service);
+    
+    // Parse image_url from JSON string or array
+    let imageUrls: string[] = [];
+    if (service.image_url) {
+      if (Array.isArray(service.image_url)) {
+        imageUrls = service.image_url;
+      } else if (typeof service.image_url === 'string') {
+        try {
+          const parsed = JSON.parse(service.image_url);
+          imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+        } catch {
+          imageUrls = [service.image_url];
+        }
+      }
+    }
+
+    // Parse features from JSON string or object
+    let features: { az: string[]; ru: string[]; en: string[]; ar: string[] } = {
+      az: [],
+      ru: [],
+      en: [],
+      ar: [],
+    };
+    if (service.features) {
+      if (typeof service.features === 'string') {
+        try {
+          const parsed = JSON.parse(service.features);
+          features = {
+            az: parsed.az || [],
+            ru: parsed.ru || [],
+            en: parsed.en || [],
+            ar: parsed.ar || [],
+          };
+        } catch {
+          // If parsing fails, treat as empty
+        }
+      } else if (typeof service.features === 'object') {
+        features = {
+          az: service.features.az || [],
+          ru: service.features.ru || [],
+          en: service.features.en || [],
+          ar: service.features.ar || [],
+        };
+      }
+    }
+
     setFormData({
       title_az: service.title_az || '',
       title_ru: service.title_ru || '',
@@ -121,27 +201,42 @@ const AdminServices = () => {
       description_ru: service.description_ru || '',
       description_en: service.description_en || '',
       description_ar: service.description_ar || '',
-      image_url: service.image_url || '',
-      features: service.features || [],
+      image_url: imageUrls,
+      features: features,
     });
-    setFeatureInput('');
+    setFeatureInputs({
+      az: '',
+      ru: '',
+      en: '',
+      ar: '',
+    });
     setIsAddDialogOpen(true);
   };
 
-  const addFeature = () => {
-    if (featureInput.trim()) {
+  const addFeature = (lang: 'az' | 'ru' | 'en' | 'ar') => {
+    const input = featureInputs[lang];
+    if (input.trim()) {
       setFormData(prev => ({
         ...prev,
-        features: [...prev.features, featureInput.trim()],
+        features: {
+          ...prev.features,
+          [lang]: [...prev.features[lang], input.trim()],
+        },
       }));
-      setFeatureInput('');
+      setFeatureInputs(prev => ({
+        ...prev,
+        [lang]: '',
+      }));
     }
   };
 
-  const removeFeature = (index: number) => {
+  const removeFeature = (lang: 'az' | 'ru' | 'en' | 'ar', index: number) => {
     setFormData(prev => ({
       ...prev,
-      features: prev.features.filter((_, i) => i !== index),
+      features: {
+        ...prev.features,
+        [lang]: prev.features[lang].filter((_, i) => i !== index),
+      },
     }));
   };
 
@@ -190,10 +285,20 @@ const AdminServices = () => {
                   description_ru: '',
                   description_en: '',
                   description_ar: '',
-                  image_url: '',
-                  features: [],
+                  image_url: [],
+                  features: {
+                    az: [],
+                    ru: [],
+                    en: [],
+                    ar: [],
+                  },
                 });
-                setFeatureInput('');
+                setFeatureInputs({
+                  az: '',
+                  ru: '',
+                  en: '',
+                  ar: '',
+                });
               }
             }}>
               <DialogTrigger asChild>
@@ -222,11 +327,12 @@ const AdminServices = () => {
                   </div>
 
                   <div>
-                    <ImageUpload
+                    <ImageGalleryUpload
                       value={formData.image_url}
-                      onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                      onChange={(urls) => setFormData(prev => ({ ...prev, image_url: urls }))}
                       folder="services"
-                      label="Xidmət Şəkli *"
+                      label="Xidmət Şəkilləri (maksimum 3)"
+                      maxImages={3}
                     />
                   </div>
 
@@ -291,44 +397,169 @@ const AdminServices = () => {
                     </div>
                   </div>
 
-                  {/* Features Section */}
-                  <div>
+                  {/* Features Section - Multilanguage */}
+                  <div className="space-y-4">
                     <Label>Xüsusiyyətlər</Label>
-                    <div className="flex gap-2 mb-2">
-                      <Input
-                        value={featureInput}
-                        onChange={(e) => setFeatureInput(e.target.value)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addFeature();
-                          }
-                        }}
-                        placeholder="Xüsusiyyət əlavə et və Enter bas"
-                      />
-                      <Button type="button" onClick={addFeature}>
-                        Əlavə et
-                      </Button>
-                    </div>
-                    {formData.features.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {formData.features.map((feature, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
-                          >
-                            <span className="text-sm">{feature}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeFeature(index)}
-                              className="text-destructive hover:text-destructive/80"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                    
+                    {/* Azərbaycan */}
+                    <div className="border rounded-lg p-4">
+                      <Label className="text-base font-semibold mb-2 block">Azərbaycan</Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input
+                          value={featureInputs.az}
+                          onChange={(e) => setFeatureInputs(prev => ({ ...prev, az: e.target.value }))}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addFeature('az');
+                            }
+                          }}
+                          placeholder="Xüsusiyyət əlavə et və Enter bas"
+                        />
+                        <Button type="button" onClick={() => addFeature('az')}>
+                          Əlavə et
+                        </Button>
                       </div>
-                    )}
+                      {formData.features.az.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.features.az.map((feature, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
+                            >
+                              <span className="text-sm">{feature}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeFeature('az', index)}
+                                className="text-destructive hover:text-destructive/80"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Rus */}
+                    <div className="border rounded-lg p-4">
+                      <Label className="text-base font-semibold mb-2 block">Русский</Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input
+                          value={featureInputs.ru}
+                          onChange={(e) => setFeatureInputs(prev => ({ ...prev, ru: e.target.value }))}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addFeature('ru');
+                            }
+                          }}
+                          placeholder="Добавить особенность и нажать Enter"
+                        />
+                        <Button type="button" onClick={() => addFeature('ru')}>
+                          Добавить
+                        </Button>
+                      </div>
+                      {formData.features.ru.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.features.ru.map((feature, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
+                            >
+                              <span className="text-sm">{feature}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeFeature('ru', index)}
+                                className="text-destructive hover:text-destructive/80"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* İngilis */}
+                    <div className="border rounded-lg p-4">
+                      <Label className="text-base font-semibold mb-2 block">English</Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input
+                          value={featureInputs.en}
+                          onChange={(e) => setFeatureInputs(prev => ({ ...prev, en: e.target.value }))}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addFeature('en');
+                            }
+                          }}
+                          placeholder="Add feature and press Enter"
+                        />
+                        <Button type="button" onClick={() => addFeature('en')}>
+                          Add
+                        </Button>
+                      </div>
+                      {formData.features.en.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.features.en.map((feature, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
+                            >
+                              <span className="text-sm">{feature}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeFeature('en', index)}
+                                className="text-destructive hover:text-destructive/80"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Ərəb */}
+                    <div className="border rounded-lg p-4">
+                      <Label className="text-base font-semibold mb-2 block">العربية</Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input
+                          value={featureInputs.ar}
+                          onChange={(e) => setFeatureInputs(prev => ({ ...prev, ar: e.target.value }))}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addFeature('ar');
+                            }
+                          }}
+                          placeholder="أضف ميزة واضغط Enter"
+                        />
+                        <Button type="button" onClick={() => addFeature('ar')}>
+                          إضافة
+                        </Button>
+                      </div>
+                      {formData.features.ar.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.features.ar.map((feature, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full"
+                            >
+                              <span className="text-sm">{feature}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeFeature('ar', index)}
+                                className="text-destructive hover:text-destructive/80"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex justify-end space-x-2">
@@ -382,17 +613,32 @@ const AdminServices = () => {
                 {filteredServices.map((service) => (
                   <TableRow key={service.id}>
                     <TableCell>
-                      {service.image_url ? (
-                        <img 
-                          src={service.image_url} 
-                          alt={service.title_az}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">Şəkil yoxdur</span>
-                        </div>
-                      )}
+                      {(() => {
+                        let imageUrls: string[] = [];
+                        if (service.image_url) {
+                          if (Array.isArray(service.image_url)) {
+                            imageUrls = service.image_url;
+                          } else if (typeof service.image_url === 'string') {
+                            try {
+                              const parsed = JSON.parse(service.image_url);
+                              imageUrls = Array.isArray(parsed) ? parsed : [service.image_url];
+                            } catch {
+                              imageUrls = [service.image_url];
+                            }
+                          }
+                        }
+                        return imageUrls.length > 0 ? (
+                          <img 
+                            src={imageUrls[0]} 
+                            alt={service.title_az}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
+                            <span className="text-xs text-muted-foreground">Şəkil yoxdur</span>
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="font-medium">{service.title_az}</TableCell>
                     <TableCell>
