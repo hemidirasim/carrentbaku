@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { api } from '@/lib/api';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 
 interface Service {
   id: string;
@@ -27,12 +27,90 @@ const ServiceDetail = () => {
   const { t, language } = useLanguage();
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const fancyboxLoaded = useRef(false);
 
   useEffect(() => {
     if (id) {
       loadService(id);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (service && !fancyboxLoaded.current) {
+      loadFancybox();
+    }
+  }, [service]);
+
+  const loadFancybox = () => {
+    if (fancyboxLoaded.current) return;
+    
+    if (!(window as any).Fancybox) {
+      // Load Fancybox CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css';
+      document.head.appendChild(link);
+
+      // Load Fancybox JS
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js';
+      script.onload = () => {
+        fancyboxLoaded.current = true;
+        const Fancybox = (window as any).Fancybox;
+        Fancybox.bind("[data-fancybox='service-gallery']", {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: [],
+              right: ["slideshow", "download", "thumbs", "close"],
+            },
+          },
+          Thumbs: {
+            autoStart: false,
+          },
+          Image: {
+            zoom: true,
+          },
+          Swipe: {
+            threshold: 50,
+          },
+          on: {
+            reveal: (fancybox: any, slide: any) => {
+              setSelectedImage(slide.index);
+            },
+          },
+        });
+      };
+      document.head.appendChild(script);
+    } else {
+      fancyboxLoaded.current = true;
+      const Fancybox = (window as any).Fancybox;
+      Fancybox.bind("[data-fancybox='service-gallery']", {
+        Toolbar: {
+          display: {
+            left: ["infobar"],
+            middle: [],
+            right: ["slideshow", "download", "thumbs", "close"],
+          },
+        },
+        Thumbs: {
+          autoStart: false,
+        },
+        Image: {
+          zoom: true,
+        },
+        Swipe: {
+          threshold: 50,
+        },
+        on: {
+          reveal: (fancybox: any, slide: any) => {
+            setSelectedImage(slide.index);
+          },
+        },
+      });
+    }
+  };
 
   const loadService = async (serviceId: string) => {
     try {
@@ -148,29 +226,71 @@ const ServiceDetail = () => {
 
           {/* Featured Images */}
           {images.length > 0 ? (
-            <div className="mb-8 rounded-lg overflow-hidden">
+            <div className="mb-8">
               {images.length === 1 ? (
-                <img
-                  src={images[0]}
-                  alt={getServiceTitle(service)}
-                  className="w-full h-full object-cover"
-                  style={{ aspectRatio: '16 / 9', minHeight: '400px' }}
-                />
+                <a
+                  href={images[0]}
+                  data-fancybox="service-gallery"
+                  data-caption={getServiceTitle(service)}
+                >
+                  <img
+                    src={images[0]}
+                    alt={getServiceTitle(service)}
+                    className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    style={{ aspectRatio: '16 / 9', minHeight: '400px' }}
+                  />
+                </a>
               ) : (
-                <Carousel className="w-full">
-                  <CarouselContent>
-                    {images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <img
-                          src={image}
-                          alt={`${getServiceTitle(service)} - ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg"
-                          style={{ aspectRatio: '16 / 9', minHeight: '400px' }}
-                        />
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
+                <div className="space-y-4">
+                  {/* Main Image Slider */}
+                  <Carousel className="w-full">
+                    <CarouselContent>
+                      {images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <a
+                            href={image}
+                            data-fancybox="service-gallery"
+                            data-caption={`${getServiceTitle(service)} - ${index + 1}`}
+                            data-thumb={image}
+                          >
+                            <img
+                              src={image}
+                              alt={`${getServiceTitle(service)} - ${index + 1}`}
+                              className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                              style={{ aspectRatio: '16 / 9', minHeight: '400px' }}
+                            />
+                          </a>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+                  
+                  {/* Thumbnail Gallery */}
+                  {images.length > 1 && (
+                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                      {images.map((image, index) => (
+                        <a
+                          key={index}
+                          href={image}
+                          data-fancybox="service-gallery"
+                          data-caption={`${getServiceTitle(service)} - ${index + 1}`}
+                          data-thumb={image}
+                          className={`rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedImage === index ? 'border-primary' : 'border-transparent hover:border-primary/50'
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-20 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           ) : (
