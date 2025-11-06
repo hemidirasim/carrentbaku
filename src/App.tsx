@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCars from "./pages/admin/Cars";
+import AdminCarForm from "./pages/admin/CarForm";
 import AdminReservations from "./pages/admin/Reservations";
 import AdminBlog from "./pages/admin/Blog";
 import AdminServices from "./pages/admin/Services";
@@ -48,6 +49,16 @@ const App = () => (
               <Route path="/admin/cars" element={
                 <AdminRoute>
                   <AdminCars />
+                </AdminRoute>
+              } />
+              <Route path="/admin/cars/new" element={
+                <AdminRoute>
+                  <AdminCarForm />
+                </AdminRoute>
+              } />
+              <Route path="/admin/cars/:id/edit" element={
+                <AdminRoute>
+                  <AdminCarForm />
                 </AdminRoute>
               } />
               <Route path="/admin/reservations" element={

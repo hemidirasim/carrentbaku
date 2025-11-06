@@ -5,12 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ImageGalleryUpload } from '@/components/ui/image-gallery-upload';
 import { 
   Car, 
   Plus, 
@@ -19,7 +14,8 @@ import {
   Search,
   ArrowLeft
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface CarData {
   id: string;
@@ -42,28 +38,10 @@ interface CarData {
 
 const AdminCars = () => {
   const { user } = useAdmin();
+  const navigate = useNavigate();
   const [cars, setCars] = useState<CarData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingCar, setEditingCar] = useState<CarData | null>(null);
-
-  // Form state
-  const [formData, setFormData] = useState({
-    brand: '',
-    model: '',
-    year: new Date().getFullYear(),
-    category: 'ekonomik',
-    price_per_day: 0,
-    price_per_week: 0,
-    price_per_month: 0,
-    fuel_type: 'petrol',
-    transmission: 'automatic',
-    seats: 5,
-    image_url: [],
-    features: [] as string[],
-    available: true,
-  });
 
   useEffect(() => {
     loadCars();
@@ -76,72 +54,27 @@ const AdminCars = () => {
       setCars(data || []);
     } catch (error) {
       console.error('Error loading cars:', error);
+      toast.error('Avtomobilləri yükləməkdə xəta baş verdi');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingCar) {
-        await api.cars.update(editingCar.id, formData);
-      } else {
-        await api.cars.create(formData);
-      }
-      
-      await loadCars();
-      setIsAddDialogOpen(false);
-      setEditingCar(null);
-      setFormData({
-        brand: '',
-        model: '',
-        year: new Date().getFullYear(),
-        category: 'ekonomik',
-        price_per_day: 0,
-        price_per_week: 0,
-        price_per_month: 0,
-        fuel_type: 'petrol',
-        transmission: 'automatic',
-        seats: 5,
-        image_url: [],
-        features: [] as string[],
-        available: true,
-      });
-    } catch (error: any) {
-      console.error('Error saving car:', error);
-      alert(error?.message || 'Avtomobil saxlanarkən xəta baş verdi');
-    }
-  };
-
   const handleEdit = (car: CarData) => {
-    setEditingCar(car);
-    setFormData({
-      brand: car.brand,
-      model: car.model,
-      year: car.year,
-      category: car.category,
-      price_per_day: car.price_per_day,
-      price_per_week: car.price_per_week || car.price_per_day * 7,
-      price_per_month: car.price_per_month || car.price_per_day * 30,
-      fuel_type: car.fuel_type,
-      transmission: car.transmission,
-      seats: car.seats,
-      image_url: Array.isArray(car.image_url) ? car.image_url : (car.image_url ? [car.image_url] : []),
-      features: car.features || [],
-      available: car.available,
-    });
-    setIsAddDialogOpen(true);
+    navigate(`/admin/cars/${car.id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this car?')) return;
+    if (!window.confirm('Bu avtomobili silmək istədiyinizə əminsiniz?')) return;
     
     try {
       await api.cars.delete(id);
+      toast.success('Avtomobil silindi');
       await loadCars();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting car:', error);
+      const errorMessage = error?.message || error?.error || 'Avtomobili silməkdə xəta baş verdi';
+      toast.error(errorMessage);
     }
   };
 
@@ -168,215 +101,10 @@ const AdminCars = () => {
                 <p className="text-muted-foreground">Manage your vehicle fleet</p>
               </div>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Yeni Avtomobil
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingCar ? 'Avtomobil Redaktə Et' : 'Yeni Avtomobil Əlavə Et'}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {editingCar ? 'Avtomobil məlumatlarını yeniləyin' : 'Yeni avtomobil əlavə edin'}
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="brand">Marka *</Label>
-                      <Input
-                        id="brand"
-                        value={formData.brand}
-                        onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                        required
-                        placeholder="Məs: Toyota"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="model">Model *</Label>
-                      <Input
-                        id="model"
-                        value={formData.model}
-                        onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                        required
-                        placeholder="Məs: Camry"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="year">İl *</Label>
-                      <Input
-                        id="year"
-                        type="number"
-                        value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
-                        required
-                        min="1900"
-                        max={new Date().getFullYear() + 1}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="seats">Oturacaq sayı *</Label>
-                      <Input
-                        id="seats"
-                        type="number"
-                        value={formData.seats}
-                        onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) || 5 })}
-                        required
-                        min="2"
-                        max="50"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="price_day">Günlük qiymət (AZN)</Label>
-                      <Input
-                        id="price_day"
-                        type="number"
-                        step="0.01"
-                        value={formData.price_per_day}
-                        onChange={(e) => setFormData({ ...formData, price_per_day: parseFloat(e.target.value) || 0 })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="price_week">Həftəlik qiymət (AZN)</Label>
-                      <Input
-                        id="price_week"
-                        type="number"
-                        step="0.01"
-                        value={formData.price_per_week}
-                        onChange={(e) => setFormData({ ...formData, price_per_week: parseFloat(e.target.value) || 0 })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="price_month">Aylıq qiymət (AZN)</Label>
-                      <Input
-                        id="price_month"
-                        type="number"
-                        step="0.01"
-                        value={formData.price_per_month}
-                        onChange={(e) => setFormData({ ...formData, price_per_month: parseFloat(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fuel_type">Yanacaq növü *</Label>
-                      <Select
-                        value={formData.fuel_type}
-                        onValueChange={(value) => setFormData({ ...formData, fuel_type: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="petrol">Benzin</SelectItem>
-                        <SelectItem value="diesel">Dizel</SelectItem>
-                        <SelectItem value="electric">Elektrik</SelectItem>
-                        <SelectItem value="hybrid">Hibrid</SelectItem>
-                      </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="transmission">Sürət qutusu *</Label>
-                      <Select
-                        value={formData.transmission}
-                        onValueChange={(value) => setFormData({ ...formData, transmission: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="automatic">Avtomatik</SelectItem>
-                          <SelectItem value="manual">Mexaniki</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Kateqoriya *</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Kateqoriya seçin" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ekonomik">Ekonomik</SelectItem>
-                        <SelectItem value="biznes">Biznes</SelectItem>
-                        <SelectItem value="premium">Premium</SelectItem>
-                        <SelectItem value="suv">SUV</SelectItem>
-                        <SelectItem value="minivan">Minivan</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <ImageGalleryUpload
-                      value={formData.image_url}
-                      onChange={(urls) => setFormData({ ...formData, image_url: urls })}
-                      folder="cars"
-                      label="Avtomobil Şəkilləri"
-                      maxImages={10}
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="available"
-                      checked={formData.available}
-                      onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
-                      className="rounded"
-                    />
-                    <Label htmlFor="available">Kirayə üçün mövcuddur</Label>
-                  </div>
-
-                  <div className="flex justify-end space-x-2 pt-4 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setIsAddDialogOpen(false);
-                        setEditingCar(null);
-                        setFormData({
-                          brand: '',
-                          model: '',
-                          year: new Date().getFullYear(),
-                          category: 'ekonomik',
-                          price_per_day: 0,
-                          price_per_week: 0,
-                          price_per_month: 0,
-                          fuel_type: 'petrol',
-                          transmission: 'automatic',
-                          seats: 5,
-                          image_url: [],
-                          features: [] as string[],
-                          available: true,
-                        });
-                      }}
-                    >
-                      Ləğv et
-                    </Button>
-                    <Button type="submit">
-                      {editingCar ? 'Yenilə' : 'Əlavə et'}
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => navigate('/admin/cars/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Yeni Avtomobil
+            </Button>
           </div>
         </div>
       </header>
