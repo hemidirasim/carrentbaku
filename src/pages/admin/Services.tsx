@@ -261,15 +261,16 @@ const AdminServices = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu xidməti silmək istədiyinizə əminsiniz?')) return;
+    if (!window.confirm('Bu xidməti silmək istədiyinizə əminsiniz?')) return;
 
     try {
       await api.services.delete(id);
       toast.success('Xidmət silindi');
-      loadServices();
-    } catch (error) {
+      await loadServices();
+    } catch (error: any) {
       console.error('Error deleting service:', error);
-      toast.error('Xidməti silməkdə xəta baş verdi');
+      const errorMessage = error?.message || error?.error || 'Xidməti silməkdə xəta baş verdi';
+      toast.error(errorMessage);
     }
   };
 
