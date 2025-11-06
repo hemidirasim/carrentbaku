@@ -40,6 +40,13 @@ const ServiceDetail = () => {
     if (service && !fancyboxLoaded.current) {
       loadFancybox();
     }
+
+    return () => {
+      const Fancybox = (window as any).Fancybox;
+      if (Fancybox && typeof Fancybox.destroy === 'function') {
+        Fancybox.destroy();
+      }
+    };
   }, [service]);
 
   const loadFancybox = () => {
