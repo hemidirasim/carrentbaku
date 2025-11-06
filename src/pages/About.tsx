@@ -105,14 +105,37 @@ const About = () => {
     }
   };
 
-  const getContent = () => {
-    if (!aboutData) return t('about.description');
-    switch (language) {
-      case 'ru': return aboutData.content_ru || aboutData.content_az;
-      case 'en': return aboutData.content_en || aboutData.content_az;
-      case 'ar': return aboutData.content_ar || aboutData.content_az;
-      default: return aboutData.content_az;
+  const formatContent = (content: string) => {
+    if (!content) return '';
+    
+    // If content already contains HTML tags, return as is
+    if (content.includes('<') && content.includes('>')) {
+      return content;
     }
+    
+    // Otherwise, convert newlines to paragraphs
+    return content
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => `<p>${line.trim()}</p>`)
+      .join('');
+  };
+
+  const getContent = () => {
+    if (!aboutData) {
+      const defaultContent = t('about.description');
+      return formatContent(defaultContent);
+    }
+    
+    let content = '';
+    switch (language) {
+      case 'ru': content = aboutData.content_ru || aboutData.content_az; break;
+      case 'en': content = aboutData.content_en || aboutData.content_az; break;
+      case 'ar': content = aboutData.content_ar || aboutData.content_az; break;
+      default: content = aboutData.content_az;
+    }
+    
+    return formatContent(content);
   };
 
   const getIconComponent = (iconName: string) => {
@@ -177,16 +200,18 @@ const About = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
       <section className="bg-gradient-primary py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
             {getTitle()}
           </h1>
-          <p className="text-white/90 text-center text-lg md:text-xl max-w-4xl mx-auto">
-            {getTagline()}
-          </p>
+          {getTagline() && (
+            <p className="text-white/90 text-center text-lg md:text-xl max-w-4xl mx-auto">
+              {getTagline()}
+            </p>
+          )}
         </div>
       </section>
 
@@ -198,7 +223,7 @@ const About = () => {
               <h2 className="text-3xl font-bold mb-6">Bizim Hekayəmiz</h2>
               <div className="space-y-4 text-muted-foreground">
                 <div 
-                  className="prose prose-lg max-w-none"
+                  className="prose prose-lg max-w-none prose-p:text-muted-foreground prose-p:leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: getContent() }}
                 />
               </div>
@@ -211,7 +236,7 @@ const About = () => {
                     <img 
                       src={imageUrl}
                       alt={`About ${index + 1}`}
-                      className="rounded-lg shadow-card w-full h-full object-cover"
+                      className="rounded-lg shadow-card w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       style={{ aspectRatio: '1 / 1', minHeight: '200px' }}
                     />
                   </div>
