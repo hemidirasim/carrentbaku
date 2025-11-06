@@ -174,56 +174,62 @@ const AdminCars = () => {
                   Add Car
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
-                    {editingCar ? 'Edit Car' : 'Add New Car'}
+                    {editingCar ? 'Avtomobil Redaktə Et' : 'Yeni Avtomobil Əlavə Et'}
                   </DialogTitle>
                   <DialogDescription>
-                    {editingCar ? 'Update car information' : 'Add a new vehicle to your fleet'}
+                    {editingCar ? 'Avtomobil məlumatlarını yeniləyin' : 'Yeni avtomobil əlavə edin'}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="brand">Brand</Label>
+                      <Label htmlFor="brand">Marka *</Label>
                       <Input
                         id="brand"
                         value={formData.brand}
                         onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                         required
+                        placeholder="Məs: Toyota"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="model">Model</Label>
+                      <Label htmlFor="model">Model *</Label>
                       <Input
                         id="model"
                         value={formData.model}
                         onChange={(e) => setFormData({ ...formData, model: e.target.value })}
                         required
+                        placeholder="Məs: Camry"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="year">Year</Label>
+                      <Label htmlFor="year">İl *</Label>
                       <Input
                         id="year"
                         type="number"
                         value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
                         required
+                        min="1900"
+                        max={new Date().getFullYear() + 1}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="seats">Seats</Label>
+                      <Label htmlFor="seats">Oturacaq sayı *</Label>
                       <Input
                         id="seats"
                         type="number"
                         value={formData.seats}
-                        onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) || 5 })}
                         required
+                        min="2"
+                        max="50"
                       />
                     </div>
                   </div>
@@ -264,7 +270,7 @@ const AdminCars = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="fuel_type">Fuel Type</Label>
+                      <Label htmlFor="fuel_type">Yanacaq növü *</Label>
                       <Select
                         value={formData.fuel_type}
                         onValueChange={(value) => setFormData({ ...formData, fuel_type: value })}
@@ -273,15 +279,15 @@ const AdminCars = () => {
                           <SelectValue />
                         </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="petrol">Petrol</SelectItem>
-                        <SelectItem value="diesel">Diesel</SelectItem>
-                        <SelectItem value="electric">Electric</SelectItem>
-                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                        <SelectItem value="petrol">Benzin</SelectItem>
+                        <SelectItem value="diesel">Dizel</SelectItem>
+                        <SelectItem value="electric">Elektrik</SelectItem>
+                        <SelectItem value="hybrid">Hibrid</SelectItem>
                       </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="transmission">Transmission</Label>
+                      <Label htmlFor="transmission">Sürət qutusu *</Label>
                       <Select
                         value={formData.transmission}
                         onValueChange={(value) => setFormData({ ...formData, transmission: value })}
@@ -290,21 +296,21 @@ const AdminCars = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="automatic">Automatic</SelectItem>
-                          <SelectItem value="manual">Manual</SelectItem>
+                          <SelectItem value="automatic">Avtomatik</SelectItem>
+                          <SelectItem value="manual">Mexaniki</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">Kateqoriya *</Label>
                     <Select
                       value={formData.category}
                       onValueChange={(value) => setFormData({ ...formData, category: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder="Kateqoriya seçin" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ekonomik">Ekonomik</SelectItem>
@@ -334,22 +340,37 @@ const AdminCars = () => {
                       onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
                       className="rounded"
                     />
-                    <Label htmlFor="available">Available for rent</Label>
+                    <Label htmlFor="available">Kirayə üçün mövcuddur</Label>
                   </div>
 
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-end space-x-2 pt-4 border-t">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => {
                         setIsAddDialogOpen(false);
                         setEditingCar(null);
+                        setFormData({
+                          brand: '',
+                          model: '',
+                          year: new Date().getFullYear(),
+                          category: 'ekonomik',
+                          price_per_day: 0,
+                          price_per_week: 0,
+                          price_per_month: 0,
+                          fuel_type: 'petrol',
+                          transmission: 'automatic',
+                          seats: 5,
+                          image_url: [],
+                          features: [] as string[],
+                          available: true,
+                        });
                       }}
                     >
-                      Cancel
+                      Ləğv et
                     </Button>
                     <Button type="submit">
-                      {editingCar ? 'Update Car' : 'Add Car'}
+                      {editingCar ? 'Yenilə' : 'Əlavə et'}
                     </Button>
                   </div>
                 </form>
