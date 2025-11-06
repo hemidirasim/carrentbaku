@@ -24,6 +24,7 @@ import AdminCars from "./pages/admin/Cars";
 import AdminReservations from "./pages/admin/Reservations";
 import AdminBlog from "./pages/admin/Blog";
 import AdminServices from "./pages/admin/Services";
+import AdminServiceForm from "./pages/admin/ServiceForm";
 import AdminCategories from "./pages/admin/Categories";
 
 const queryClient = new QueryClient();
