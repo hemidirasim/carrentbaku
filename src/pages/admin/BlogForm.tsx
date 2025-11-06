@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageGalleryUpload } from '@/components/ui/image-gallery-upload';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +27,7 @@ interface BlogPost {
   excerpt_en?: string;
   excerpt_ar?: string;
   image_url?: string;
+  image_urls?: string[];
   author?: string;
   published: boolean;
   published_at?: string;
@@ -54,7 +55,7 @@ const BlogForm = () => {
     excerpt_ru: '',
     excerpt_en: '',
     excerpt_ar: '',
-    image_url: '',
+    image_urls: [] as string[],
     author: 'Admin',
     published: false,
   });
@@ -72,6 +73,20 @@ const BlogForm = () => {
       setLoading(true);
       const post = await api.blog.getById(postId);
       
+      // Parse image_urls from response
+      let imageUrls: string[] = [];
+      if (post.image_urls && Array.isArray(post.image_urls)) {
+        imageUrls = post.image_urls;
+      } else if (post.image_url) {
+        // Try to parse as JSON array
+        try {
+          const parsed = JSON.parse(post.image_url);
+          imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+        } catch {
+          imageUrls = [post.image_url];
+        }
+      }
+      
       setFormData({
         title_az: post.title_az || '',
         title_ru: post.title_ru || '',
@@ -86,13 +101,14 @@ const BlogForm = () => {
         excerpt_ru: post.excerpt_ru || '',
         excerpt_en: post.excerpt_en || '',
         excerpt_ar: post.excerpt_ar || '',
-        image_url: post.image_url || '',
+        image_urls: imageUrls,
         author: post.author || 'Admin',
         published: post.published || false,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading post:', error);
-      toast.error('Yazını yükləməkdə xəta baş verdi');
+      const errorMessage = error?.message || error?.error || 'Yazını yükləməkdə xəta baş verdi';
+      toast.error(errorMessage);
       navigate('/admin/blog');
     } finally {
       setLoading(false);
@@ -324,11 +340,12 @@ const BlogForm = () => {
               </div>
 
               <div>
-                <ImageUpload
-                  value={formData.image_url}
-                  onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                <ImageGalleryUpload
+                  value={formData.image_urls}
+                  onChange={(urls) => setFormData(prev => ({ ...prev, image_urls: urls }))}
                   folder="blog"
-                  label="Blog Şəkli"
+                  label="Blog Şəkilləri (maksimum 5 şəkil)"
+                  maxImages={5}
                 />
               </div>
 
@@ -360,4 +377,3 @@ const BlogForm = () => {
 };
 
 export default BlogForm;
-

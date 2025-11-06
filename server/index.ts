@@ -451,6 +451,37 @@ app.get('/api/blog', async (req, res) => {
   }
 });
 
+app.get('/api/blog/id/:id', async (req, res) => {
+  try {
+    const post = await prisma.blogPost.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!post) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    // Parse image_url if it's a JSON array
+    let imageUrls: string[] = [];
+    if (post.image_url) {
+      try {
+        const parsed = JSON.parse(post.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+      } catch {
+        imageUrls = [post.image_url];
+      }
+    }
+    
+    res.json({
+      ...post,
+      image_url: imageUrls.length > 0 ? imageUrls[0] : '', // For backward compatibility, return first image
+      image_urls: imageUrls, // Return all images
+    });
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    res.status(500).json({ error: 'Failed to fetch blog post' });
+  }
+});
+
 app.get('/api/blog/:slug', async (req, res) => {
   try {
     const post = await prisma.blogPost.findUnique({
@@ -459,7 +490,23 @@ app.get('/api/blog/:slug', async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
-    res.json(post);
+    
+    // Parse image_url if it's a JSON array
+    let imageUrls: string[] = [];
+    if (post.image_url) {
+      try {
+        const parsed = JSON.parse(post.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+      } catch {
+        imageUrls = [post.image_url];
+      }
+    }
+    
+    res.json({
+      ...post,
+      image_url: imageUrls.length > 0 ? imageUrls[0] : '', // For backward compatibility, return first image
+      image_urls: imageUrls, // Return all images
+    });
   } catch (error) {
     console.error('Error fetching blog post:', error);
     res.status(500).json({ error: 'Failed to fetch blog post' });
@@ -523,10 +570,41 @@ app.put('/api/contact/:id', async (req, res) => {
 // Blog management endpoints (admin only - needs auth middleware in production)
 app.post('/api/blog', async (req, res) => {
   try {
+    // Convert image_urls array to JSON string if provided
+    let imageUrlString: string | null = null;
+    if (req.body.image_urls && Array.isArray(req.body.image_urls)) {
+      imageUrlString = JSON.stringify(req.body.image_urls);
+    } else if (req.body.image_url) {
+      // If single image_url provided, convert to array format
+      imageUrlString = JSON.stringify([req.body.image_url]);
+    }
+    
+    const postData = {
+      ...req.body,
+      image_url: imageUrlString,
+    };
+    delete postData.image_urls; // Remove image_urls from data
+    
     const post = await prisma.blogPost.create({
-      data: req.body,
+      data: postData,
     });
-    res.json(post);
+    
+    // Parse image_url for response
+    let imageUrls: string[] = [];
+    if (post.image_url) {
+      try {
+        const parsed = JSON.parse(post.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+      } catch {
+        imageUrls = [post.image_url];
+      }
+    }
+    
+    res.json({
+      ...post,
+      image_url: imageUrls.length > 0 ? imageUrls[0] : '',
+      image_urls: imageUrls,
+    });
   } catch (error) {
     console.error('Error creating blog post:', error);
     res.status(500).json({ error: 'Failed to create blog post' });
@@ -535,11 +613,42 @@ app.post('/api/blog', async (req, res) => {
 
 app.put('/api/blog/:id', async (req, res) => {
   try {
+    // Convert image_urls array to JSON string if provided
+    let imageUrlString: string | null = null;
+    if (req.body.image_urls && Array.isArray(req.body.image_urls)) {
+      imageUrlString = JSON.stringify(req.body.image_urls);
+    } else if (req.body.image_url) {
+      // If single image_url provided, convert to array format
+      imageUrlString = JSON.stringify([req.body.image_url]);
+    }
+    
+    const postData = {
+      ...req.body,
+      image_url: imageUrlString,
+    };
+    delete postData.image_urls; // Remove image_urls from data
+    
     const post = await prisma.blogPost.update({
       where: { id: req.params.id },
-      data: req.body,
+      data: postData,
     });
-    res.json(post);
+    
+    // Parse image_url for response
+    let imageUrls: string[] = [];
+    if (post.image_url) {
+      try {
+        const parsed = JSON.parse(post.image_url);
+        imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+      } catch {
+        imageUrls = [post.image_url];
+      }
+    }
+    
+    res.json({
+      ...post,
+      image_url: imageUrls.length > 0 ? imageUrls[0] : '',
+      image_urls: imageUrls,
+    });
   } catch (error) {
     console.error('Error updating blog post:', error);
     res.status(500).json({ error: 'Failed to update blog post' });

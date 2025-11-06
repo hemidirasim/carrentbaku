@@ -105,6 +105,7 @@ export const api = {
         : `${API_URL}/blog`;
       return fetch(url).then(res => res.json());
     },
+    getById: (id: string) => fetch(`${API_URL}/blog/id/${id}`).then(res => res.json()),
     getBySlug: (slug: string) => fetch(`${API_URL}/blog/${slug}`).then(res => res.json()),
     create: (data: any) =>
       authFetch(`${API_URL}/blog`, {
