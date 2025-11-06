@@ -444,7 +444,27 @@ app.get('/api/blog', async (req, res) => {
       where,
       orderBy: { published_at: 'desc' },
     });
-    res.json(posts);
+    
+    // Parse image_url for each post if it's a JSON array
+    const postsWithParsedImages = posts.map(post => {
+      let imageUrls: string[] = [];
+      if (post.image_url) {
+        try {
+          const parsed = JSON.parse(post.image_url);
+          imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
+        } catch {
+          imageUrls = [post.image_url];
+        }
+      }
+      
+      return {
+        ...post,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : '', // For backward compatibility, return first image
+        image_urls: imageUrls, // Return all images
+      };
+    });
+    
+    res.json(postsWithParsedImages);
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     res.status(500).json({ error: 'Failed to fetch blog posts' });
