@@ -89,6 +89,18 @@ const AdminServices = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!formData.title_az.trim()) {
+      toast.error('Azərbaycan başlığı məcburidir');
+      return;
+    }
+    
+    if (!formData.description_az.trim()) {
+      toast.error('Azərbaycan təsviri məcburidir');
+      return;
+    }
+
     try {
       // Convert features object to JSON string
       const featuresJson = JSON.stringify(formData.features);
@@ -99,7 +111,14 @@ const AdminServices = () => {
         : null;
 
       const submitData = {
-        ...formData,
+        title_az: formData.title_az.trim(),
+        title_ru: formData.title_ru?.trim() || null,
+        title_en: formData.title_en?.trim() || null,
+        title_ar: formData.title_ar?.trim() || null,
+        description_az: formData.description_az.trim(),
+        description_ru: formData.description_ru?.trim() || null,
+        description_en: formData.description_en?.trim() || null,
+        description_ar: formData.description_ar?.trim() || null,
         image_url: imageUrlJson,
         features: featuresJson,
       };
@@ -138,9 +157,10 @@ const AdminServices = () => {
         ar: '',
       });
       loadServices();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving service:', error);
-      toast.error('Xidməti saxlamaqda xəta baş verdi');
+      const errorMessage = error?.message || error?.error || 'Xidməti saxlamaqda xəta baş verdi';
+      toast.error(errorMessage);
     }
   };
 
@@ -331,7 +351,7 @@ const AdminServices = () => {
                       value={formData.image_url}
                       onChange={(urls) => setFormData(prev => ({ ...prev, image_url: urls }))}
                       folder="services"
-                      label="Xidmət Şəkilləri (maksimum 3)"
+                      label="Xidmət Şəkilləri (maksimum 3, optional)"
                       maxImages={3}
                     />
                   </div>

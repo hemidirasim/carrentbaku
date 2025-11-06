@@ -561,6 +561,11 @@ app.delete('/api/blog/:id', async (req, res) => {
 // Service management endpoints
 app.post('/api/services', async (req, res) => {
   try {
+    // Validate required fields
+    if (!req.body.title_az || !req.body.description_az) {
+      return res.status(400).json({ error: 'title_az and description_az are required' });
+    }
+    
     // image_url and features are already JSON strings from frontend
     const service = await prisma.service.create({
       data: req.body,
