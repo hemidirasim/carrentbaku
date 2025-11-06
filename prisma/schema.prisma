@@ -155,3 +155,24 @@ model ContactMessage {
   @@index([status])
   @@index([created_at])
 }
+
+model About {
+  id            String   @id @default(uuid())
+  title_az      String
+  title_ru      String?
+  title_en      String?
+  title_ar      String?
+  tagline_az    String?
+  tagline_ru    String?
+  tagline_en    String?
+  tagline_ar    String?
+  content_az    String   @db.Text
+  content_ru    String?  @db.Text
+  content_en    String?  @db.Text
+  content_ar    String?  @db.Text
+  image_urls    String?  // JSON array of image URLs
+  stats         String?  // JSON: [{"icon": "Car", "value": "100+", "label": "Avtomobil"}]
+  values        String?  // JSON: [{"title": "Keyfiyyət", "description": "...", "icon": "⭐"}]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}

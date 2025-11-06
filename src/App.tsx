@@ -28,6 +28,7 @@ import AdminBlogForm from "./pages/admin/BlogForm";
 import AdminServices from "./pages/admin/Services";
 import AdminServiceForm from "./pages/admin/ServiceForm";
 import AdminCategories from "./pages/admin/Categories";
+import AdminAbout from "./pages/admin/About";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,11 @@ const App = () => (
               <Route path="/admin/categories" element={
                 <AdminRoute>
                   <AdminCategories />
+                </AdminRoute>
+              } />
+              <Route path="/admin/about" element={
+                <AdminRoute>
+                  <AdminAbout />
                 </AdminRoute>
               } />
               

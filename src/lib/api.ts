@@ -133,6 +133,16 @@ export const api = {
     },
   },
   
+  // About
+  about: {
+    get: () => fetch(`${API_URL}/about`).then(res => res.json()),
+    update: (data: any) =>
+      authFetch(`${API_URL}/about`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+  },
+  
   // Contact
   contact: {
     getAll: () => authFetch(`${API_URL}/contact`).then(res => res.json()),

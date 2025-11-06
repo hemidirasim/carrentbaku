@@ -687,6 +687,136 @@ app.delete('/api/blog/:id', async (req, res) => {
   }
 });
 
+// About endpoints
+app.get('/api/about', async (req, res) => {
+  try {
+    let about = await prisma.about.findFirst();
+    
+    if (!about) {
+      return res.json(null);
+    }
+    
+    // Parse image_urls
+    let imageUrls: string[] = [];
+    if (about.image_urls) {
+      try {
+        const parsed = JSON.parse(about.image_urls);
+        imageUrls = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        imageUrls = [];
+      }
+    }
+    
+    // Parse stats
+    let stats = null;
+    if (about.stats) {
+      try {
+        stats = JSON.parse(about.stats);
+      } catch {
+        stats = null;
+      }
+    }
+    
+    // Parse values
+    let values = null;
+    if (about.values) {
+      try {
+        values = JSON.parse(about.values);
+      } catch {
+        values = null;
+      }
+    }
+    
+    res.json({
+      ...about,
+      image_urls: imageUrls,
+      stats: stats,
+      values: values,
+    });
+  } catch (error) {
+    console.error('Error fetching about:', error);
+    res.status(500).json({ error: 'Failed to fetch about' });
+  }
+});
+
+app.put('/api/about', async (req, res) => {
+  try {
+    // Validate required fields
+    if (!req.body.title_az || !req.body.content_az) {
+      return res.status(400).json({ error: 'title_az and content_az are required' });
+    }
+    
+    // Convert image_urls array to JSON string
+    let imageUrlString: string | null = null;
+    if (req.body.image_urls && Array.isArray(req.body.image_urls)) {
+      imageUrlString = JSON.stringify(req.body.image_urls);
+    }
+    
+    // Stats and values are already JSON strings from frontend
+    const aboutData = {
+      ...req.body,
+      image_urls: imageUrlString,
+    };
+    delete aboutData.id; // Remove id if present
+    
+    // Check if about exists
+    const existing = await prisma.about.findFirst();
+    
+    let about;
+    if (existing) {
+      // Update existing
+      about = await prisma.about.update({
+        where: { id: existing.id },
+        data: aboutData,
+      });
+    } else {
+      // Create new
+      about = await prisma.about.create({
+        data: aboutData,
+      });
+    }
+    
+    // Parse for response
+    let imageUrls: string[] = [];
+    if (about.image_urls) {
+      try {
+        const parsed = JSON.parse(about.image_urls);
+        imageUrls = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        imageUrls = [];
+      }
+    }
+    
+    let stats = null;
+    if (about.stats) {
+      try {
+        stats = JSON.parse(about.stats);
+      } catch {
+        stats = null;
+      }
+    }
+    
+    let values = null;
+    if (about.values) {
+      try {
+        values = JSON.parse(about.values);
+      } catch {
+        values = null;
+      }
+    }
+    
+    res.json({
+      ...about,
+      image_urls: imageUrls,
+      stats: stats,
+      values: values,
+    });
+  } catch (error) {
+    console.error('Error saving about:', error);
+    res.status(500).json({ error: 'Failed to save about' });
+  }
+});
+
 // Service management endpoints
 app.post('/api/services', async (req, res) => {
   try {
