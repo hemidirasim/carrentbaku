@@ -10,6 +10,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-pro
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:8080',
+  'http://localhost:5174',
   'https://baku-drive-planner.vercel.app',
 ];
 
