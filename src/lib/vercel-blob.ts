@@ -1,50 +1,77 @@
-// Vercel Blob storage utility
-const BLOB_READ_WRITE_TOKEN = "vercel_blob_rw_UrgM6GRVtGvrhLeH_r4yaSYb8EP3sTh9Ne0uzT5qsMvPd9t";
+
+const getDefaultApiUrl = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    const origin = window.location.origin.replace(/\/$/, '');
+    return `${origin}/api`;
+  }
+  return 'http://localhost:3001/api';
+};
+
+const API_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
+  getDefaultApiUrl();
+
+const getAuthToken = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  return localStorage.getItem('admin_token');
+};
+
+const buildUploadUrl = (pathname?: string) => {
+  const url = new URL(`${API_URL}/uploads`);
+  if (pathname) {
+    const parts = pathname.split('/').filter(Boolean);
+    const fileName = parts.pop();
+    if (parts.length > 0) {
+      url.searchParams.set('folder', parts.join('/'));
+    }
+    if (fileName) {
+      url.searchParams.set('filename', fileName);
+    }
+  }
+  return url;
+};
 
 export const uploadImage = async (file: File, pathname?: string): Promise<string> => {
-  const fileName = pathname || `${Date.now()}-${file.name}`;
-  
-  // Use PUT method to upload directly to Vercel Blob
-  const response = await fetch(`https://blob.vercel-storage.com/${fileName}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${BLOB_READ_WRITE_TOKEN}`,
-      'Content-Type': file.type,
-      'x-content-type': file.type,
-    },
-    body: file,
+  const token = getAuthToken();
+  const uploadUrl = buildUploadUrl(pathname);
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(uploadUrl.toString(), {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: formData,
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to upload image: ${errorText}`);
+    const message = await response.text().catch(() => 'Failed to upload image');
+    throw new Error(message || 'Failed to upload image');
   }
 
-  // The response body contains the URL or JSON
-  const responseText = await response.text();
-  try {
-    // Try to parse as JSON first (Vercel Blob returns JSON)
-    const json = JSON.parse(responseText);
-    return json.url || responseText.trim();
-  } catch {
-    // If not JSON, return as-is
-    return responseText.trim();
+  const data = await response.json().catch(() => null);
+  if (!data || typeof data.url !== 'string') {
+    throw new Error('Invalid upload response');
   }
+
+  return data.url;
 };
 
 export const deleteImage = async (url: string): Promise<void> => {
-  // Extract the blob path from URL
-  const urlObj = new URL(url);
-  const blobPath = urlObj.pathname;
-
-  const response = await fetch(`https://blob.vercel-storage.com${blobPath}`, {
+  const token = getAuthToken();
+  const response = await fetch(`${API_URL}/uploads`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${BLOB_READ_WRITE_TOKEN}`,
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
+    body: JSON.stringify({ url }),
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to delete image');
+  if (!response.ok && response.status !== 404) {
+    const message = await response.text().catch(() => 'Failed to delete image');
+    throw new Error(message || 'Failed to delete image');
   }
 };

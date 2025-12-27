@@ -40,9 +40,11 @@ model Car {
   model         String
   year          Int
   category      String
+  categories    String[]     @default([])
   price_per_day Float
   price_per_week Float?
   price_per_month Float?
+  unavailable_dates String[] @default([])
   fuel_type     String
   transmission  String
   seats         Int
@@ -52,21 +54,26 @@ model Car {
   created_at    DateTime     @default(now())
   updated_at    DateTime     @updatedAt
   reservations  Reservation[]
+  services      ServiceCar[]
 }
 
 model Reservation {
-  id            String   @id @default(uuid())
-  car_id        String
-  car           Car      @relation(fields: [car_id], references: [id], onDelete: Cascade)
-  customer_name String
-  customer_email String
-  customer_phone String?
-  pickup_date   DateTime
-  return_date   DateTime
-  total_price   Float
-  status        String   @default("pending") // pending, confirmed, completed, cancelled
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id               String   @id @default(uuid())
+  car_id           String
+  car              Car      @relation(fields: [car_id], references: [id], onDelete: Cascade)
+  customer_name    String
+  customer_email   String?
+  customer_phone   String?
+  pickup_date      DateTime
+  return_date      DateTime
+  pickup_location  String?
+  dropoff_location String?
+  child_seat       Boolean  @default(false)
+  video_recorder   Boolean  @default(false)
+  total_price      Float
+  status           String   @default("pending") // pending, confirmed, completed, cancelled
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   @@index([car_id])
   @@index([status])
@@ -82,11 +89,25 @@ model Service {
   description_ru String?
   description_en String?
   description_ar String?
+  category      String?
   image_url     String?  // JSON array of image URLs
   icon          String?
   features      String?  // JSON: {"az": ["feature1"], "ru": ["feature1"], "en": ["feature1"], "ar": ["feature1"]}
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+  cars          ServiceCar[]
+}
+
+model ServiceCar {
+  service_id String
+  car_id     String
+  created_at DateTime @default(now())
+
+  service Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  car     Car     @relation(fields: [car_id], references: [id], onDelete: Cascade)
+
+  @@id([service_id, car_id])
+  @@index([car_id])
 }
 
 model BlogPost {
@@ -106,6 +127,7 @@ model BlogPost {
   excerpt_ar    String?
   image_url     String?
   author        String?
+  category      String   @default("blogs")
   published     Boolean  @default(false)
   published_at  DateTime?
   created_at    DateTime @default(now())
@@ -138,6 +160,19 @@ model Review {
   @@index([rating])
   @@index([featured])
   @@index([review_type])
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  slug       String   @unique
+  name_az    String
+  name_ru    String?
+  name_en    String?
+  name_ar    String?
+  sort_order Int      @default(0)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model ContactMessage {
@@ -176,3 +211,38 @@ model About {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 }
+
+model ContactInfo {
+  id                String   @id @default(uuid())
+  company_name      String?
+  tagline           String?
+  description       String?  @db.Text
+  phones            String?
+  emails            String?
+  whatsapp_numbers  String?
+  office_hours      String?
+  address           String?
+  address_secondary String?
+  map_embed_url     String?
+  social_links      String?
+  offices           String?  // JSON array of offices with localized data
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+model AgentConfig {
+  id                 String   @id @default(uuid())
+  agent_name         String
+  api_token          String
+  instructions       String   @db.Text
+  company_name       String
+  site_url           String
+  agent_endpoint     String?
+  project_id         String?
+  database_id        String?
+  knowledge_base_id  String?
+  embedding_model_id String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+

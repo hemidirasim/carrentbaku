@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { 
-  Calendar, 
   Search,
   ArrowLeft,
   Eye,
@@ -20,19 +26,19 @@ import { Link } from 'react-router-dom';
 interface ReservationData {
   id: string;
   customer_name: string;
-  customer_email: string;
-  customer_phone: string;
+  customer_email?: string | null;
+  customer_phone?: string | null;
   car_id: string;
-  start_date: string;
-  end_date: string;
-  pickup_location: string;
-  dropoff_location: string;
+  pickup_date: string;
+  return_date: string;
+  pickup_location?: string | null;
+  dropoff_location?: string | null;
   child_seat: boolean;
   video_recorder: boolean;
   total_price: number;
   status: string;
   created_at: string;
-  cars?: {
+  car?: {
     brand: string;
     model: string;
   };
@@ -44,6 +50,8 @@ const AdminReservations = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState<ReservationData | null>(null);
 
   useEffect(() => {
     loadReservations();
@@ -52,13 +60,8 @@ const AdminReservations = () => {
   const loadReservations = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('reservations')
-        .select('*, cars(brand, model)')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      setReservations(data || []);
+      const data = await api.reservations.getAll();
+      setReservations(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading reservations:', error);
     } finally {
@@ -68,12 +71,7 @@ const AdminReservations = () => {
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('reservations')
-        .update({ status: newStatus })
-        .eq('id', id);
-      
-      if (error) throw error;
+      await api.reservations.update(id, { status: newStatus });
       await loadReservations();
     } catch (error) {
       console.error('Error updating reservation:', error);
@@ -84,12 +82,7 @@ const AdminReservations = () => {
     if (!confirm('Are you sure you want to delete this reservation?')) return;
     
     try {
-      const { error } = await supabase
-        .from('reservations')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await api.reservations.delete(id);
       await loadReservations();
     } catch (error) {
       console.error('Error deleting reservation:', error);
@@ -112,17 +105,37 @@ const AdminReservations = () => {
     );
   };
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredReservations = reservations.filter(reservation => {
-    const carBrand = reservation.cars?.brand || '';
+    const carBrand = reservation.car?.brand || '';
     const matchesSearch = 
-      reservation.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reservation.customer_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      carBrand.toLowerCase().includes(searchTerm.toLowerCase());
+      reservation.customer_name.toLowerCase().includes(normalizedSearch) ||
+      (reservation.customer_email?.toLowerCase().includes(normalizedSearch) ?? false) ||
+      carBrand.toLowerCase().includes(normalizedSearch);
     
     const matchesStatus = statusFilter === 'all' || reservation.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
+
+  const openDetails = (reservation: ReservationData) => {
+    setSelectedReservation(reservation);
+    setDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setDetailsOpen(false);
+    setSelectedReservation(null);
+  };
+
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return '—';
+    try {
+      return new Date(dateString).toLocaleString();
+    } catch {
+      return dateString;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -210,27 +223,27 @@ const AdminReservations = () => {
                         <div>
                           <div className="font-medium">{reservation.customer_name}</div>
                           <div className="text-sm text-muted-foreground">
-                            {reservation.customer_email}
+                            {reservation.customer_email || '—'}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {reservation.customer_phone}
+                            {reservation.customer_phone || '—'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {reservation.cars?.brand} {reservation.cars?.model}
+                            {reservation.car ? `${reservation.car.brand} ${reservation.car.model}` : '—'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
                           <div className="text-sm">
-                            {new Date(reservation.start_date).toLocaleDateString()}
+                            {new Date(reservation.pickup_date).toLocaleDateString()}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            to {new Date(reservation.end_date).toLocaleDateString()}
+                            to {new Date(reservation.return_date).toLocaleDateString()}
                           </div>
                         </div>
                       </TableCell>
@@ -243,9 +256,7 @@ const AdminReservations = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => {
-                              // TODO: Open reservation details modal
-                            }}
+                            onClick={() => openDetails(reservation)}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
@@ -295,6 +306,92 @@ const AdminReservations = () => {
           </CardContent>
         </Card>
       </main>
+
+      <Dialog open={detailsOpen} onOpenChange={(open) => (open ? setDetailsOpen(true) : closeDetails())}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Reservation Details</DialogTitle>
+            <DialogDescription>
+              Full breakdown of the booking information
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedReservation ? (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase">Customer</h3>
+                <div className="mt-2 space-y-1">
+                  <p className="text-lg font-medium">{selectedReservation.customer_name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedReservation.customer_email || '—'}</p>
+                  <p className="text-sm text-muted-foreground">{selectedReservation.customer_phone || '—'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Car</h3>
+                  <p className="text-base font-medium">
+                    {selectedReservation.car
+                      ? `${selectedReservation.car.brand} ${selectedReservation.car.model}`
+                      : '—'}
+                  </p>
+                  <p className="text-sm text-muted-foreground break-all">{selectedReservation.car_id}</p>
+                </div>
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Status</h3>
+                  {getStatusBadge(selectedReservation.status)}
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Created {formatDate(selectedReservation.created_at)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Pickup</h3>
+                  <p className="text-base font-medium">{formatDate(selectedReservation.pickup_date)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedReservation.pickup_location || '—'}
+                  </p>
+                </div>
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Return</h3>
+                  <p className="text-base font-medium">{formatDate(selectedReservation.return_date)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedReservation.dropoff_location || '—'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Extras</h3>
+                  <ul className="space-y-1 text-sm">
+                    <li>
+                      Child Seat:{' '}
+                      <span className="font-medium">
+                        {selectedReservation.child_seat ? 'Yes' : 'No'}
+                      </span>
+                    </li>
+                    <li>
+                      Video Recorder:{' '}
+                      <span className="font-medium">
+                        {selectedReservation.video_recorder ? 'Yes' : 'No'}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-2">Total Price</h3>
+                  <p className="text-2xl font-semibold">${selectedReservation.total_price.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No reservation selected.</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,0 +1,251 @@
+import { PrismaClient } from "@prisma/client";
+import { randomUUID } from "crypto";
+
+const prisma = new PrismaClient();
+
+const cars = [
+  {
+    brand: "Hyundai",
+    model: "Sonata",
+    year: 2017,
+    price_per_day: 80,
+    price_per_week: 550,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Hyundai",
+    model: "Sonata",
+    year: 2023,
+    price_per_day: 140,
+    price_per_week: 900,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Kia",
+    model: "Optima",
+    year: 2019,
+    price_per_day: 80,
+    price_per_week: 550,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Kia",
+    model: "K5",
+    year: 2023,
+    price_per_day: 130,
+    price_per_week: 850,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "BMW",
+    model: "530",
+    year: 2016,
+    price_per_day: 170,
+    price_per_week: 1120,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Toyota",
+    model: "Land Cruiser",
+    year: 2024,
+    price_per_day: 300,
+    price_per_week: 2000,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 7,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "7 seats"],
+  },
+  {
+    brand: "Lexus",
+    model: "LX 570",
+    year: 2024,
+    price_per_day: 1400,
+    price_per_week: 9100,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 7,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "7 seats"],
+  },
+  {
+    brand: "BMW",
+    model: "530",
+    year: 2021,
+    price_per_day: 350,
+    price_per_week: 2300,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "GLS",
+    year: 2023,
+    price_per_day: 350,
+    price_per_week: 2400,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "BMW",
+    model: "X5",
+    year: 2022,
+    price_per_day: 350,
+    price_per_week: 2400,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "BMW",
+    model: "X7",
+    year: 2022,
+    price_per_day: 400,
+    price_per_week: 2700,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 7,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "7 seats"],
+  },
+  {
+    brand: "Range Rover",
+    model: "Vogue",
+    year: 2022,
+    price_per_day: 350,
+    price_per_week: 2300,
+    fuel_type: "Benzin",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Benzin", "5 seats"],
+  },
+  {
+    brand: "Toyota",
+    model: "Camry",
+    year: 2023,
+    price_per_day: 130,
+    price_per_week: 800,
+    fuel_type: "Hybrid",
+    transmission: "Auto",
+    seats: 5,
+    category: "luxury",
+    categories: ["luxury"],
+    image_url: "https://new.carrentbaku.az/placeholder.svg",
+    features: ["Automatic transmission", "Fuel: Hybrid", "5 seats"],
+  },
+];
+
+async function main() {
+  for (const car of cars) {
+    const existing = await prisma.car.findFirst({
+      where: {
+        brand: car.brand,
+        model: car.model,
+        year: car.year,
+      },
+    });
+
+    if (existing) {
+      await prisma.car.update({
+        where: { id: existing.id },
+        data: {
+          price_per_day: car.price_per_day,
+          price_per_week: car.price_per_week,
+          price_per_month: null,
+          fuel_type: car.fuel_type,
+          transmission: car.transmission,
+          seats: car.seats,
+          category: car.category,
+          categories: car.categories,
+          image_url: car.image_url,
+          features: car.features,
+          available: true,
+        },
+      });
+      console.log(`Updated ${car.brand} ${car.model} ${car.year}`);
+    } else {
+      await prisma.car.create({
+        data: {
+          id: randomUUID(),
+          brand: car.brand,
+          model: car.model,
+          year: car.year,
+          price_per_day: car.price_per_day,
+          price_per_week: car.price_per_week,
+          price_per_month: null,
+          fuel_type: car.fuel_type,
+          transmission: car.transmission,
+          seats: car.seats,
+          category: car.category,
+          categories: car.categories,
+          image_url: car.image_url,
+          features: car.features,
+          available: true,
+        },
+      });
+      console.log(`Created ${car.brand} ${car.model} ${car.year}`);
+    }
+  }
+}
+
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

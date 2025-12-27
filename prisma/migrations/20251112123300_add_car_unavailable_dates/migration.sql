@@ -1,0 +1,3 @@
+ALTER TABLE "Car" DROP COLUMN IF EXISTS "available_from";
+ALTER TABLE "Car" DROP COLUMN IF EXISTS "available_until";
+ALTER TABLE "Car" ADD COLUMN IF NOT EXISTS "unavailable_dates" TEXT[] DEFAULT ARRAY[]::TEXT[];

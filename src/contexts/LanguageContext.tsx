@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { DEFAULT_OG_IMAGE, SEO_CONFIG } from '@/seo/config';
 
-type Language = 'az' | 'ru' | 'en' | 'ar';
+export type Language = 'az' | 'ru' | 'en' | 'ar';
 
 interface LanguageContextType {
   language: Language;
@@ -10,13 +11,32 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   az: {
+    // Common
+    'common.loading': 'Yüklənir...',
+    'common.noImage': 'Şəkil yoxdur',
+    'services.empty': 'Hələ xidmət yoxdur',
+    'services.moreFeatures': '+{{count}} daha...',
+    'services.detail.notFound': 'Xidmət tapılmadı',
+    'services.detail.backToList': 'Xidmətlərə qayıt',
+    'services.detail.relatedCars': 'Bu xidmət üçün uyğun avtomobillər',
+    'services.detail.features': 'Xidmətin Xüsusiyyətləri',
+    'services.detail.price.perDay': 'Günlük',
+    'services.detail.price.perWeek': 'Həftəlik',
+    'services.detail.price.perMonth': 'Aylıq',
+    'about.storyTitle': 'Bizim Hekayəmiz',
+    'about.galleryAlt': 'Şirkət şəkli',
+    'cars.search.noResults': 'Nəticə tapılmadı',
+    'cars.search.adjustFilters': 'Filterləri dəyişdirərək yenidən axtarış edin',
+    'cars.search.resetCategories': 'Kateqoriyaları sıfırla',
+    'cars.search.resetDates': 'Tarixi sıfırla',
+
     // Header
     'nav.home': 'Əsas Səhifə',
     'nav.cars': 'Avtomobillər',
     'nav.services': 'Xidmətlər',
     'nav.about': 'Haqqımızda',
     'nav.contact': 'Əlaqə',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Məqalələr',
     'nav.reserve': 'Rezerv et',
     
     // Hero
@@ -24,12 +44,13 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.subtitle': 'İcarə maşınlar 55 AZN-dən başlayır',
     'hero.cta': 'İndi Rezerv Et',
     'hero.selectCar': 'İdeal avtomobilinizi seçin',
-    'hero.tagline': 'Avtomobil icarə etmək üçün sürətli və asan yol',
-    'hero.headline.part1': 'Rahat avtomobil ilə',
-    'hero.headline.part2': 'ölkəmizi kəşf edin',
-    'hero.description': 'Unudulmaz səyahətlərə çıxın və bizim xüsusi rahat avtomobillərimiz ilə ölkəmizi misilsiz rahatlıqla kəşf edin.',
+    'hero.tagline': 'Azərbaycanın birinci dərəcəli avtomobil icarə xidməti',
+    'hero.headline.part1': 'Avtomobil icarəsi cəmi',
+    'hero.headline.part2': '50₼/gün – depozitsiz',
+    'hero.description': 'Avtomobillərimiz bütün tələblərə cavab verir və Azərbaycanda ən sərfəli şərtlərlə depozitsiz icarə təklif edirik.',
     'hero.booking.question': 'Hansı növ avtomobil icarə etmək istəyirsiniz?',
     'hero.booking.vehicleType': 'Avtomobil növü',
+    'hero.booking.search': 'Axtar',
     'hero.booking.pickupLocation': 'Götürmə Yeri',
     'hero.booking.dropoffLocation': 'Qaytarma Yeri',
     'hero.booking.pickupDate': 'Götürmə Tarixi',
@@ -86,9 +107,14 @@ const translations: Record<Language, Record<string, string>> = {
     // Cars
     'cars.title': 'Avtomobillərimiz',
     'cars.perDay': 'gün',
+    'cars.day': 'gün',
     'cars.viewAll': 'Bütün Avtomobilləri Gör',
+    'cars.week': 'həftə',
+    'cars.month': 'ay',
     'cars.viewDetails': 'Ətraflı Bax',
     'cars.search': 'Avtomobil axtar...',
+    'cars.subtitle': 'Sürüş azadlığını yaşayın-avtomobilinizi indi seçin',
+    'cars.found': 'avtomobil tapıldı',
     'cars.comprehensive.title.part1': 'Hər ehtiyaca uyğun',
     'cars.comprehensive.title.part2': 'avtomobillər',
     'cars.comprehensive.subtitle': 'Ekonom sinifdən lüks avtomobillərə qədər hər ehtiyaca uyğun geniş avtomobil seçimimiz var.',
@@ -97,6 +123,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cars.reset': 'Sıfırla',
     'cars.noResults': 'Axtarış nəticəsində avtomobil tapılmadı',
     'cars.header': 'Geniş avtomobil parkımızdan seçim edin',
+    'cars.loadMore': 'Daha çox göstər',
     
     // Car Detail
     'detail.specs': 'Texniki Xüsusiyyətlər',
@@ -144,7 +171,10 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.message': 'Mesajınız',
     'contact.send': 'Göndər',
     'contact.phone': 'Telefon',
+    'contact.office': 'Ofis',
     'contact.address': 'Ünvan',
+    'contact.hoursTitle': 'İş saatları',
+
     
     // Footer
     'footer.description': 'Bakıda ən etibarlı avtomobil icarə xidməti',
@@ -164,24 +194,32 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.title': 'İdeal Avtomobilinizi Seçin',
     'cta.subtitle': 'Bakının ən yaxşı avtomobil icarə xidməti',
     'cta.button': 'İndi Əlaqə Saxlayın',
+    'cta.floating.buttonLabel': 'Bizə WhatsApp yaz',
+    'cta.floating.title': 'Bizimlə əlaqə saxlayın',
+    'cta.floating.subtitle': 'Ən uyğun əlaqə kanalını seçin',
+    'cta.floating.whatsapp': 'WhatsApp ilə əlaqə',
+    'cta.floating.telegram': 'Telegram yazışı',
+    'cta.floating.email': 'E-mail göndər',
+    'cta.floating.phone': 'Zəng et',
     
     // Blog
-    'blog.mainTitle': 'Blog and Latest News',
-    'blog.title': 'Blog',
-    'blog.subtitle': 'Ən son xəbərlər və məqalələr',
-    'blog.readMore': 'Ətraflı Oxu',
-    'blog.keepReading': 'Keep Reading',
+    'blog.mainTitle': 'Yeniliklər və məqalələr',
+    'blog.title': 'Məqalələr',
+    'blog.subtitle': 'Ən son xəbərlər və bloq yazıları',
+    'blog.readMore': 'Daha ətraflı oxu',
+    'blog.keepReading': 'Daha çox oxu',
     'blog.meta.date': 'tarix',
-    'blog.meta.readTime': 'dəq oxuma',
+    'blog.meta.readTime': 'dəq oxu',
     'blog.meta.comments': 'şərhlər',
-    'blog.author': 'Jimmy Dave',
-    'blog.category.carUpdates': 'Avtomobil Yeniləmələri',
-    'blog.category.rentalAdvice': 'İcarə Məsləhəti',
-    'blog.category.roadTrips': 'Səyahət Məsləhətləri',
-    'blog.category.carReview': 'Avtomobil İcmalı',
-    'blog.category.discovery': 'Kəşfiyyat',
-    'blog.category.industryNews': 'Sənaye Xəbərləri',
-    'blog.category.travelTips': 'Səyahət Məsləhətləri',
+    'blog.author': 'Yazar',
+    'blog.categories.news': 'Yeniliklər',
+    'blog.categories.blogs': 'Bloq yazıları',
+    'blog.loading': 'Yüklənir...',
+    'blog.empty': 'Bu bölmədə hələ məqalə yoxdur',
+    'blog.noImage': 'Şəkil yoxdur',
+    'blog.notFound': 'Məqalə tapılmadı',
+    'blog.backToList': 'Məqalələrə qayıt',
+    'blog.relatedTitle': 'Oxşar yazılar',
     'blog.pagination.previous': 'Əvvəlki',
     'blog.pagination.next': 'Növbəti',
     
@@ -206,13 +244,19 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.success': 'Uğurlu!',
     'reservation.successMsg': 'Rezervasiyanız qeydə alındı. Tezliklə sizinlə əlaqə saxlanılacaq.',
     'reservation.namePlaceholder': 'Adınız və soyadınız',
+    'reservation.subtitle': 'Rezervasiya formunu doldurun, komandamız sizinlə əlaqə saxlasın',
+    'reservation.selectCountryCode': 'Ölkə kodunu seçin',
+    'reservation.searchCountryCode': 'Ölkə kodu üzrə axtar',
+    'reservation.noCountryResults': 'Uyğun ölkə tapılmadı',
+    'reservation.phoneNumberPlaceholder': 'Telefon nömrəsi',
+    'reservation.totalPrice': 'Ümumi qiymət',
+    'reservation.submitting': 'Göndərilir...',
+    'common.back': 'Geri qayıt',
     
     // Car Categories
     'cars.filter.all': 'Hamısı',
-    'cars.filter.ekonomik': 'Ekonomik avtomobillər',
+    'cars.filter.econom': 'Econom',
     'cars.filter.mediumSedan': 'Medium Sedan',
-    'cars.filter.biznes': 'Biznes avtomobilləri',
-    'cars.filter.premium': 'Premium',
     'cars.filter.suv': 'SUV tipli avtomobillər',
     'cars.filter.minivan': 'Minivanlar',
     'cars.filter.luxury': 'Luxury',
@@ -253,6 +297,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Contact additional
     'contact.visitUs': 'BİZİ ZİYARƏT EDİN',
+    'contact.sendMessage': 'Mesaj Göndərin',
     'contact.firstNamePlaceholder': 'Adınız',
     'contact.lastNamePlaceholder': 'Soyadınız',
     'contact.emailPlaceholder': 'E-mail ünvanınız',
@@ -264,9 +309,29 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.hours.saturday': 'Şənbə: 10:00 - 16:00',
     'contact.hours.sunday': 'Bazar: Bağlı',
     'contact.error.fillRequired': 'Zəhmət olmasa bütün məcburi sahələri doldurun',
+    'contact.error.sendFailed': 'Mesaj göndərilərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
     'contact.success': 'Mesajınız uğurla göndərildi! Tezliklə sizinlə əlaqə saxlanılacaq.',
   },
   ru: {
+    // Common
+    'common.loading': 'Загрузка...',
+    'common.noImage': 'Нет изображения',
+    'services.empty': 'Пока нет услуг',
+    'services.moreFeatures': '+{{count}} ещё...',
+    'services.detail.notFound': 'Услуга не найдена',
+    'services.detail.backToList': 'Назад к услугам',
+    'services.detail.relatedCars': 'Подходящие автомобили для этой услуги',
+    'services.detail.features': 'Особенности услуги',
+    'services.detail.price.perDay': 'В день',
+    'services.detail.price.perWeek': 'В неделю',
+    'services.detail.price.perMonth': 'В месяц',
+    'about.storyTitle': 'Наша история',
+    'about.galleryAlt': 'Изображение компании',
+    'cars.search.noResults': 'Ничего не найдено',
+    'cars.search.adjustFilters': 'Измените фильтры и попробуйте снова',
+    'cars.search.resetCategories': 'Сбросить категории',
+    'cars.search.resetDates': 'Сбросить даты',
+
     // New Services (Comprehensive)
     'services.comprehensive.title.part1': 'Комплексные',
     'services.comprehensive.title.part2': 'Аренда авто',
@@ -284,19 +349,20 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.services': 'Услуги',
     'nav.about': 'О нас',
     'nav.contact': 'Контакты',
-    'nav.blog': 'Блог',
+    'nav.blog': 'Статьи',
     'nav.reserve': 'Забронировать',
     
     'hero.title': 'Премиум аренда авто в Баку',
     'hero.subtitle': 'Аренда авто от 55 AZN',
     'hero.cta': 'Забронировать сейчас',
     'hero.selectCar': 'Выберите идеальный автомобиль',
-    'hero.tagline': 'Быстрый и простой способ арендовать автомобиль',
-    'hero.headline.part1': 'Исследуйте мир',
-    'hero.headline.part2': 'на комфортном автомобиле',
-    'hero.description': 'Отправляйтесь в незабываемые приключения и открывайте страну в непревзойдённом комфорте и стиле с нашим парком исключительно комфортных автомобилей.',
+    'hero.tagline': 'Аренда автомобилей первого класса в Азербайджане',
+    'hero.headline.part1': 'Аренда авто всего от',
+    'hero.headline.part2': '50₼ в день — без депозита',
+    'hero.description': 'Наши автомобили соответствуют всем требованиям, а мы предлагаем аренду на самых выгодных условиях по всей территории Азербайджана.',
     'hero.booking.question': 'Какой тип автомобиля вы хотели бы арендовать?',
     'hero.booking.vehicleType': 'Тип автомобиля',
+    'hero.booking.search': 'Найти авто',
     'hero.booking.pickupLocation': 'Место получения',
     'hero.booking.dropoffLocation': 'Место возврата',
     'hero.booking.pickupDate': 'Дата получения',
@@ -339,26 +405,30 @@ const translations: Record<Language, Record<string, string>> = {
     
     'cars.title': 'Популярные автомобили',
     'cars.perDay': 'день',
+    'cars.day': 'день',
+    'cars.week': 'неделя',
+    'cars.month': 'месяц',
     'cars.viewAll': 'Все автомобили',
     'cars.viewDetails': 'Подробнее',
     'cars.comprehensive.title.part1': 'Широкий Выбор',
     'cars.comprehensive.title.part2': 'Автомобилей',
     'cars.comprehensive.subtitle': 'От эконом-класса до люксовых автомобилей — у нас есть широкий выбор для любых потребностей.',
     'cars.filter.all': 'Все',
-    'cars.filter.ekonomik': 'Эконом',
+    'cars.filter.econom': 'Эконом',
     'cars.filter.mediumSedan': 'Medium Sedan',
-    'cars.filter.biznes': 'Бизнес',
-    'cars.filter.premium': 'Премиум',
     'cars.filter.suv': 'SUV',
     'cars.filter.minivan': 'Минивэн',
     'cars.filter.luxury': 'Люкс',
     'cars.filter.bigBus': 'Большой автобус',
     'cars.search': 'Поиск авто...',
+    'cars.subtitle': 'Испытайте свободу вождения - выберите автомобиль сейчас',
+    'cars.found': 'автомобилей найдено',
     'cars.price': 'Диапазон цен',
     'cars.price.all': 'Все цены',
     'cars.reset': 'Сбросить',
     'cars.noResults': 'Автомобили не найдены',
     'cars.header': 'Выберите из широкого парка автомобилей',
+    'cars.loadMore': 'Показать больше',
     
     'detail.specs': 'Технические характеристики',
     'detail.seats': 'Мест',
@@ -403,7 +473,10 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.message': 'Ваше сообщение',
     'contact.send': 'Отправить',
     'contact.phone': 'Телефон',
+    'contact.office': 'Офис',
     'contact.address': 'Адрес',
+    'contact.hoursTitle': 'График работы',
+
     
     'footer.description': 'Самый надежный сервис аренды авто в Баку',
     'footer.links': 'Ссылки',
@@ -420,23 +493,31 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.title': 'Выберите идеальный автомобиль',
     'cta.subtitle': 'Лучший сервис аренды авто в Баку',
     'cta.button': 'Связаться сейчас',
+    'cta.floating.buttonLabel': 'Написать нам в WhatsApp',
+    'cta.floating.title': 'Свяжитесь с нами',
+    'cta.floating.subtitle': 'Выберите удобный канал связи',
+    'cta.floating.whatsapp': 'Написать в WhatsApp',
+    'cta.floating.telegram': 'Сообщение в Telegram',
+    'cta.floating.email': 'Отправить письмо',
+    'cta.floating.phone': 'Позвонить нам',
     
-    'blog.mainTitle': 'Блог и последние новости',
-    'blog.title': 'Блог',
-    'blog.subtitle': 'Последние новости и статьи',
-    'blog.readMore': 'Читать далее',
+    'blog.mainTitle': 'Новости и статьи',
+    'blog.title': 'Статьи',
+    'blog.subtitle': 'Актуальные новости и материалы блога',
+    'blog.readMore': 'Подробнее',
     'blog.keepReading': 'Читать далее',
     'blog.meta.date': 'дата',
     'blog.meta.readTime': 'мин чтения',
     'blog.meta.comments': 'комментарии',
-    'blog.author': 'Джимми Дейв',
-    'blog.category.carUpdates': 'Обновления автомобилей',
-    'blog.category.rentalAdvice': 'Советы по аренде',
-    'blog.category.roadTrips': 'Советы по путешествиям',
-    'blog.category.carReview': 'Обзор автомобиля',
-    'blog.category.discovery': 'Открытия',
-    'blog.category.industryNews': 'Новости отрасли',
-    'blog.category.travelTips': 'Советы путешественникам',
+    'blog.author': 'Автор',
+    'blog.categories.news': 'Новости',
+    'blog.categories.blogs': 'Блог',
+    'blog.loading': 'Загрузка...',
+    'blog.empty': 'В этой категории пока нет материалов',
+    'blog.noImage': 'Нет изображения',
+    'blog.notFound': 'Материал не найден',
+    'blog.backToList': 'Вернуться к статьям',
+    'blog.relatedTitle': 'Похожие материалы',
     'blog.pagination.previous': 'Предыдущая',
     'blog.pagination.next': 'Следующая',
     
@@ -461,6 +542,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.success': 'Успешно!',
     'reservation.successMsg': 'Ваше бронирование принято. Мы свяжемся с вами в ближайшее время.',
     'reservation.namePlaceholder': 'Ваше имя и фамилия',
+    'reservation.subtitle': 'Заполните форму бронирования, и мы свяжемся с вами',
+    'reservation.selectCountryCode': 'Выберите код страны',
+    'reservation.searchCountryCode': 'Поиск кода страны',
+    'reservation.noCountryResults': 'Страна не найдена',
+    'reservation.phoneNumberPlaceholder': 'Номер телефона',
+    'reservation.totalPrice': 'Итоговая стоимость',
+    'reservation.submitting': 'Отправка...',
+    'common.back': 'Назад',
     
     // FAQ
     'faq.title': 'Часто задаваемые вопросы',
@@ -497,6 +586,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Contact additional
     'contact.visitUs': 'ПОСЕТИТЕ НАС',
+    'contact.sendMessage': 'Отправить сообщение',
     'contact.firstNamePlaceholder': 'Ваше имя',
     'contact.lastNamePlaceholder': 'Ваша фамилия',
     'contact.emailPlaceholder': 'Ваш e-mail адрес',
@@ -508,9 +598,29 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.hours.saturday': 'Суббота: 10:00 - 16:00',
     'contact.hours.sunday': 'Воскресенье: Закрыто',
     'contact.error.fillRequired': 'Пожалуйста, заполните все обязательные поля',
+    'contact.error.sendFailed': 'Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.',
     'contact.success': 'Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.',
   },
   en: {
+    // Common
+    'common.loading': 'Loading...',
+    'common.noImage': 'No image',
+    'services.empty': 'No services yet',
+    'services.moreFeatures': '+{{count}} more...',
+    'services.detail.notFound': 'Service not found',
+    'services.detail.backToList': 'Back to services',
+    'services.detail.relatedCars': 'Vehicles available for this service',
+    'services.detail.features': 'Service Features',
+    'services.detail.price.perDay': 'Daily',
+    'services.detail.price.perWeek': 'Weekly',
+    'services.detail.price.perMonth': 'Monthly',
+    'about.storyTitle': 'Our Story',
+    'about.galleryAlt': 'Company image',
+    'cars.search.noResults': 'No results found',
+    'cars.search.adjustFilters': 'Adjust filters and search again',
+    'cars.search.resetCategories': 'Reset categories',
+    'cars.search.resetDates': 'Reset dates',
+
     // New Services (Comprehensive)
     'services.comprehensive.title.part1': 'Comprehensive',
     'services.comprehensive.title.part2': 'Car Rental',
@@ -528,19 +638,20 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.services': 'Services',
     'nav.about': 'About',
     'nav.contact': 'Contact',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Articles',
     'nav.reserve': 'Reserve',
     
     'hero.title': 'Premium Car Rental in Baku',
     'hero.subtitle': 'Car rental from 55 AZN',
     'hero.cta': 'Reserve Now',
     'hero.selectCar': 'Choose Your Ideal Car',
-    'hero.tagline': 'Fast and Easy Way to Rent a Car',
-    'hero.headline.part1': 'Explore the world with',
-    'hero.headline.part2': 'comfortable car',
-    'hero.description': 'Embark on unforgettable adventures and discover the country in unparalleled comfort and style with our fleet of exceptionally comfortable cars.',
+    'hero.tagline': 'First class car rental service in Azerbaijan',
+    'hero.headline.part1': 'Rental Cars From Just',
+    'hero.headline.part2': '50₼/Day without Deposit',
+    'hero.description': 'Our cars meet all required standards and we offer rentals on the most profitable conditions across the Republic of Azerbaijan.',
     'hero.booking.question': 'What type of car would you like to rent?',
     'hero.booking.vehicleType': 'Vehicle Type',
+    'hero.booking.search': 'Search cars',
     'hero.booking.pickupLocation': 'Pick Up Location',
     'hero.booking.dropoffLocation': 'Drop Off Location',
     'hero.booking.pickupDate': 'Pick Up Date',
@@ -583,26 +694,30 @@ const translations: Record<Language, Record<string, string>> = {
     
     'cars.title': 'Popular Cars',
     'cars.perDay': 'day',
+    'cars.day': 'day',
+    'cars.week': 'week',
+    'cars.month': 'month',
     'cars.viewAll': 'View All Cars',
     'cars.viewDetails': 'View Details',
     'cars.comprehensive.title.part1': 'Wide Selection',
     'cars.comprehensive.title.part2': 'Of Cars',
     'cars.comprehensive.subtitle': 'From economy to luxury cars, we have a wide selection for every need.',
     'cars.filter.all': 'All',
-    'cars.filter.ekonomik': 'Economy Cars',
+    'cars.filter.econom': 'Econom',
     'cars.filter.mediumSedan': 'Medium Sedan',
-    'cars.filter.biznes': 'Business Cars',
-    'cars.filter.premium': 'Premium',
     'cars.filter.suv': 'SUV Type Cars',
     'cars.filter.minivan': 'Minivans',
     'cars.filter.luxury': 'Luxury',
     'cars.filter.bigBus': 'Big Bus',
     'cars.search': 'Search cars...',
+    'cars.subtitle': 'Experience the freedom of driving - choose your car now',
+    'cars.found': 'cars found',
     'cars.price': 'Price Range',
     'cars.price.all': 'All prices',
     'cars.reset': 'Reset',
     'cars.noResults': 'No cars found',
     'cars.header': 'Choose from our wide range of vehicles',
+    'cars.loadMore': 'Load more',
     
     'detail.specs': 'Specifications',
     'detail.seats': 'Seats',
@@ -647,7 +762,10 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.message': 'Your Message',
     'contact.send': 'Send',
     'contact.phone': 'Phone',
+    'contact.office': 'Office',
     'contact.address': 'Address',
+    'contact.hoursTitle': 'Working Hours',
+
     
     'footer.description': 'Most reliable car rental service in Baku',
     'footer.links': 'Links',
@@ -664,23 +782,31 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.title': 'Choose Your Perfect Car',
     'cta.subtitle': 'Best car rental service in Baku',
     'cta.button': 'Contact Now',
+    'cta.floating.buttonLabel': 'Contact us on WhatsApp',
+    'cta.floating.title': 'Get in touch',
+    'cta.floating.subtitle': 'Choose the channel that suits you best',
+    'cta.floating.whatsapp': 'Chat via WhatsApp',
+    'cta.floating.telegram': 'Message on Telegram',
+    'cta.floating.email': 'Send an email',
+    'cta.floating.phone': 'Call us',
     
-    'blog.mainTitle': 'Blog and Latest News',
-    'blog.title': 'Blog',
-    'blog.subtitle': 'Latest news and articles',
-    'blog.readMore': 'Read More',
-    'blog.keepReading': 'Keep Reading',
+    'blog.mainTitle': 'News & Articles',
+    'blog.title': 'Articles',
+    'blog.subtitle': 'Latest company news and blog posts',
+    'blog.readMore': 'Read more',
+    'blog.keepReading': 'Keep reading',
     'blog.meta.date': 'date',
-    'blog.meta.readTime': 'mins read',
+    'blog.meta.readTime': 'min read',
     'blog.meta.comments': 'comments',
-    'blog.author': 'Jimmy Dave',
-    'blog.category.carUpdates': 'Car Updates',
-    'blog.category.rentalAdvice': 'Rental Advice',
-    'blog.category.roadTrips': 'Road Trips',
-    'blog.category.carReview': 'Car Review',
-    'blog.category.discovery': 'Discovery',
-    'blog.category.industryNews': 'Industry News',
-    'blog.category.travelTips': 'Travel Tips',
+    'blog.author': 'Author',
+    'blog.categories.news': 'News',
+    'blog.categories.blogs': 'Blog posts',
+    'blog.loading': 'Loading...',
+    'blog.empty': 'No articles in this category yet',
+    'blog.noImage': 'No image',
+    'blog.notFound': 'Article not found',
+    'blog.backToList': 'Back to articles',
+    'blog.relatedTitle': 'Related articles',
     'blog.pagination.previous': 'Previous',
     'blog.pagination.next': 'Next',
     
@@ -705,6 +831,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.success': 'Success!',
     'reservation.successMsg': 'Your reservation has been received. We will contact you shortly.',
     'reservation.namePlaceholder': 'Your full name',
+    'reservation.subtitle': 'Complete the booking form and our team will contact you',
+    'reservation.selectCountryCode': 'Select country code',
+    'reservation.searchCountryCode': 'Search country code',
+    'reservation.noCountryResults': 'No matching country',
+    'reservation.phoneNumberPlaceholder': 'Phone number',
+    'reservation.totalPrice': 'Total price',
+    'reservation.submitting': 'Submitting...',
+    'common.back': 'Back',
     
     // FAQ
     'faq.title': 'Frequently Asked Questions',
@@ -741,6 +875,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Contact additional
     'contact.visitUs': 'VISIT US',
+    'contact.sendMessage': 'Send Message',
     'contact.firstNamePlaceholder': 'Your first name',
     'contact.lastNamePlaceholder': 'Your last name',
     'contact.emailPlaceholder': 'Your email address',
@@ -752,9 +887,29 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.hours.saturday': 'Saturday: 10am - 4pm',
     'contact.hours.sunday': 'Sunday: Closed',
     'contact.error.fillRequired': 'Please fill in all required fields',
+    'contact.error.sendFailed': 'An error occurred while sending the message. Please try again.',
     'contact.success': 'Your message has been sent successfully! We will contact you shortly.',
   },
   ar: {
+    // Common
+    'common.loading': 'جارٍ التحميل...',
+    'common.noImage': 'لا توجد صورة',
+    'services.empty': 'لا توجد خدمات بعد',
+    'services.moreFeatures': '+{{count}} المزيد...',
+    'services.detail.notFound': 'الخدمة غير موجودة',
+    'services.detail.backToList': 'العودة إلى الخدمات',
+    'services.detail.relatedCars': 'السيارات المناسبة لهذه الخدمة',
+    'services.detail.features': 'مزايا الخدمة',
+    'services.detail.price.perDay': 'يوميًا',
+    'services.detail.price.perWeek': 'أسبوعيًا',
+    'services.detail.price.perMonth': 'شهريًا',
+    'about.storyTitle': 'قصتنا',
+    'about.galleryAlt': 'صورة الشركة',
+    'cars.search.noResults': 'لا توجد نتائج',
+    'cars.search.adjustFilters': 'عدّل عوامل التصفية وحاول مرة أخرى',
+    'cars.search.resetCategories': 'إعادة تعيين الفئات',
+    'cars.search.resetDates': 'إعادة تعيين التواريخ',
+
     // New Services (Comprehensive)
     'services.comprehensive.title.part1': 'خدمات',
     'services.comprehensive.title.part2': 'تأجير السيارات',
@@ -772,19 +927,20 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.services': 'الخدمات',
     'nav.about': 'عن الشركة',
     'nav.contact': 'اتصل بنا',
-    'nav.blog': 'المدونة',
+    'nav.blog': 'المقالات',
     'nav.reserve': 'احجز الآن',
     
     'hero.title': 'تأجير سيارات فاخرة في باكو',
     'hero.subtitle': 'تأجير السيارات من 55 مانات',
     'hero.cta': 'احجز الآن',
     'hero.selectCar': 'اختر سيارتك المثالية',
-    'hero.tagline': 'طريقة سريعة وسهلة لتأجير سيارة',
-    'hero.headline.part1': 'استكشف العالم',
-    'hero.headline.part2': 'بسيارة مريحة',
-    'hero.description': 'انطلق في مغامرات لا تُنسى واكتشف البلد براحة لا مثيل لها وأناقة مع أسطولنا من السيارات المريحة بشكل استثنائي.',
+    'hero.tagline': 'خدمة تأجير سيارات من الدرجة الأولى في أذربيجان',
+    'hero.headline.part1': 'تأجير سيارات ابتداءً من',
+    'hero.headline.part2': '50 مانات/اليوم بدون وديعة',
+    'hero.description': 'سياراتنا مطابقة لجميع المعايير المطلوبة ونوفر لك التأجير بشروط مربحة في جميع أنحاء جمهورية أذربيجان.',
     'hero.booking.question': 'ما نوع السيارة التي ترغب في تأجيرها؟',
     'hero.booking.vehicleType': 'نوع السيارة',
+    'hero.booking.search': 'ابحث عن السيارات',
     'hero.booking.pickupLocation': 'مكان الاستلام',
     'hero.booking.dropoffLocation': 'مكان التسليم',
     'hero.booking.pickupDate': 'تاريخ الاستلام',
@@ -827,26 +983,30 @@ const translations: Record<Language, Record<string, string>> = {
     
     'cars.title': 'السيارات الشعبية',
     'cars.perDay': 'يوم',
+    'cars.day': 'يوم',
+    'cars.week': 'أسبوع',
+    'cars.month': 'شهر',
     'cars.viewAll': 'عرض جميع السيارات',
     'cars.viewDetails': 'عرض التفاصيل',
     'cars.comprehensive.title.part1': 'مجموعة واسعة',
     'cars.comprehensive.title.part2': 'من السيارات',
     'cars.comprehensive.subtitle': 'من الاقتصادية إلى السيارات الفاخرة، لدينا مجموعة واسعة لكل احتياج.',
     'cars.filter.all': 'الكل',
-    'cars.filter.ekonomik': 'اقتصادي',
+    'cars.filter.econom': 'اقتصادي',
     'cars.filter.mediumSedan': 'Medium Sedan',
-    'cars.filter.biznes': 'أعمال',
-    'cars.filter.premium': 'فاخر',
     'cars.filter.suv': 'SUV',
     'cars.filter.minivan': 'حافلة صغيرة',
     'cars.filter.luxury': 'فاخرة',
     'cars.filter.bigBus': 'حافلة كبيرة',
     'cars.search': 'البحث عن السيارات...',
+    'cars.subtitle': 'استمتع بحرية القيادة - اختر سيارتك الآن',
+    'cars.found': 'سيارة تم العثور عليها',
     'cars.price': 'نطاق السعر',
     'cars.price.all': 'جميع الأسعار',
     'cars.reset': 'إعادة تعيين',
     'cars.noResults': 'لم يتم العثور على سيارات',
     'cars.header': 'اختر من مجموعة واسعة من السيارات',
+    'cars.loadMore': 'عرض المزيد',
     
     'detail.specs': 'المواصفات',
     'detail.seats': 'المقاعد',
@@ -891,7 +1051,10 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.message': 'رسالتك',
     'contact.send': 'إرسال',
     'contact.phone': 'الهاتف',
+    'contact.office': 'مكتب',
     'contact.address': 'العنوان',
+    'contact.hoursTitle': 'ساعات العمل',
+
     
     'footer.description': 'أكثر خدمة تأجير سيارات موثوقة في باكو',
     'footer.links': 'روابط',
@@ -908,23 +1071,31 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.title': 'اختر سيارتك المثالية',
     'cta.subtitle': 'أفضل خدمة تأجير سيارات في باكو',
     'cta.button': 'اتصل الآن',
+    'cta.floating.buttonLabel': 'تواصل معنا عبر واتساب',
+    'cta.floating.title': 'تواصل معنا',
+    'cta.floating.subtitle': 'اختر قناة التواصل الأنسب لك',
+    'cta.floating.whatsapp': 'تواصل عبر واتساب',
+    'cta.floating.telegram': 'أرسل رسالة عبر تيليغرام',
+    'cta.floating.email': 'أرسل بريدًا إلكترونيًا',
+    'cta.floating.phone': 'اتصل بنا',
     
-    'blog.mainTitle': 'المدونة وأحدث الأخبار',
-    'blog.title': 'المدونة',
-    'blog.subtitle': 'أحدث الأخبار والمقالات',
+    'blog.mainTitle': 'الأخبار والمقالات',
+    'blog.title': 'المقالات',
+    'blog.subtitle': 'أحدث الأخبار ومحتوى المدونة',
     'blog.readMore': 'اقرأ المزيد',
-    'blog.keepReading': 'تابع القراءة',
+    'blog.keepReading': 'متابعة القراءة',
     'blog.meta.date': 'التاريخ',
-    'blog.meta.readTime': 'دقائق قراءة',
+    'blog.meta.readTime': 'دقائق القراءة',
     'blog.meta.comments': 'تعليقات',
-    'blog.author': 'جيمي ديف',
-    'blog.category.carUpdates': 'تحديثات السيارات',
-    'blog.category.rentalAdvice': 'نصائح التأجير',
-    'blog.category.roadTrips': 'نصائح السفر',
-    'blog.category.carReview': 'مراجعة السيارة',
-    'blog.category.discovery': 'استكشاف',
-    'blog.category.industryNews': 'أخبار الصناعة',
-    'blog.category.travelTips': 'نصائح السفر',
+    'blog.author': 'الكاتب',
+    'blog.categories.news': 'الأخبار',
+    'blog.categories.blogs': 'مدونة',
+    'blog.loading': 'جاري التحميل...',
+    'blog.empty': 'لا توجد مقالات في هذه الفئة بعد',
+    'blog.noImage': 'لا توجد صورة',
+    'blog.notFound': 'المقال غير موجود',
+    'blog.backToList': 'العودة إلى المقالات',
+    'blog.relatedTitle': 'مقالات ذات صلة',
     'blog.pagination.previous': 'السابق',
     'blog.pagination.next': 'التالي',
     
@@ -949,6 +1120,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reservation.success': 'نجاح!',
     'reservation.successMsg': 'تم استلام حجزك. سنتصل بك قريبًا.',
     'reservation.namePlaceholder': 'اسمك الكامل',
+    'reservation.subtitle': 'أكمل نموذج الحجز وسيتواصل معك فريقنا',
+    'reservation.selectCountryCode': 'اختر مفتاح الدولة',
+    'reservation.searchCountryCode': 'ابحث عن رمز الدولة',
+    'reservation.noCountryResults': 'لا توجد دولة مطابقة',
+    'reservation.phoneNumberPlaceholder': 'رقم الهاتف',
+    'reservation.totalPrice': 'السعر الإجمالي',
+    'reservation.submitting': 'جاري الإرسال...',
+    'common.back': 'رجوع',
     
     // FAQ
     'faq.title': 'الأسئلة المتكررة',
@@ -985,6 +1164,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Contact additional
     'contact.visitUs': 'زرنا',
+    'contact.sendMessage': 'إرسال رسالة',
     'contact.firstNamePlaceholder': 'اسمك الأول',
     'contact.lastNamePlaceholder': 'اسم عائلتك',
     'contact.emailPlaceholder': 'عنوان بريدك الإلكتروني',
@@ -996,14 +1176,28 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.hours.saturday': 'السبت: 10 صباحاً - 4 مساءً',
     'contact.hours.sunday': 'الأحد: مغلق',
     'contact.error.fillRequired': 'يرجى ملء جميع الحقول المطلوبة',
+    'contact.error.sendFailed': 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.',
     'contact.success': 'تم إرسال رسالتك بنجاح! سنتصل بك قريباً.',
   },
+};
+
+const updateMetaTag = (attribute: 'name' | 'property', identifier: string, content: string) => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  let tag = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${identifier}"]`);
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute(attribute, identifier);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', content);
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('az');
+  const [language, setLanguage] = useState<Language>('en');
 
   useEffect(() => {
     const savedLang = localStorage.getItem('language') as Language;
@@ -1011,6 +1205,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setLanguage(savedLang);
       document.documentElement.lang = savedLang;
       document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+    } else {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
     }
   }, []);
 
@@ -1020,6 +1217,29 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   };
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    const config = SEO_CONFIG[language];
+    if (!config) {
+      return;
+    }
+    const ogTitle = config.ogTitle ?? config.title;
+    const ogDescription = config.ogDescription ?? config.description;
+    const image = config.image ?? DEFAULT_OG_IMAGE;
+
+    document.title = config.title;
+    updateMetaTag('name', 'description', config.description);
+    updateMetaTag('name', 'keywords', config.keywords.join(', '));
+    updateMetaTag('property', 'og:title', ogTitle);
+    updateMetaTag('property', 'og:description', ogDescription);
+    updateMetaTag('property', 'og:image', image);
+    updateMetaTag('name', 'twitter:title', ogTitle);
+    updateMetaTag('name', 'twitter:description', ogDescription);
+    updateMetaTag('name', 'twitter:image', image);
+  }, [language]);
 
   const t = (key: string): string => {
     return translations[language][key] || key;

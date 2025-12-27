@@ -64,6 +64,33 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/9ee2c8c9-ef1c-457a-be31-bf6266495654) and click on Share -> Publish.
 
+### Manual server deployment (new.carrentbaku.az)
+
+When deploying directly on the DigitalOcean droplet, follow these steps to avoid wiping user-generated uploads (blog images, etc.):
+
+1. SSH into the server and move to the project directory:
+
+   ```bash
+   cd /var/www/new.carrentbaku.az/source
+   ```
+
+2. Install dependencies (once) and build:
+
+   ```bash
+   npm install
+   npm run build
+   ```
+
+3. Sync the new build to `public_html` while preserving the `uploads` directory:
+
+   ```bash
+   rsync -a --delete --exclude 'uploads/' dist/ ../public_html/
+   ```
+
+4. Restart the Node server (`/usr/bin/node --import tsx server/index.ts`).
+
+> ⚠️ Never run `rsync` with `--delete` against `public_html` without excluding the `uploads/` directory—doing so will erase all uploaded blog images.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

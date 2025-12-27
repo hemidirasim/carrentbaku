@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { api } from '@/lib/api';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -21,25 +21,17 @@ import { toast } from 'sonner';
 interface BlogPost {
   id: string;
   title_az: string;
-  title_ru?: string;
-  title_en?: string;
-  title_ar?: string;
   slug: string;
-  content_az: string;
-  content_ru?: string;
-  content_en?: string;
-  content_ar?: string;
-  excerpt_az?: string;
-  excerpt_ru?: string;
-  excerpt_en?: string;
-  excerpt_ar?: string;
-  image_url?: string;
   author?: string;
+  category: string;
   published: boolean;
-  published_at?: string;
+  published_at?: string | null;
   created_at: string;
-  updated_at: string;
 }
+
+type ArticleCategory = 'news' | 'blogs';
+
+type AdminCategoryFilter = 'all' | 'news' | 'blogs';
 
 const AdminBlog = () => {
   const { user } = useAdmin();
@@ -47,19 +39,25 @@ const AdminBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<AdminCategoryFilter>('all');
 
   useEffect(() => {
     loadPosts();
   }, []);
 
+  const categoryLabels = useMemo(() => ({
+    news: 'Yeniliklər',
+    blogs: 'Bloq yazıları',
+  }), []);
+
   const loadPosts = async () => {
     try {
       setLoading(true);
-      const data = await api.blog.getAll(false);
-      setPosts(data || []);
+      const data = await api.blog.getAll();
+      setPosts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading posts:', error);
-      toast.error('Yazıları yükləməkdə xəta baş verdi');
+      toast.error('Məqalələri yükləməkdə xəta baş verdi');
     } finally {
       setLoading(false);
     }
@@ -83,10 +81,17 @@ const AdminBlog = () => {
     }
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.title_az.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.slug.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPosts = posts
+    .filter(post => {
+      if (categoryFilter === 'all') {
+        return true;
+      }
+      return post.category === categoryFilter;
+    })
+    .filter(post =>
+      post.title_az.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.slug.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,8 +104,8 @@ const AdminBlog = () => {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">Blog & Xəbərlər İdarəetməsi</h1>
-                <p className="text-muted-foreground">Blog yazılarını idarə edin</p>
+                <h1 className="text-2xl font-bold">Məqalələr & Yeniliklər</h1>
+                <p className="text-muted-foreground">Bloq və xəbər yazılarını idarə edin</p>
               </div>
             </div>
             <Button onClick={() => navigate('/admin/blog/new')}>
@@ -112,17 +117,34 @@ const AdminBlog = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Search */}
-        <div className="mb-6">
-          <div className="relative">
+      <main className="container mx-auto px-4 py-8 space-y-6">
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="relative md:w-1/2">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Yazılarda axtar..."
+              placeholder="Məqalələrdə axtar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
+          </div>
+          <div className="flex items-center gap-2">
+            {(
+              [
+                { value: 'all', label: 'Hamısı' },
+                { value: 'news', label: categoryLabels.news },
+                { value: 'blogs', label: categoryLabels.blogs },
+              ] as { value: AdminCategoryFilter; label: string }[]
+            ).map(option => (
+              <Button
+                key={option.value}
+                variant={categoryFilter === option.value ? 'default' : 'outline'}
+                onClick={() => setCategoryFilter(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -132,12 +154,18 @@ const AdminBlog = () => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">Yüklənir...</p>
           </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Bu kateqoriyada yazı tapılmadı</p>
+          </div>
         ) : (
           <Card>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Başlıq</TableHead>
+                  <TableHead>Kateqoriya</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Müəllif</TableHead>
                   <TableHead>Status</TableHead>
@@ -149,6 +177,7 @@ const AdminBlog = () => {
                 {filteredPosts.map((post) => (
                   <TableRow key={post.id}>
                     <TableCell className="font-medium">{post.title_az}</TableCell>
+                    <TableCell>{categoryLabels[(post.category as ArticleCategory)] || post.category}</TableCell>
                     <TableCell className="text-muted-foreground">{post.slug}</TableCell>
                     <TableCell>{post.author || 'Admin'}</TableCell>
                     <TableCell>
@@ -188,13 +217,6 @@ const AdminBlog = () => {
               </TableBody>
             </Table>
           </Card>
-        )}
-
-        {filteredPosts.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Hələ yazı yoxdur</p>
-          </div>
         )}
       </main>
     </div>

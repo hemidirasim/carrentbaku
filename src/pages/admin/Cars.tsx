@@ -23,12 +23,14 @@ interface CarData {
   model: string;
   year: number;
   category: string;
+  categories?: string[];
   price_per_day: number;
   price_per_week?: number | null;
   price_per_month?: number | null;
   fuel_type: string;
   transmission: string;
   seats: number;
+  unavailable_dates?: string[] | null;
   image_url: string[];
   features: string[] | null;
   available: boolean;

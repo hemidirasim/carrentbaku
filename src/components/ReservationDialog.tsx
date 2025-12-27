@@ -11,7 +11,7 @@ import { Calendar as CalendarIcon, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 
 interface ReservationDialogProps {
   open: boolean;
@@ -46,6 +46,7 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
     childSeat: false,
     videoRecorder: false,
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleReset = () => {
     setFormData({ name: '', phone: '', email: '', pickupLocation: '', dropoffLocation: '', childSeat: false, videoRecorder: false });
@@ -75,28 +76,29 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
     }
 
     try {
-      // Calculate total price
-      const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      setSubmitting(true);
+      const days = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
       const totalPrice = days * pricePerDay;
 
-      const { error } = await supabase
-        .from('reservations')
-        .insert([{
-          customer_name: formData.name,
-          customer_phone: formData.phone,
-          customer_email: formData.email,
-          car_id: carId,
-          start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0],
-          pickup_location: formData.pickupLocation,
-          dropoff_location: formData.dropoffLocation,
-          child_seat: formData.childSeat,
-          video_recorder: formData.videoRecorder,
-          total_price: totalPrice,
-          status: 'pending',
-        }]);
+      const payload = {
+        customer_name: formData.name.trim(),
+        customer_phone: formData.phone.trim(),
+        customer_email: formData.email.trim() || null,
+        car_id: carId,
+        pickup_date: startDate.toISOString(),
+        return_date: endDate.toISOString(),
+        pickup_location: formData.pickupLocation,
+        dropoff_location: formData.dropoffLocation,
+        child_seat: formData.childSeat,
+        video_recorder: formData.videoRecorder,
+        total_price: totalPrice,
+        status: 'pending',
+      };
 
-      if (error) throw error;
+      const response = await api.reservations.create(payload);
+      if (response?.error) {
+        throw new Error(response.error);
+      }
 
       toast({
         title: t('reservation.success'),
@@ -114,6 +116,8 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
         description: 'Failed to create reservation',
         variant: 'destructive',
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -318,8 +322,8 @@ const ReservationDialog = ({ open, onOpenChange, carName, carId, pricePerDay = 0
             >
               {t('cars.reset')}
             </Button>
-            <Button type="submit" className="w-full sm:flex-1 bg-gradient-primary">
-              {t('reservation.submit')}
+            <Button type="submit" className="w-full sm:flex-1 bg-gradient-primary" disabled={submitting}>
+              {submitting ? t('reservation.submitting') : t('reservation.submit')}
             </Button>
           </DialogFooter>
         </form>

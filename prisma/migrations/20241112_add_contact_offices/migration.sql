@@ -1,0 +1,2 @@
+ALTER TABLE "ContactInfo"
+ADD COLUMN IF NOT EXISTS "offices" TEXT;

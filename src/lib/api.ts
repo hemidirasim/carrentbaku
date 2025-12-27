@@ -1,4 +1,27 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const getDefaultApiUrl = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    const origin = window.location.origin.replace(/\/$/, '');
+    return `${origin}/api`;
+  }
+  return 'http://localhost:3001/api';
+};
+
+const API_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
+  getDefaultApiUrl();
+
+export type CategoryNameMap = Record<string, string>;
+
+export interface CategoryDto {
+  id: string;
+  slug: string;
+  name: CategoryNameMap;
+  sort_order: number;
+  is_active: boolean;
+  car_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -34,7 +57,23 @@ export const api = {
   },
   // Cars
   cars: {
-    getAll: () => fetch(`${API_URL}/cars`).then(res => res.json()),
+    getAll: (params?: { pickup?: string; dropoff?: string }) => {
+      const url = new URL(`${API_URL}/cars`);
+      if (params) {
+        const searchParams = new URLSearchParams();
+        if (params.pickup) {
+          searchParams.set('pickup', params.pickup);
+        }
+        if (params.dropoff) {
+          searchParams.set('dropoff', params.dropoff);
+        }
+        const queryString = searchParams.toString();
+        if (queryString) {
+          url.search = queryString;
+        }
+      }
+      return fetch(url.toString()).then(res => res.json());
+    },
     getById: (id: string) => fetch(`${API_URL}/cars/${id}`).then(res => res.json()),
     create: (data: any) => 
       authFetch(`${API_URL}/cars`, {
@@ -57,8 +96,9 @@ export const api = {
     getAll: () => authFetch(`${API_URL}/reservations`).then(res => res.json()),
     getById: (id: string) => authFetch(`${API_URL}/reservations/${id}`).then(res => res.json()),
     create: (data: any) =>
-      authFetch(`${API_URL}/reservations`, {
+      fetch(`${API_URL}/reservations`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       }).then(res => res.json()),
     update: (id: string, data: any) =>
@@ -94,16 +134,55 @@ export const api = {
   
   // Categories
   categories: {
-    getAll: () => fetch(`${API_URL}/categories`).then(res => res.json()),
+    getAll: (params?: { includeInactive?: boolean; includeCounts?: boolean }) => {
+      const url = new URL(`${API_URL}/categories`);
+      if (params?.includeInactive) {
+        url.searchParams.set('includeInactive', 'true');
+      }
+      if (params?.includeCounts) {
+        url.searchParams.set('includeCounts', 'true');
+      }
+      return fetch(url.toString()).then(res => res.json());
+    },
+    getById: (id: string, params?: { includeCounts?: boolean }) => {
+      const url = new URL(`${API_URL}/categories/${id}`);
+      if (params?.includeCounts) {
+        url.searchParams.set('includeCounts', 'true');
+      }
+      return authFetch(url.toString()).then(res => res.json());
+    },
+    create: (data: any) =>
+      authFetch(`${API_URL}/categories`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    update: (id: string, data: any) =>
+      authFetch(`${API_URL}/categories/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    delete: (id: string, options?: { force?: boolean }) => {
+      const url = new URL(`${API_URL}/categories/${id}`);
+      if (options?.force) {
+        url.searchParams.set('force', 'true');
+      }
+      return authFetch(url.toString(), {
+        method: 'DELETE',
+      }).then(res => res.json());
+    },
   },
   
   // Blog
   blog: {
-    getAll: (published?: boolean) => {
-      const url = published !== undefined 
-        ? `${API_URL}/blog?published=${published}` 
-        : `${API_URL}/blog`;
-      return fetch(url).then(res => res.json());
+    getAll: (params?: { published?: boolean; category?: string }) => {
+      const url = new URL(`${API_URL}/blog`);
+      if (params?.published !== undefined) {
+        url.searchParams.set('published', String(params.published));
+      }
+      if (params?.category) {
+        url.searchParams.set('category', params.category);
+      }
+      return fetch(url.toString()).then(res => res.json());
     },
     getById: (id: string) => fetch(`${API_URL}/blog/id/${id}`).then(res => res.json()),
     getBySlug: (slug: string) => fetch(`${API_URL}/blog/${slug}`).then(res => res.json()),
@@ -122,15 +201,44 @@ export const api = {
         method: 'DELETE',
       }).then(res => res.json()),
   },
-  
+
+  // Agent Config
+  agent: {
+    get: () => authFetch(`${API_URL}/agent-config`).then(res => res.json()),
+    update: (data: any) =>
+      authFetch(`${API_URL}/agent-config`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    getPrompt: () => fetch(`${API_URL}/agent-config/prompt`).then(res => res.json()),
+  },
+
+
   // Reviews
   reviews: {
-    getAll: (featured?: boolean) => {
-      const url = featured !== undefined 
-        ? `${API_URL}/reviews?featured=${featured}` 
-        : `${API_URL}/reviews`;
-      return fetch(url).then(res => res.json());
+    getAll: (params?: { featured?: boolean }) => {
+      const url = new URL(`${API_URL}/reviews`);
+      if (params?.featured) {
+        url.searchParams.set('featured', 'true');
+      }
+      return fetch(url.toString()).then(res => res.json());
     },
+    getById: (id: string) =>
+      authFetch(`${API_URL}/reviews/${id}`).then(res => res.json()),
+    create: (data: any) =>
+      authFetch(`${API_URL}/reviews`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    update: (id: string, data: any) =>
+      authFetch(`${API_URL}/reviews/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    delete: (id: string) =>
+      authFetch(`${API_URL}/reviews/${id}`, {
+        method: 'DELETE',
+      }).then(res => res.json()),
   },
   
   // About
@@ -143,6 +251,15 @@ export const api = {
       }).then(res => res.json()),
   },
   
+  contactInfo: {
+    get: () => fetch(`${API_URL}/contact-info`).then(res => res.json()),
+    update: (data: any) =>
+      authFetch(`${API_URL}/contact-info`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+  },
+
   // Contact
   contact: {
     getAll: () => authFetch(`${API_URL}/contact`).then(res => res.json()),

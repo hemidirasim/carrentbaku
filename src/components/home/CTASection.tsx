@@ -1,19 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const LOCATION_LABELS = {
+  baku: { az: 'Bakı', ru: 'Баку', en: 'Baku', ar: 'باكو' },
+  ganja: { az: 'Gəncə', ru: 'Гянджа', en: 'Ganja', ar: 'كنجه' },
+  sumqayit: { az: 'Sumqayıt', ru: 'Сумгаит', en: 'Sumqayit', ar: 'سومقاييت' },
+  quba: { az: 'Quba', ru: 'Куба', en: 'Quba', ar: 'قوبا' },
+  sheki: { az: 'Şəki', ru: 'Шеки', en: 'Sheki', ar: 'شاكي' },
+} as const;
+
 const CTASection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [weatherData, setWeatherData] = useState<Record<string, { temperature: number; windspeed: number; time: string }>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const locations = [
-    { key: 'Bakı', latitude: 40.4093, longitude: 49.8671 },
-    { key: 'Gəncə', latitude: 40.6828, longitude: 46.3606 },
-    { key: 'Sumqayıt', latitude: 40.5897, longitude: 49.6686 },
-    { key: 'Quba', latitude: 41.3611, longitude: 48.5122 },
-    { key: 'Şəki', latitude: 41.1919, longitude: 47.1705 },
+    { key: 'baku', latitude: 40.4093, longitude: 49.8671 },
+    { key: 'ganja', latitude: 40.6828, longitude: 46.3606 },
+    { key: 'sumqayit', latitude: 40.5897, longitude: 49.6686 },
+    { key: 'quba', latitude: 41.3611, longitude: 48.5122 },
+    { key: 'sheki', latitude: 41.1919, longitude: 47.1705 },
   ];
+
+  const getLocationName = (key: keyof typeof LOCATION_LABELS) => {
+    const labelSet = LOCATION_LABELS[key];
+    if (!labelSet) return key;
+    return labelSet[language as keyof typeof labelSet] ?? labelSet.az;
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -92,7 +106,7 @@ const CTASection = () => {
                       const data = weatherData[loc.key];
                       return (
                         <div key={loc.key} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 bg-transparent">
-                          <div className="text-slate-800 font-semibold">{loc.key}</div>
+                          <div className="text-slate-800 font-semibold">{getLocationName(loc.key as keyof typeof LOCATION_LABELS)}</div>
                           {data ? (
                             <div className="text-slate-700 text-sm">
                               <span className="font-bold text-slate-900">{Math.round(data.temperature)}°C</span>

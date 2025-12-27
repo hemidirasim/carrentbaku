@@ -11,6 +11,14 @@ import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
+interface CarOption {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  image_url?: string[] | string;
+}
+
 interface Service {
   id: string;
   title_az: string;
@@ -59,6 +67,36 @@ const ServiceForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
+  const [carsLoading, setCarsLoading] = useState(true);
+  const [availableCars, setAvailableCars] = useState<CarOption[]>([]);
+  const [selectedCarIds, setSelectedCarIds] = useState<string[]>([]);
+  useEffect(() => {
+    let isMounted = true;
+    const loadCars = async () => {
+      try {
+        setCarsLoading(true);
+        const cars = await api.cars.getAll();
+        if (isMounted) {
+          setAvailableCars(Array.isArray(cars) ? cars : []);
+        }
+      } catch (error) {
+        console.error('Error loading cars:', error);
+        if (isMounted) {
+          setAvailableCars([]);
+        }
+      } finally {
+        if (isMounted) {
+          setCarsLoading(false);
+        }
+      }
+    };
+    loadCars();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
 
   useEffect(() => {
     if (isEditing && id) {
@@ -128,6 +166,7 @@ const ServiceForm = () => {
         image_url: imageUrls,
         features: features,
       });
+      setSelectedCarIds(Array.isArray(service.cars) ? service.cars.map(car => car.id) : []);
     } catch (error) {
       console.error('Error loading service:', error);
       toast.error('Xidməti yükləməkdə xəta baş verdi');
@@ -173,6 +212,7 @@ const ServiceForm = () => {
         description_ar: formData.description_ar?.trim() || null,
         image_url: imageUrlJson,
         features: featuresJson,
+        carIds: selectedCarIds,
       };
 
       if (isEditing && id) {
@@ -192,6 +232,17 @@ const ServiceForm = () => {
       setLoading(false);
     }
   };
+
+  const handleToggleCar = (carId: string) => {
+    setSelectedCarIds(prev => {
+      if (prev.includes(carId)) {
+        return prev.filter(id => id !== carId);
+      }
+      return [...prev, carId];
+    });
+  };
+
+  const isCarSelected = (carId: string) => selectedCarIds.includes(carId);
 
   const addFeature = (lang: 'az' | 'ru' | 'en' | 'ar') => {
     const input = featureInputs[lang];
@@ -274,6 +325,39 @@ const ServiceForm = () => {
                   label="Xidmət Şəkilləri (maksimum 3, optional)"
                   maxImages={3}
                 />
+              </div>
+
+              <div>
+                <Label>Xidmət üçün avtomobillər</Label>
+                <p className="text-sm text-muted-foreground">Bir neçə avtomobil seçə bilərsiniz</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {carsLoading ? (
+                    <span className="text-sm text-muted-foreground">Avtomobillər yüklənir...</span>
+                  ) : availableCars.length === 0 ? (
+                    <span className="text-sm text-muted-foreground">Mövcud avtomobil siyahısı boşdur</span>
+                  ) : (
+                    availableCars.map(car => {
+                      const selected = isCarSelected(car.id);
+                      const hasPrice = typeof car.price_per_day === 'number' && !Number.isNaN(car.price_per_day);
+                      return (
+                        <Button
+                          key={car.id}
+                          type="button"
+                          variant="outline"
+                          className={`rounded-full border transition ${selected ? 'bg-gradient-primary text-white border-transparent shadow-lg' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'}`}
+                          onClick={() => handleToggleCar(car.id)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <span className="font-semibold">{car.brand} {car.model}</span>
+                            <span className={selected ? 'text-xs text-white/90' : 'text-xs text-slate-600'}>
+                              {car.year ? `${car.year}` : 'İl məlumatı yoxdur'}{hasPrice ? ` • ${car.price_per_day} AZN/gün` : ''}
+                            </span>
+                          </div>
+                        </Button>
+                      );
+                    })
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">

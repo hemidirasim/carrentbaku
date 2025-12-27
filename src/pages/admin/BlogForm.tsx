@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { api } from '@/lib/api';
@@ -10,6 +10,13 @@ import { ImageGalleryUpload } from '@/components/ui/image-gallery-upload';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 
 interface BlogPost {
   id: string;
@@ -29,17 +36,25 @@ interface BlogPost {
   image_url?: string;
   image_urls?: string[];
   author?: string;
+  category: string;
   published: boolean;
-  published_at?: string;
+  published_at?: string | null;
   created_at: string;
   updated_at: string;
 }
+
+type ArticleCategory = 'news' | 'blogs';
 
 const BlogForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAdmin();
   const isEditing = !!id;
+
+  const categoryOptions = useMemo(() => ([
+    { value: 'news' as ArticleCategory, label: 'Yeniliklər' },
+    { value: 'blogs' as ArticleCategory, label: 'Bloq yazısı' },
+  ]), []);
 
   const [formData, setFormData] = useState({
     title_az: '',
@@ -57,6 +72,7 @@ const BlogForm = () => {
     excerpt_ar: '',
     image_urls: [] as string[],
     author: 'Admin',
+    category: 'news' as ArticleCategory,
     published: false,
   });
 
@@ -71,22 +87,20 @@ const BlogForm = () => {
   const loadPost = async (postId: string) => {
     try {
       setLoading(true);
-      const post = await api.blog.getById(postId);
-      
-      // Parse image_urls from response
-      let imageUrls: string[] = [];
-      if (post.image_urls && Array.isArray(post.image_urls)) {
-        imageUrls = post.image_urls;
-      } else if (post.image_url) {
-        // Try to parse as JSON array
-        try {
-          const parsed = JSON.parse(post.image_url);
-          imageUrls = Array.isArray(parsed) ? parsed : [post.image_url];
-        } catch {
-          imageUrls = [post.image_url];
-        }
-      }
-      
+      const post: BlogPost = await api.blog.getById(postId);
+      const imageUrls: string[] = Array.isArray(post.image_urls)
+        ? post.image_urls
+        : post.image_url
+        ? (() => {
+            try {
+              const parsed = JSON.parse(post.image_url as string);
+              return Array.isArray(parsed) ? parsed : [post.image_url as string];
+            } catch {
+              return [post.image_url as string];
+            }
+          })()
+        : [];
+
       setFormData({
         title_az: post.title_az || '',
         title_ru: post.title_ru || '',
@@ -103,6 +117,7 @@ const BlogForm = () => {
         excerpt_ar: post.excerpt_ar || '',
         image_urls: imageUrls,
         author: post.author || 'Admin',
+        category: (post.category as ArticleCategory) || 'news',
         published: post.published || false,
       });
     } catch (error: any) {
@@ -132,13 +147,12 @@ const BlogForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
+
     if (!formData.title_az.trim()) {
       toast.error('Azərbaycan başlığı məcburidir');
       return;
     }
-    
+
     if (!formData.content_az.trim()) {
       toast.error('Azərbaycan məzmunu məcburidir');
       return;
@@ -151,7 +165,7 @@ const BlogForm = () => {
 
     try {
       setLoading(true);
-      
+
       const submitData = {
         ...formData,
         published_at: formData.published ? new Date().toISOString() : null,
@@ -198,174 +212,184 @@ const BlogForm = () => {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold">{isEditing ? 'Yazı Redaktə Et' : 'Yeni Yazı Yarat'}</h1>
-                <p className="text-muted-foreground">{isEditing ? 'Yazı məlumatlarını yeniləyin' : 'Yeni blog yazısı əlavə edin'}</p>
+                <p className="text-muted-foreground">Məqalənin bütün dillərdə məzmununu əlavə edin</p>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Form */}
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
         <Card>
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Başlıq (AZ) *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title_az">Azərbaycan Başlığı *</Label>
                   <Input
+                    id="title_az"
                     value={formData.title_az}
                     onChange={(e) => handleTitleChange(e.target.value, 'az')}
-                    required
-                    placeholder="Yazı başlığı"
                   />
                 </div>
-                <div>
-                  <Label>Slug (URL) *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="title_ru">Rus Başlığı</Label>
                   <Input
-                    value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    required
-                    placeholder="yazi-basligi"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Başlıq (RU)</Label>
-                  <Input
+                    id="title_ru"
                     value={formData.title_ru}
                     onChange={(e) => handleTitleChange(e.target.value, 'ru')}
-                    placeholder="Заголовок"
                   />
                 </div>
-                <div>
-                  <Label>Başlıq (EN)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="title_en">İngilis Başlığı</Label>
                   <Input
+                    id="title_en"
                     value={formData.title_en}
                     onChange={(e) => handleTitleChange(e.target.value, 'en')}
-                    placeholder="Title"
                   />
                 </div>
-                <div>
-                  <Label>Başlıq (AR)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="title_ar">Ərəb Başlığı</Label>
                   <Input
+                    id="title_ar"
                     value={formData.title_ar}
                     onChange={(e) => handleTitleChange(e.target.value, 'ar')}
-                    placeholder="العنوان"
                   />
                 </div>
               </div>
 
-              <div>
-                <Label>Məzmun (AZ) *</Label>
-                <Textarea
-                  value={formData.content_az}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content_az: e.target.value }))}
-                  rows={8}
-                  required
-                  placeholder="Yazının məzmunu..."
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="slug">Slug *</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Kateqoriya *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value: ArticleCategory) =>
+                      setFormData(prev => ({ ...prev, category: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Kateqoriya seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoryOptions.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="author">Müəllif</Label>
+                <Input
+                  id="author"
+                  value={formData.author}
+                  onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Məzmun (RU)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Azərbaycan Açıqlaması</Label>
                   <Textarea
-                    value={formData.content_ru}
-                    onChange={(e) => setFormData(prev => ({ ...prev, content_ru: e.target.value }))}
-                    rows={6}
-                    placeholder="Содержание..."
+                    value={formData.excerpt_az}
+                    onChange={(e) => setFormData(prev => ({ ...prev, excerpt_az: e.target.value }))}
+                    rows={3}
                   />
                 </div>
-                <div>
-                  <Label>Məzmun (EN)</Label>
-                  <Textarea
-                    value={formData.content_en}
-                    onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
-                    rows={6}
-                    placeholder="Content..."
-                  />
-                </div>
-                <div>
-                  <Label>Məzmun (AR)</Label>
-                  <Textarea
-                    value={formData.content_ar}
-                    onChange={(e) => setFormData(prev => ({ ...prev, content_ar: e.target.value }))}
-                    rows={6}
-                    placeholder="المحتوى..."
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Qısa Təsvir (AZ)</Label>
-                <Textarea
-                  value={formData.excerpt_az}
-                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_az: e.target.value }))}
-                  rows={3}
-                  placeholder="Yazının qısa təsviri..."
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Qısa Təsvir (RU)</Label>
+                <div className="space-y-2">
+                  <Label>Rus Açıqlaması</Label>
                   <Textarea
                     value={formData.excerpt_ru}
                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt_ru: e.target.value }))}
                     rows={3}
-                    placeholder="Краткое описание..."
                   />
                 </div>
-                <div>
-                  <Label>Qısa Təsvir (EN)</Label>
+                <div className="space-y-2">
+                  <Label>İngilis Açıqlaması</Label>
                   <Textarea
                     value={formData.excerpt_en}
                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt_en: e.target.value }))}
                     rows={3}
-                    placeholder="Excerpt..."
                   />
                 </div>
-                <div>
-                  <Label>Qısa Təsvir (AR)</Label>
+                <div className="space-y-2">
+                  <Label>Ərəb Açıqlaması</Label>
                   <Textarea
                     value={formData.excerpt_ar}
                     onChange={(e) => setFormData(prev => ({ ...prev, excerpt_ar: e.target.value }))}
                     rows={3}
-                    placeholder="مقتطف..."
                   />
                 </div>
               </div>
 
-              <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Azərbaycan Məzmunu *</Label>
+                  <Textarea
+                    value={formData.content_az}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_az: e.target.value }))}
+                    rows={8}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Rus Məzmunu</Label>
+                  <Textarea
+                    value={formData.content_ru}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_ru: e.target.value }))}
+                    rows={8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>İngilis Məzmunu</Label>
+                  <Textarea
+                    value={formData.content_en}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
+                    rows={8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Ərəb Məzmunu</Label>
+                  <Textarea
+                    value={formData.content_ar}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_ar: e.target.value }))}
+                    rows={8}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Şəkillər</Label>
                 <ImageGalleryUpload
                   value={formData.image_urls}
-                  onChange={(urls) => setFormData(prev => ({ ...prev, image_urls: urls }))}
-                  folder="blog"
-                  label="Blog Şəkilləri (maksimum 5 şəkil)"
-                  maxImages={5}
+                  onChange={(value) => setFormData(prev => ({ ...prev, image_urls: value }))}
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="published"
-                  checked={formData.published}
-                  onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
-                  className="w-4 h-4 rounded"
-                />
-                <Label htmlFor="published">Dərc et</Label>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => navigate('/admin/blog')}>
-                  Ləğv et
-                </Button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="published"
+                    checked={formData.published}
+                    onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
+                  />
+                  <Label htmlFor="published">Yayımda görünsün</Label>
+                </div>
                 <Button type="submit" disabled={loading}>
-                  {loading ? 'Yüklənir...' : (isEditing ? 'Yenilə' : 'Yarat')}
+                  {loading ? 'Yadda saxlanır...' : (isEditing ? 'Yenilə' : 'Yarat')}
                 </Button>
               </div>
             </form>

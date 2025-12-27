@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, Fuel, Calendar, Shield, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ReservationDialog from '@/components/ReservationDialog';
 import { api } from '@/lib/api';
 
 interface Car {
@@ -13,6 +12,7 @@ interface Car {
   brand: string;
   model: string;
   category: string;
+  categories?: string[];
   image_url: string[] | string;
   price_per_day: number;
   price_per_week?: number | null;
@@ -29,7 +29,6 @@ const CarDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [reservationOpen, setReservationOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
@@ -331,7 +330,7 @@ const CarDetail = () => {
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                         {/* Gün */}
                         <div className="rounded-lg p-2 sm:p-3 text-center bg-[#7b1020]">
-                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-white mb-1">{t("cars.day")}</div>
                           <div className="flex flex-col items-center">
                             <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white">{car.price_per_day}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-white/90">AZN</span>
@@ -339,7 +338,7 @@ const CarDetail = () => {
                         </div>
                         {/* Həftə */}
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
-                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">{t("cars.week")}</div>
                           <div className="flex flex-col items-center">
                             <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-900">{car.price_per_week || car.price_per_day * 7}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
@@ -347,7 +346,7 @@ const CarDetail = () => {
                         </div>
                         {/* Ay */}
                         <div className="rounded-lg p-2 sm:p-3 text-center border border-border">
-                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
+                          <div className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-slate-900 mb-1">{t("cars.month")}</div>
                           <div className="flex flex-col items-center">
                             <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-slate-900">{car.price_per_month || car.price_per_day * 30}</span>
                             <span className="text-[10px] sm:text-xs font-semibold text-slate-700">AZN</span>
@@ -358,7 +357,7 @@ const CarDetail = () => {
 
                     <Button 
                       className="w-full bg-gradient-primary text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6"
-                      onClick={() => setReservationOpen(true)}
+                      onClick={() => navigate(`/reserve?carId=${car.id}`)}
                       disabled={!car.available}
                     >
                       {car.available ? t('detail.reserve') : 'Mövcud deyil'}
@@ -388,11 +387,6 @@ const CarDetail = () => {
         </div>
       </section>
 
-      <ReservationDialog
-        open={reservationOpen}
-        onOpenChange={setReservationOpen}
-        carName={getCarName()}
-      />
     </div>
   );
 };

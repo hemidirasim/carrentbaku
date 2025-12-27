@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,11 +23,14 @@ interface BlogPost {
   excerpt_ar?: string;
   image_url?: string;
   author?: string;
+  category: string;
   published: boolean;
   published_at?: string;
   created_at: string;
   updated_at: string;
 }
+
+type ArticleCategory = 'news' | 'blogs';
 
 const BlogDetail = () => {
   const { id } = useParams();
@@ -37,10 +40,14 @@ const BlogDetail = () => {
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
 
+  const categoryLabels = useMemo(() => ({
+    news: t('blog.categories.news'),
+    blogs: t('blog.categories.blogs'),
+  }), [t]);
+
   useEffect(() => {
     if (id) {
       loadPost(id);
-      loadRelatedPosts();
     }
   }, [id]);
 
@@ -48,22 +55,30 @@ const BlogDetail = () => {
     try {
       setLoading(true);
       const data = await api.blog.getBySlug(slug);
-      setPost(data);
+      if (data) {
+        setPost(data);
+        loadRelatedPosts(data.category, data.slug);
+      } else {
+        setPost(null);
+      }
     } catch (error) {
-      console.error('Error loading blog post:', error);
+      console.error('Error loading article:', error);
+      setPost(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadRelatedPosts = async () => {
+  const loadRelatedPosts = async (category: string, currentSlug: string) => {
     try {
-      const data = await api.blog.getAll(true);
-      // Exclude current post and get first 2
-      const filtered = (data || []).filter((p: BlogPost) => p.slug !== id).slice(0, 2);
+      const data = await api.blog.getAll({ published: true, category });
+      const filtered = (Array.isArray(data) ? data : [])
+        .filter((p: BlogPost) => p.slug !== currentSlug)
+        .slice(0, 2);
       setRelatedPosts(filtered);
     } catch (error) {
-      console.error('Error loading related posts:', error);
+      console.error('Error loading related articles:', error);
+      setRelatedPosts([]);
     }
   };
 
@@ -115,7 +130,7 @@ const BlogDetail = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Yüklənir...</p>
+          <p className="mt-2 text-muted-foreground">{t('blog.loading')}</p>
         </div>
       </div>
     );
@@ -125,8 +140,8 @@ const BlogDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Məqalə tapılmadı</h2>
-          <Button onClick={() => navigate('/blog')}>Bloqa qayıt</Button>
+          <h2 className="text-2xl font-bold mb-4">{t('blog.notFound')}</h2>
+          <Button onClick={() => navigate('/blog')}>{t('blog.backToList')}</Button>
         </div>
       </div>
     );
@@ -136,20 +151,24 @@ const BlogDetail = () => {
   const postContent = getPostContent(post);
   const postDate = post.published_at || post.created_at;
   const readTime = calculateReadTime(post.content_az);
+  const categoryLabel = categoryLabels[(post.category as ArticleCategory) || 'blogs'] || post.category;
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <section className="bg-gradient-primary py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={() => navigate('/blog')}
-            className="text-white hover:bg-white/10 mb-4"
+            className="text-white hover:bg-white/10"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
-            Bloqa qayıt
+            {t('blog.backToList')}
           </Button>
+          <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            {categoryLabel}
+          </span>
         </div>
       </section>
 
@@ -200,43 +219,46 @@ const BlogDetail = () => {
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Əlaqəli Məqalələr</h2>
+            <section className="mt-16">
+              <h2 className="text-2xl font-bold mb-6">{t('blog.relatedTitle')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {relatedPosts.map((relatedPost) => {
-                  const relatedTitle = getPostTitle(relatedPost);
-                  const relatedExcerpt = getPostExcerpt(relatedPost);
-                  const relatedDate = relatedPost.published_at || relatedPost.created_at;
+                {relatedPosts.map((related) => {
+                  const relatedTitle = getPostTitle(related);
+                  const relatedExcerpt = getPostExcerpt(related);
+                  const relatedDate = related.published_at || related.created_at;
+                  const relatedReadTime = calculateReadTime(related.content_az);
 
                   return (
-                    <Card
-                      key={relatedPost.id}
-                      className="cursor-pointer hover:shadow-elegant transition-all"
-                      onClick={() => navigate(`/blog/${relatedPost.slug}`)}
+                    <Card 
+                      key={related.id}
+                      className="hover:shadow-elegant transition-all cursor-pointer"
+                      onClick={() => navigate(`/blog/${related.slug}`)}
                     >
-                      {relatedPost.image_url && (
-                        <div className="relative h-48 overflow-hidden rounded-t-lg">
+                      {related.image_url && (
+                        <div className="rounded-t-lg overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
                           <img
-                            src={relatedPost.image_url}
+                            src={related.image_url}
                             alt={relatedTitle}
                             className="w-full h-full object-cover"
                           />
                         </div>
                       )}
-                      <CardContent className="pt-4">
-                        <h3 className="font-bold mb-2 line-clamp-2">{relatedTitle}</h3>
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                          <span>{formatDate(relatedDate)}</span>
+                          <span>•</span>
+                          <span>{relatedReadTime}</span>
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2 line-clamp-2">{relatedTitle}</h3>
                         {relatedExcerpt && (
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                            {relatedExcerpt}
-                          </p>
+                          <p className="text-sm text-muted-foreground line-clamp-3">{relatedExcerpt}</p>
                         )}
-                        <p className="text-sm text-muted-foreground">{formatDate(relatedDate)}</p>
                       </CardContent>
                     </Card>
                   );
                 })}
               </div>
-            </div>
+            </section>
           )}
         </div>
       </article>

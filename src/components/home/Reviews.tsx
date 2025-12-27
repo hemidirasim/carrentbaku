@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { api } from '@/lib/api';
 import { Star, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import {
   Carousel,
@@ -20,25 +21,113 @@ interface ReviewCard {
   videoUrl?: string;
 }
 
+const toEmbedUrl = (input: string): string => {
+  try {
+    const trimmed = input.trim();
+    if (!trimmed) {
+      return '';
+    }
+    const url = new URL(trimmed);
+    const host = url.hostname.toLowerCase();
+    const segments = url.pathname.split('/').filter(Boolean);
+    let videoId = '';
+
+    if (host.includes('youtube.com')) {
+      if (segments[0] === 'shorts' && segments[1]) {
+        videoId = segments[1];
+      } else if (segments[0] === 'embed' && segments[1]) {
+        videoId = segments[1];
+      } else if (url.searchParams.has('v')) {
+        videoId = url.searchParams.get('v') ?? '';
+      }
+    } else if (host.includes('youtu.be')) {
+      if (segments[0] === 'shorts' && segments[1]) {
+        videoId = segments[1];
+      } else if (segments[0]) {
+        videoId = segments[0];
+      }
+    }
+
+    videoId = videoId.split('?')[0].split('&')[0];
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return trimmed;
+  } catch {
+    return input;
+  }
+};
+
 const Reviews = () => {
-  const { t } = useLanguage();
-  const [api, setApi] = useState<CarouselApi>();
+  const { t, language } = useLanguage();
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const [reviews, setReviews] = useState<ReviewCard[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!api) return;
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const data = await api.reviews.getAll({ featured: true });
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((item: any): ReviewCard => {
+            const getLocalized = (prefix: string) => {
+              const value = item[`${prefix}_${language}`];
+              if (typeof value === 'string' && value.trim()) {
+                return value.trim();
+              }
+              const fallback = item[`${prefix}_az`];
+              return typeof fallback === 'string' ? fallback.trim() : '';
+            };
 
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
+            const text = getLocalized('content');
+            const title = getLocalized('title');
+            const location = typeof item.customer_location === 'string' ? item.customer_location : '';
+            const rating = Number.isFinite(item.rating) ? Math.min(5, Math.max(1, Number(item.rating))) : 5;
+            const type = item.review_type === 'video' ? 'video' : 'text';
+            const videoUrl = type === 'video' && typeof item.video_url === 'string' ? toEmbedUrl(item.video_url) : undefined;
 
-    api.on('select', () => {
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
+            return {
+              type,
+              title: title || t('reviews.card1.title'),
+              text: text || t('reviews.review1.text'),
+              name: (item.customer_name || '').trim() || 'Müştəri',
+              location,
+              rating,
+              videoUrl,
+            };
+          }).filter(card => card.text.trim().length > 0 || card.videoUrl);
+          setReviews(mapped);
+        } else {
+          setReviews([]);
+        }
+      } catch (error) {
+        console.error('Error loading reviews:', error);
+        setReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [language, t]);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    setCanScrollPrev(carouselApi.canScrollPrev());
+    setCanScrollNext(carouselApi.canScrollNext());
+
+    carouselApi.on('select', () => {
+      setCanScrollPrev(carouselApi.canScrollPrev());
+      setCanScrollNext(carouselApi.canScrollNext());
     });
-  }, [api]);
+  }, [carouselApi]);
 
-  const cards: ReviewCard[] = [
+  const defaultCards: ReviewCard[] = [
     {
       type: 'text',
       title: t('reviews.card1.title'),
@@ -109,6 +198,20 @@ const Reviews = () => {
     },
   ];
 
+  const activeCards = reviews.length > 0 ? reviews : defaultCards;
+
+  if (loading && reviews.length === 0) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -126,7 +229,7 @@ const Reviews = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => api?.scrollPrev()}
+              onClick={() => carouselApi?.scrollPrev()}
               disabled={!canScrollPrev}
               className="bg-white border border-border text-slate-700 hover:bg-slate-50"
             >
@@ -135,7 +238,7 @@ const Reviews = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => api?.scrollNext()}
+              onClick={() => carouselApi?.scrollNext()}
               disabled={!canScrollNext}
               className="bg-white border border-border text-slate-700 hover:bg-slate-50"
             >
@@ -144,16 +247,15 @@ const Reviews = () => {
           </div>
         </div>
         <div className="relative">
-          <Carousel opts={{ align: 'start', loop: true }} setApi={setApi} className="w-full">
+          <Carousel opts={{ align: 'start', loop: true }} setApi={setCarouselApi} className="w-full">
             <CarouselContent>
-              {cards.map((c, i) => (
+              {activeCards.map((c, i) => (
                 <CarouselItem key={i} className="md:basis-2/3 lg:basis-1/2">
                   <Card className="border-border overflow-hidden h-full">
                     {c.type === 'video' && c.videoUrl ? (
                       <CardContent className="p-0">
                         <div className="flex flex-col md:flex-row h-full">
                           <div className="flex-1 p-6">
-                            <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
                             <p className="text-muted-foreground mb-6">{c.text}</p>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -186,7 +288,6 @@ const Reviews = () => {
                       </CardContent>
                     ) : (
                       <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
                         <p className="text-muted-foreground mb-6">{c.text}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">

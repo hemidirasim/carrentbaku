@@ -124,11 +124,11 @@ const Services = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">Yüklənir...</p>
+              <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
             </div>
           ) : services.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Hələ xidmət yoxdur</p>
+              <p className="text-muted-foreground">{t('services.empty')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -166,7 +166,7 @@ const Services = () => {
                           ))}
                           {features.length > 3 && (
                             <div className="text-sm text-muted-foreground">
-                              +{features.length - 3} daha...
+                              {t('services.moreFeatures').replace('{{count}}', String(features.length - 3))}
                             </div>
                           )}
                         </div>

@@ -1,33 +1,61 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '@/lib/api';
+import { api, CategoryDto } from '@/lib/api';
+import { resolveLocalizedValue } from '@/hooks/useContactInfo';
 
 interface Car {
   id: string;
   brand: string;
   model: string;
   category: string;
+  categories?: string[];
   image_url: string[] | string;
   price_per_day: number;
   price_per_week?: number | null;
   price_per_month?: number | null;
   seats: number;
+  unavailable_dates?: string[] | null;
   fuel_type: string;
   available: boolean;
 }
 
+const INITIAL_VISIBLE_CARS = 12;
+
 const FeaturedCars = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('ekonomik');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CARS);
 
   useEffect(() => {
     loadCars();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadCategories = async () => {
+      try {
+        const data = await api.categories.getAll({ includeInactive: false, includeCounts: true });
+        if (isMounted) {
+          setCategories(Array.isArray(data) ? (data as CategoryDto[]) : []);
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        if (isMounted) {
+          setCategories([]);
+        }
+      }
+    };
+    loadCategories();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const loadCars = async () => {
@@ -69,24 +97,104 @@ const FeaturedCars = () => {
   };
 
   const getCarName = (car: Car) => {
-    return `${car.brand} ${car.model}`;
+    const yearLabel = car.year ? ` (${car.year})` : '';
+    return `${car.brand} ${car.model}${yearLabel}`;
   };
 
-  const categories = [
-    { id: 'all', label: 'Hamısı' },
-    { id: 'ekonomik', label: 'Ekonom' },
-    { id: 'medium-sedan', label: 'Medium Sedan' },
-    { id: 'biznes', label: 'Biznes' },
-    { id: 'premium', label: 'Premium' },
-    { id: 'suv', label: 'SUV' },
-    { id: 'minivan', label: 'Minivan' },
-    { id: 'luxury', label: 'Luxury' },
-    { id: 'big-bus', label: 'Big Bus' },
-  ];
+  const activeCategories = useMemo(() => {
+    return categories
+      .filter(category => category?.is_active)
+      .sort((a, b) => {
+        if ((a?.sort_order ?? 0) !== (b?.sort_order ?? 0)) {
+          return (a?.sort_order ?? 0) - (b?.sort_order ?? 0);
+        }
+        const labelA = resolveLocalizedValue(a.name, language);
+        const labelB = resolveLocalizedValue(b.name, language);
+        return labelA.localeCompare(labelB);
+      });
+  }, [categories, language]);
 
-  const filteredCars = selectedCategory === 'all' 
-    ? cars 
-    : cars.filter(car => car.category === selectedCategory);
+  const availableCategorySlugs = useMemo(() => activeCategories.map(category => category.slug), [activeCategories]);
+
+  const categoryOrderMap = useMemo(() => {
+    const map = new Map<string, number>();
+    activeCategories.forEach((category, index) => {
+      map.set(category.slug, index);
+    });
+    return map;
+  }, [activeCategories]);
+
+  const getCategoryLabel = (category: CategoryDto) => {
+    const label = resolveLocalizedValue(category.name, language);
+    if (label && label.trim().length > 0) {
+      return label;
+    }
+    return category.slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const allLabel = t('cars.filter.all');
+
+  const handleSelectAll = () => {
+    setSelectedCategory(null);
+  };
+
+  const handleToggleCategory = (categoryId: string) => {
+    if (!availableCategorySlugs.includes(categoryId)) {
+      return;
+    }
+    setSelectedCategory(prev => (prev === categoryId ? null : categoryId));
+  };
+
+  useEffect(() => {
+    if (selectedCategory === null) {
+      setVisibleCount(INITIAL_VISIBLE_CARS);
+    }
+  }, [selectedCategory]);
+
+  const getCarCategories = (car: Car): string[] => {
+    if (Array.isArray((car as any).categories) && (car as any).categories.length > 0) {
+      return (car as any).categories.filter((category: unknown): category is string => typeof category === 'string' && category.trim() !== '');
+    }
+    return car.category ? [car.category] : [];
+  };
+
+  const getPrimaryCategoryOrder = (car: Car): number => {
+    const carCategories = getCarCategories(car);
+    const orders = carCategories
+      .map(category => categoryOrderMap.get(category))
+      .filter((value): value is number => typeof value === 'number');
+    if (orders.length > 0) {
+      return Math.min(...orders);
+    }
+    return Number.MAX_SAFE_INTEGER;
+  };
+
+  const isAllSelected = selectedCategory === null;
+
+  const filteredCars = useMemo(() => {
+    const base = isAllSelected
+      ? cars
+      : cars.filter(car => {
+          const carCategories = getCarCategories(car);
+          return selectedCategory ? carCategories.includes(selectedCategory) : true;
+        });
+
+    if (isAllSelected) {
+      return [...base].sort((a, b) => getPrimaryCategoryOrder(a) - getPrimaryCategoryOrder(b));
+    }
+
+    return base;
+  }, [cars, isAllSelected, selectedCategory, categoryOrderMap]);
+
+  const displayedCars = isAllSelected ? filteredCars.slice(0, visibleCount) : filteredCars;
+  const canLoadMore = isAllSelected && visibleCount < filteredCars.length;
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => Math.min(prev + INITIAL_VISIBLE_CARS, filteredCars.length));
+  };
 
   if (loading) {
     return (
@@ -113,21 +221,33 @@ const FeaturedCars = () => {
           
           {/* Category Filter */}
           <div className="flex flex-wrap justify-start gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory(category.id)}
-                className={selectedCategory === category.id ? 'bg-gradient-primary' : ''}
-              >
-                {category.label}
-              </Button>
-            ))}
+            <Button
+              type="button"
+              variant="outline"
+              className={`rounded-full border transition ${isAllSelected ? 'bg-gradient-primary text-white border-transparent shadow-lg' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'}`}
+              onClick={handleSelectAll}
+            >
+              {allLabel !== 'cars.filter.all' ? allLabel : t('cars.filter.all')}
+            </Button>
+            {activeCategories.map(category => {
+              const selected = selectedCategory === category.slug;
+              return (
+                <Button
+                  key={category.id}
+                  type="button"
+                  variant="outline"
+                  className={`rounded-full border transition ${selected ? 'bg-gradient-primary text-white border-transparent shadow-lg' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'}`}
+                  onClick={() => handleToggleCategory(category.slug)}
+                >
+                  {getCategoryLabel(category)}
+                </Button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {filteredCars.map((car) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+          {displayedCars.map((car) => (
             <Card 
               key={car.id}
               className="group overflow-hidden hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 cursor-pointer"
@@ -146,12 +266,12 @@ const FeaturedCars = () => {
                   <span className="text-white font-semibold text-sm sm:text-base drop-shadow">{getCarName(car)}</span>
                 </div>
               </div>
-              
-              <CardContent className="p-4">
+
+              <CardContent className="p-4 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
                   {/* Gün */}
                   <div className="rounded-lg p-3 text-center bg-[#7b1020]">
-                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-white mb-1">gün</div>
+                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-white mb-1">{t('services.detail.price.perDay')}</div>
                     <div className="flex flex-col items-center">
                       <span className="text-2xl font-bold text-white">{car.price_per_day}</span>
                       <span className="text-sm font-semibold text-white/90">AZN</span>
@@ -159,7 +279,7 @@ const FeaturedCars = () => {
                   </div>
                   {/* Həftə */}
                   <div className="rounded-lg p-3 text-center border border-border">
-                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">həftə</div>
+                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">{t('services.detail.price.perWeek')}</div>
                     <div className="flex flex-col items-center">
                       <span className="text-xl font-bold text-slate-900">{car.price_per_week || car.price_per_day * 7}</span>
                       <span className="text-xs font-semibold text-slate-700">AZN</span>
@@ -167,17 +287,35 @@ const FeaturedCars = () => {
                   </div>
                   {/* Ay */}
                   <div className="rounded-lg p-3 text-center border border-border">
-                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">ay</div>
+                    <div className="text-base md:text-lg font-extrabold uppercase tracking-wide text-slate-900 mb-1">{t('services.detail.price.perMonth')}</div>
                     <div className="flex flex-col items-center">
                       <span className="text-xl font-extrabold text-slate-900">{car.price_per_month || car.price_per_day * 30}</span>
                       <span className="text-xs font-semibold text-slate-700">AZN</span>
                     </div>
                   </div>
                 </div>
+                <Button
+                  type="button"
+                  className="w-full bg-gradient-primary text-white"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/reserve?carId=${car.id}`);
+                  }}
+                >
+                  {t('nav.reserve')}
+                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {canLoadMore && (
+          <div className="flex justify-center">
+            <Button variant="outline" onClick={handleLoadMore}>
+              {t('cars.loadMore')}
+            </Button>
+          </div>
+        )}
 
         {/* Bottom button removed previously; keeping section minimal with prices only */}
       </div>

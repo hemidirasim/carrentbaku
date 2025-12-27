@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,14 @@ interface BlogPost {
   excerpt_ar?: string;
   image_url?: string;
   author?: string;
+  category: string;
   published: boolean;
   published_at?: string;
   created_at: string;
   updated_at: string;
 }
+
+type ArticleCategory = 'blogs';
 
 const Blog = () => {
   const { t, language } = useLanguage();
@@ -36,6 +39,7 @@ const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 6;
+  const categoryLabel = useMemo(() => t('blog.categories.blogs'), [t]);
 
   useEffect(() => {
     loadPosts();
@@ -44,11 +48,12 @@ const Blog = () => {
   const loadPosts = async () => {
     try {
       setLoading(true);
-      // Fetch only published posts
-      const data = await api.blog.getAll(true);
-      setPosts(data || []);
+      const data = await api.blog.getAll({ published: true, category: 'blogs' });
+      setPosts(Array.isArray(data) ? data : []);
+      setCurrentPage(1);
     } catch (error) {
-      console.error('Error loading blog posts:', error);
+      console.error('Error loading articles:', error);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -88,7 +93,8 @@ const Blog = () => {
     return `${minutes} dəq`;
   };
 
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
+
+  const totalPages = Math.ceil(posts.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentPosts = posts.slice(startIndex, endIndex);
@@ -98,9 +104,18 @@ const Blog = () => {
       {/* Page Header */}
       <section className="bg-gradient-primary py-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-white text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-6">
             {t('blog.mainTitle')}
           </h1>
+          <div className="flex justify-center">
+            <Button
+              variant="default"
+              className="bg-white text-primary hover:bg-white cursor-default"
+              disabled
+            >
+              {categoryLabel}
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -110,11 +125,11 @@ const Blog = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">Yüklənir...</p>
+              <p className="mt-2 text-muted-foreground">{t('blog.loading')}</p>
             </div>
           ) : posts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Hələ məqalə yoxdur</p>
+              <p className="text-muted-foreground">{t('blog.empty')}</p>
             </div>
           ) : (
             <>
@@ -145,9 +160,12 @@ const Blog = () => {
                             />
                           ) : (
                             <div className="w-full h-full bg-muted flex items-center justify-center">
-                              <span className="text-muted-foreground">Şəkil yoxdur</span>
+                              <span className="text-muted-foreground">{t('blog.noImage')}</span>
                             </div>
                           )}
+                        </div>
+                        <div className="absolute top-3 left-3 bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                          {categoryLabel}
                         </div>
                       </div>
 
@@ -178,7 +196,6 @@ const Blog = () => {
                       </CardContent>
 
                       <CardFooter className="pt-0 pb-6 flex items-center justify-start">
-                        {/* Keep Reading Button */}
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -202,47 +219,19 @@ const Blog = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="rounded-lg"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-
-                  {[...Array(totalPages)].map((_, index) => {
-                    const page = index + 1;
-                    if (
-                      page === 1 ||
-                      page === totalPages ||
-                      (page >= currentPage - 1 && page <= currentPage + 1) ||
-                      (page === currentPage - 2 && currentPage > 3) ||
-                      (page === currentPage + 2 && currentPage < totalPages - 2)
-                    ) {
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          onClick={() => setCurrentPage(page)}
-                          className={`rounded-lg ${currentPage === page ? 'bg-primary text-white' : ''}`}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    } else if (
-                      page === currentPage - 2 ||
-                      page === currentPage + 2
-                    ) {
-                      return <span key={page} className="px-2">...</span>;
-                    }
-                    return null;
-                  })}
-
+                  <span className="text-sm text-muted-foreground">
+                    {currentPage} / {totalPages}
+                  </span>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="rounded-lg"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>

@@ -1,0 +1,745 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar as CalendarIcon, ChevronDown, ChevronLeft } from 'lucide-react';
+import { format } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
+
+interface Car {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  categories?: string[];
+  image_url: string[] | string;
+  price_per_day: number;
+  seats: number;
+  fuel_type: string;
+  transmission: string;
+  available: boolean;
+  year: number;
+  features: string[];
+}
+
+const COUNTRY_CODES = [
+  { code: '+93', label: 'Afghanistan (+93)' },
+  { code: '+355', label: 'Albania (+355)' },
+  { code: '+213', label: 'Algeria (+213)' },
+  { code: '+376', label: 'Andorra (+376)' },
+  { code: '+244', label: 'Angola (+244)' },
+  { code: '+1-268', label: 'Antigua and Barbuda (+1-268)' },
+  { code: '+54', label: 'Argentina (+54)' },
+  { code: '+374', label: 'Armenia (+374)' },
+  { code: '+297', label: 'Aruba (+297)' },
+  { code: '+61', label: 'Australia (+61)' },
+  { code: '+43', label: 'Austria (+43)' },
+  { code: '+994', label: 'Azerbaijan (+994)' },
+  { code: '+1-242', label: 'Bahamas (+1-242)' },
+  { code: '+973', label: 'Bahrain (+973)' },
+  { code: '+880', label: 'Bangladesh (+880)' },
+  { code: '+1-246', label: 'Barbados (+1-246)' },
+  { code: '+375', label: 'Belarus (+375)' },
+  { code: '+32', label: 'Belgium (+32)' },
+  { code: '+501', label: 'Belize (+501)' },
+  { code: '+229', label: 'Benin (+229)' },
+  { code: '+1-441', label: 'Bermuda (+1-441)' },
+  { code: '+975', label: 'Bhutan (+975)' },
+  { code: '+591', label: 'Bolivia (+591)' },
+  { code: '+387', label: 'Bosnia and Herzegovina (+387)' },
+  { code: '+267', label: 'Botswana (+267)' },
+  { code: '+55', label: 'Brazil (+55)' },
+  { code: '+246', label: 'British Indian Ocean Territory (+246)' },
+  { code: '+1-284', label: 'British Virgin Islands (+1-284)' },
+  { code: '+673', label: 'Brunei (+673)' },
+  { code: '+359', label: 'Bulgaria (+359)' },
+  { code: '+226', label: 'Burkina Faso (+226)' },
+  { code: '+257', label: 'Burundi (+257)' },
+  { code: '+855', label: 'Cambodia (+855)' },
+  { code: '+237', label: 'Cameroon (+237)' },
+  { code: '+1', label: 'Canada (+1)' },
+  { code: '+238', label: 'Cape Verde (+238)' },
+  { code: '+1-345', label: 'Cayman Islands (+1-345)' },
+  { code: '+236', label: 'Central African Republic (+236)' },
+  { code: '+235', label: 'Chad (+235)' },
+  { code: '+56', label: 'Chile (+56)' },
+  { code: '+86', label: 'China (+86)' },
+  { code: '+57', label: 'Colombia (+57)' },
+  { code: '+269', label: 'Comoros (+269)' },
+  { code: '+242', label: 'Congo (+242)' },
+  { code: '+243', label: 'Congo, Democratic Republic (+243)' },
+  { code: '+682', label: 'Cook Islands (+682)' },
+  { code: '+506', label: 'Costa Rica (+506)' },
+  { code: '+385', label: 'Croatia (+385)' },
+  { code: '+53', label: 'Cuba (+53)' },
+  { code: '+599', label: 'Curacao (+599)' },
+  { code: '+357', label: 'Cyprus (+357)' },
+  { code: '+420', label: 'Czech Republic (+420)' },
+  { code: '+45', label: 'Denmark (+45)' },
+  { code: '+253', label: 'Djibouti (+253)' },
+  { code: '+1-767', label: 'Dominica (+1-767)' },
+  { code: '+1-809', label: 'Dominican Republic (+1-809)' },
+  { code: '+670', label: 'East Timor (+670)' },
+  { code: '+593', label: 'Ecuador (+593)' },
+  { code: '+20', label: 'Egypt (+20)' },
+  { code: '+503', label: 'El Salvador (+503)' },
+  { code: '+240', label: 'Equatorial Guinea (+240)' },
+  { code: '+291', label: 'Eritrea (+291)' },
+  { code: '+372', label: 'Estonia (+372)' },
+  { code: '+251', label: 'Ethiopia (+251)' },
+  { code: '+500', label: 'Falkland Islands (+500)' },
+  { code: '+298', label: 'Faroe Islands (+298)' },
+  { code: '+679', label: 'Fiji (+679)' },
+  { code: '+358', label: 'Finland (+358)' },
+  { code: '+33', label: 'France (+33)' },
+  { code: '+689', label: 'French Polynesia (+689)' },
+  { code: '+241', label: 'Gabon (+241)' },
+  { code: '+220', label: 'Gambia (+220)' },
+  { code: '+995', label: 'Georgia (+995)' },
+  { code: '+49', label: 'Germany (+49)' },
+  { code: '+233', label: 'Ghana (+233)' },
+  { code: '+350', label: 'Gibraltar (+350)' },
+  { code: '+30', label: 'Greece (+30)' },
+  { code: '+299', label: 'Greenland (+299)' },
+  { code: '+1-473', label: 'Grenada (+1-473)' },
+  { code: '+590', label: 'Guadeloupe (+590)' },
+  { code: '+1-671', label: 'Guam (+1-671)' },
+  { code: '+502', label: 'Guatemala (+502)' },
+  { code: '+44-1481', label: 'Guernsey (+44-1481)' },
+  { code: '+224', label: 'Guinea (+224)' },
+  { code: '+245', label: 'Guinea-Bissau (+245)' },
+  { code: '+592', label: 'Guyana (+592)' },
+  { code: '+509', label: 'Haiti (+509)' },
+  { code: '+504', label: 'Honduras (+504)' },
+  { code: '+852', label: 'Hong Kong (+852)' },
+  { code: '+36', label: 'Hungary (+36)' },
+  { code: '+354', label: 'Iceland (+354)' },
+  { code: '+91', label: 'India (+91)' },
+  { code: '+62', label: 'Indonesia (+62)' },
+  { code: '+98', label: 'Iran (+98)' },
+  { code: '+964', label: 'Iraq (+964)' },
+  { code: '+353', label: 'Ireland (+353)' },
+  { code: '+44-1624', label: 'Isle of Man (+44-1624)' },
+  { code: '+972', label: 'Israel (+972)' },
+  { code: '+39', label: 'Italy (+39)' },
+  { code: '+1-876', label: 'Jamaica (+1-876)' },
+  { code: '+81', label: 'Japan (+81)' },
+  { code: '+44-1534', label: 'Jersey (+44-1534)' },
+  { code: '+962', label: 'Jordan (+962)' },
+  { code: '+7', label: 'Kazakhstan (+7)' },
+  { code: '+254', label: 'Kenya (+254)' },
+  { code: '+686', label: 'Kiribati (+686)' },
+  { code: '+383', label: 'Kosovo (+383)' },
+  { code: '+965', label: 'Kuwait (+965)' },
+  { code: '+996', label: 'Kyrgyzstan (+996)' },
+  { code: '+856', label: 'Laos (+856)' },
+  { code: '+371', label: 'Latvia (+371)' },
+  { code: '+961', label: 'Lebanon (+961)' },
+  { code: '+266', label: 'Lesotho (+266)' },
+  { code: '+231', label: 'Liberia (+231)' },
+  { code: '+218', label: 'Libya (+218)' },
+  { code: '+423', label: 'Liechtenstein (+423)' },
+  { code: '+370', label: 'Lithuania (+370)' },
+  { code: '+352', label: 'Luxembourg (+352)' },
+  { code: '+853', label: 'Macau (+853)' },
+  { code: '+389', label: 'North Macedonia (+389)' },
+  { code: '+261', label: 'Madagascar (+261)' },
+  { code: '+265', label: 'Malawi (+265)' },
+  { code: '+60', label: 'Malaysia (+60)' },
+  { code: '+960', label: 'Maldives (+960)' },
+  { code: '+223', label: 'Mali (+223)' },
+  { code: '+356', label: 'Malta (+356)' },
+  { code: '+692', label: 'Marshall Islands (+692)' },
+  { code: '+596', label: 'Martinique (+596)' },
+  { code: '+222', label: 'Mauritania (+222)' },
+  { code: '+230', label: 'Mauritius (+230)' },
+  { code: '+262', label: 'Mayotte (+262)' },
+  { code: '+52', label: 'Mexico (+52)' },
+  { code: '+691', label: 'Micronesia (+691)' },
+  { code: '+373', label: 'Moldova (+373)' },
+  { code: '+377', label: 'Monaco (+377)' },
+  { code: '+976', label: 'Mongolia (+976)' },
+  { code: '+382', label: 'Montenegro (+382)' },
+  { code: '+212', label: 'Morocco (+212)' },
+  { code: '+258', label: 'Mozambique (+258)' },
+  { code: '+95', label: 'Myanmar (+95)' },
+  { code: '+264', label: 'Namibia (+264)' },
+  { code: '+674', label: 'Nauru (+674)' },
+  { code: '+977', label: 'Nepal (+977)' },
+  { code: '+31', label: 'Netherlands (+31)' },
+  { code: '+687', label: 'New Caledonia (+687)' },
+  { code: '+64', label: 'New Zealand (+64)' },
+  { code: '+505', label: 'Nicaragua (+505)' },
+  { code: '+227', label: 'Niger (+227)' },
+  { code: '+234', label: 'Nigeria (+234)' },
+  { code: '+683', label: 'Niue (+683)' },
+  { code: '+850', label: 'North Korea (+850)' },
+  { code: '+1-670', label: 'Northern Mariana Islands (+1-670)' },
+  { code: '+47', label: 'Norway (+47)' },
+  { code: '+968', label: 'Oman (+968)' },
+  { code: '+92', label: 'Pakistan (+92)' },
+  { code: '+680', label: 'Palau (+680)' },
+  { code: '+970', label: 'Palestine (+970)' },
+  { code: '+507', label: 'Panama (+507)' },
+  { code: '+675', label: 'Papua New Guinea (+675)' },
+  { code: '+595', label: 'Paraguay (+595)' },
+  { code: '+51', label: 'Peru (+51)' },
+  { code: '+63', label: 'Philippines (+63)' },
+  { code: '+48', label: 'Poland (+48)' },
+  { code: '+351', label: 'Portugal (+351)' },
+  { code: '+1-787', label: 'Puerto Rico (+1-787/939)' },
+  { code: '+974', label: 'Qatar (+974)' },
+  { code: '+262', label: 'Reunion (+262)' },
+  { code: '+40', label: 'Romania (+40)' },
+  { code: '+7', label: 'Russia (+7)' },
+  { code: '+250', label: 'Rwanda (+250)' },
+  { code: '+590', label: 'Saint Barthelemy (+590)' },
+  { code: '+290', label: 'Saint Helena (+290)' },
+  { code: '+1-869', label: 'Saint Kitts and Nevis (+1-869)' },
+  { code: '+1-758', label: 'Saint Lucia (+1-758)' },
+  { code: '+590', label: 'Saint Martin (+590)' },
+  { code: '+508', label: 'Saint Pierre and Miquelon (+508)' },
+  { code: '+1-784', label: 'Saint Vincent and the Grenadines (+1-784)' },
+  { code: '+685', label: 'Samoa (+685)' },
+  { code: '+378', label: 'San Marino (+378)' },
+  { code: '+239', label: 'Sao Tome and Principe (+239)' },
+  { code: '+966', label: 'Saudi Arabia (+966)' },
+  { code: '+221', label: 'Senegal (+221)' },
+  { code: '+381', label: 'Serbia (+381)' },
+  { code: '+248', label: 'Seychelles (+248)' },
+  { code: '+232', label: 'Sierra Leone (+232)' },
+  { code: '+65', label: 'Singapore (+65)' },
+  { code: '+421', label: 'Slovakia (+421)' },
+  { code: '+386', label: 'Slovenia (+386)' },
+  { code: '+677', label: 'Solomon Islands (+677)' },
+  { code: '+252', label: 'Somalia (+252)' },
+  { code: '+27', label: 'South Africa (+27)' },
+  { code: '+82', label: 'South Korea (+82)' },
+  { code: '+34', label: 'Spain (+34)' },
+  { code: '+94', label: 'Sri Lanka (+94)' },
+  { code: '+249', label: 'Sudan (+249)' },
+  { code: '+597', label: 'Suriname (+597)' },
+  { code: '+46', label: 'Sweden (+46)' },
+  { code: '+41', label: 'Switzerland (+41)' },
+  { code: '+963', label: 'Syria (+963)' },
+  { code: '+886', label: 'Taiwan (+886)' },
+  { code: '+992', label: 'Tajikistan (+992)' },
+  { code: '+255', label: 'Tanzania (+255)' },
+  { code: '+66', label: 'Thailand (+66)' },
+  { code: '+228', label: 'Togo (+228)' },
+  { code: '+690', label: 'Tokelau (+690)' },
+  { code: '+676', label: 'Tonga (+676)' },
+  { code: '+1-868', label: 'Trinidad and Tobago (+1-868)' },
+  { code: '+216', label: 'Tunisia (+216)' },
+  { code: '+90', label: 'Turkey (+90)' },
+  { code: '+993', label: 'Turkmenistan (+993)' },
+  { code: '+1-649', label: 'Turks and Caicos (+1-649)' },
+  { code: '+688', label: 'Tuvalu (+688)' },
+  { code: '+256', label: 'Uganda (+256)' },
+  { code: '+380', label: 'Ukraine (+380)' },
+  { code: '+971', label: 'United Arab Emirates (+971)' },
+  { code: '+44', label: 'United Kingdom (+44)' },
+  { code: '+1', label: 'United States (+1)' },
+  { code: '+598', label: 'Uruguay (+598)' },
+  { code: '+998', label: 'Uzbekistan (+998)' },
+  { code: '+678', label: 'Vanuatu (+678)' },
+  { code: '+39-06', label: 'Vatican City (+379)' },
+  { code: '+58', label: 'Venezuela (+58)' },
+  { code: '+84', label: 'Vietnam (+84)' },
+  { code: '+681', label: 'Wallis and Futuna (+681)' },
+  { code: '+967', label: 'Yemen (+967)' },
+  { code: '+260', label: 'Zambia (+260)' },
+  { code: '+263', label: 'Zimbabwe (+263)' },
+];
+
+const ReservationRequest = () => {
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const carId = searchParams.get('carId');
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+
+  const [countryPopoverOpen, setCountryPopoverOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phoneCountry: '+994',
+    phoneNumber: '',
+    email: '',
+    pickupLocation: '',
+    dropoffLocation: '',
+    childSeat: false,
+    videoRecorder: false,
+  });
+
+  const selectedCountry = useMemo(() => {
+    return COUNTRY_CODES.find((item) => item.code === formData.phoneCountry);
+  }, [formData.phoneCountry]);
+
+  const handleSelectCountry = (code: string) => {
+    setFormData((prev) => ({ ...prev, phoneCountry: code }));
+    setCountryPopoverOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchCar = async () => {
+      if (!carId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        const data = await api.cars.getById(carId);
+        setCar(data);
+      } catch (error) {
+        console.error('Error loading car:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCar();
+  }, [carId]);
+
+  const handleReset = () => {
+    setFormData({
+      name: '',
+      phoneCountry: '+994',
+      phoneNumber: '',
+      email: '',
+      pickupLocation: '',
+      dropoffLocation: '',
+      childSeat: false,
+      videoRecorder: false,
+    });
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+
+  const images = useMemo(() => {
+    if (!car) return [] as string[];
+    const parseImageUrl = (url: string | any): string => {
+      if (typeof url === 'string') {
+        try {
+          const parsed = JSON.parse(url);
+          return parsed.url || url;
+        } catch {
+          return url;
+        }
+      }
+      if (url && typeof url === 'object' && url.url) {
+        return url.url;
+      }
+      return url || '';
+    };
+
+    if (Array.isArray(car.image_url)) {
+      return car.image_url.map(parseImageUrl).filter(Boolean);
+    }
+    const normalized = parseImageUrl(car.image_url || '');
+    return normalized ? [normalized] : [];
+  }, [car]);
+
+  const carName = car ? `${car.brand} ${car.model}` : '';
+  const pricePerDay = car?.price_per_day ?? 0;
+
+  const calculateDays = () => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate.toDateString());
+    const end = new Date(endDate.toDateString());
+    const diff = end.getTime() - start.getTime();
+    if (diff <= 0) return 0;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const rentalDays = calculateDays();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (
+      !formData.name.trim() ||
+      !formData.phoneCountry ||
+      !formData.phoneNumber.trim() ||
+      !startDate ||
+      !endDate ||
+      !formData.pickupLocation ||
+      !formData.dropoffLocation
+    ) {
+      toast({
+        title: t('reservation.error'),
+        description: t('reservation.fillAll'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!carId) {
+      toast({
+        title: t('reservation.error'),
+        description: 'Car ID is required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const sanitizedNumber = formData.phoneNumber.replace(/[^\d]/g, '');
+      const phoneValue = `${formData.phoneCountry} ${sanitizedNumber}`.trim();
+
+      const days = calculateDays();
+      const totalPriceForReservation = days * pricePerDay;
+
+      const payload = {
+        customer_name: formData.name.trim(),
+        customer_phone: phoneValue,
+        customer_email: formData.email.trim() || null,
+        car_id: carId,
+        pickup_date: startDate.toISOString(),
+        return_date: endDate.toISOString(),
+        pickup_location: formData.pickupLocation,
+        dropoff_location: formData.dropoffLocation,
+        child_seat: formData.childSeat,
+        video_recorder: formData.videoRecorder,
+        total_price: totalPriceForReservation,
+        status: 'pending',
+      };
+
+      const response = await api.reservations.create(payload);
+      if (response?.error) {
+        throw new Error(response.error);
+      }
+
+      toast({
+        title: t('reservation.success'),
+        description: t('reservation.successMsg'),
+      });
+
+      handleReset();
+      if (carId) {
+        navigate(`/cars/${carId}`);
+      }
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      toast({
+        title: t('reservation.error'),
+        description: 'Failed to create reservation',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
+      <div className="container mx-auto px-4 max-w-5xl space-y-6">
+        <div className="flex items-center justify-between gap-3">
+          <Button variant="ghost" className="flex items-center gap-1" onClick={() => navigate(-1)}>
+            <ChevronLeft className="h-4 w-4" />
+            {t('common.back')}
+          </Button>
+          {car && (
+            <div className="text-sm sm:text-base text-muted-foreground text-right">
+              <div className="font-semibold text-foreground">{carName}</div>
+              <div>
+                {t('detail.price')}: <span className="font-semibold">{pricePerDay} AZN</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {car && (
+          <Card className="overflow-hidden border-border/60">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                {images[0] ? (
+                  <img
+                    src={images[0]}
+                    alt={carName}
+                    className="w-full sm:w-56 h-40 sm:h-36 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="w-full sm:w-56 h-40 sm:h-36 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
+                    {t('cars.noResults')}
+                  </div>
+                )}
+                <div className="flex-1 space-y-2 text-sm sm:text-base">
+                  <div className="text-lg sm:text-xl font-semibold text-foreground">{carName}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-muted-foreground">
+                    <div>{t('detail.seats')}: <span className="text-foreground font-medium">{car.seats}</span></div>
+                    <div>{t('detail.fuel')}: <span className="text-foreground font-medium">{car.fuel_type}</span></div>
+                    <div>{t('detail.year')}: <span className="text-foreground font-medium">{car.year}</span></div>
+                    <div>{t('detail.specs')}: <span className="text-foreground font-medium">{car.transmission}</span></div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="border-border/60">
+          <CardContent className="p-4 sm:p-6">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground">{t('reservation.title')}</h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              {t('reservation.subtitle')}
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">{t('contact.name')} *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder={t('reservation.namePlaceholder')}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('contact.phone')} *</Label>
+                  <div className="grid grid-cols-[140px_1fr] gap-2">
+                    <Popover open={countryPopoverOpen} onOpenChange={setCountryPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full justify-between px-3"
+                        >
+                          {selectedCountry ? (
+                            <span className="font-semibold">{selectedCountry.code}</span>
+                          ) : (
+                            <span className="text-muted-foreground">{t('reservation.selectCountryCode')}</span>
+                          )}
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[320px] p-0 bg-background" align="start" sideOffset={4}>
+                        <Command>
+                          <CommandInput placeholder={t('reservation.searchCountryCode')} />
+                          <CommandEmpty>{t('reservation.noCountryResults')}</CommandEmpty>
+                          <CommandList>
+                            <CommandGroup>
+                              {COUNTRY_CODES.map((item) => {
+                                const name = item.label.split(' (')[0] || item.label;
+                                return (
+                                  <CommandItem
+                                    key={item.code}
+                                    value={`${item.code} ${name}`}
+                                    onSelect={() => handleSelectCountry(item.code)}
+                                  >
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-medium text-foreground">{name}</span>
+                                      <span className="text-xs text-muted-foreground">{item.code}</span>
+                                    </div>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <Input
+                      type="tel"
+                      value={formData.phoneNumber}
+                      onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                      placeholder={t('reservation.phoneNumberPlaceholder')}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">{t('contact.email')}</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="email@example.com"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t('reservation.startDate')} *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, 'dd/MM/yyyy') : t('reservation.select')}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-background" align="start" sideOffset={4}>
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setStartDate(date);
+                            if (endDate) {
+                              const start = new Date(date.toDateString());
+                              const end = new Date(endDate.toDateString());
+                              if (start >= end) {
+                                setEndDate(undefined);
+                              }
+                            }
+                          }
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today;
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('reservation.endDate')} *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                        disabled={!startDate}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, 'dd/MM/yyyy') : t('reservation.select')}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-background" align="start" sideOffset={4}>
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => date && setEndDate(date)}
+                        disabled={(date) => {
+                          if (!startDate) return true;
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const start = new Date(startDate.toDateString());
+                          return date <= start || date < today;
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t('reservation.pickupLocation')} *</Label>
+                  <Select
+                    value={formData.pickupLocation}
+                    onValueChange={(value) => setFormData({ ...formData, pickupLocation: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('reservation.selectLocation')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="office">{t('reservation.location.office')}</SelectItem>
+                      <SelectItem value="airport">{t('reservation.location.airport')}</SelectItem>
+                      <SelectItem value="hotel">{t('reservation.location.hotel')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('reservation.dropoffLocation')} *</Label>
+                  <Select
+                    value={formData.dropoffLocation}
+                    onValueChange={(value) => setFormData({ ...formData, dropoffLocation: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('reservation.selectLocation')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="office">{t('reservation.location.office')}</SelectItem>
+                      <SelectItem value="airport">{t('reservation.location.airport')}</SelectItem>
+                      <SelectItem value="hotel">{t('reservation.location.hotel')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label>{t('reservation.additionalOptions')}</Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="childSeat"
+                    checked={formData.childSeat}
+                    onCheckedChange={(checked) => setFormData({ ...formData, childSeat: checked as boolean })}
+                  />
+                  <label htmlFor="childSeat" className="text-sm">
+                    {t('reservation.options.childSeat')}
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="videoRecorder"
+                    checked={formData.videoRecorder}
+                    onCheckedChange={(checked) => setFormData({ ...formData, videoRecorder: checked as boolean })}
+                  />
+                  <label htmlFor="videoRecorder" className="text-sm">
+                    {t('reservation.options.videoRecorder')}
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleReset}
+                  className="w-full sm:w-auto"
+                  disabled={submitting}
+                >
+                  {t('cars.reset')}
+                </Button>
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto bg-gradient-primary"
+                  disabled={submitting}
+                >
+                  {submitting ? t('reservation.submitting') : t('reservation.submit')}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default ReservationRequest;

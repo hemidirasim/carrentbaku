@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+import 'flatpickr/dist/themes/material_blue.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
-import { api } from '@/lib/api';
+import { resolveLocalizedValue } from '@/hooks/useContactInfo';
+import { api, CategoryDto } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,12 +21,14 @@ interface CarData {
   model: string;
   year: number;
   category: string;
+  categories?: string[];
   price_per_day: number;
   price_per_week?: number | null;
   price_per_month?: number | null;
   fuel_type: string;
   transmission: string;
   seats: number;
+  unavailable_dates?: string[] | null;
   image_url: string[] | string;
   features: string[] | null;
   available: boolean;
@@ -40,10 +46,11 @@ const CarForm = () => {
     brand: '',
     model: '',
     year: new Date().getFullYear(),
-    category: 'ekonomik',
+    categories: [] as string[],
     price_per_day: 0,
     price_per_week: 0,
     price_per_month: 0,
+    unavailable_dates: [] as string[],
     fuel_type: 'petrol',
     transmission: 'automatic',
     seats: 5,
@@ -52,13 +59,99 @@ const CarForm = () => {
     available: true,
   });
 
+  const handleCategoryToggle = (value: string) => {
+    if (!allowedCategorySlugs.includes(value)) {
+      return;
+    }
+    setFormData(prev => {
+      const exists = prev.categories.includes(value);
+      if (exists) {
+        const next = prev.categories.filter(category => category !== value);
+        return { ...prev, categories: next };
+      }
+      return { ...prev, categories: [...prev.categories, value] };
+    });
+  };
+
+  const isCategorySelected = (value: string) => formData.categories.includes(value);
+
   const [loading, setLoading] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<CategoryDto[]>([]);
 
   useEffect(() => {
     if (isEditing && id) {
       loadCar(id);
     }
   }, [id, isEditing]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadCategories = async () => {
+      try {
+        const data = await api.categories.getAll({ includeInactive: false, includeCounts: true });
+        if (isMounted) {
+          setAvailableCategories(Array.isArray(data) ? (data as CategoryDto[]) : []);
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        if (isMounted) {
+          setAvailableCategories([]);
+        }
+      }
+    };
+    loadCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activeCategories = useMemo(() => {
+    return availableCategories
+      .filter(category => category?.is_active)
+      .sort((a, b) => {
+        if ((a?.sort_order ?? 0) !== (b?.sort_order ?? 0)) {
+          return (a?.sort_order ?? 0) - (b?.sort_order ?? 0);
+        }
+        const labelA = resolveLocalizedValue(a.name, 'az');
+        const labelB = resolveLocalizedValue(b.name, 'az');
+        return labelA.localeCompare(labelB);
+      });
+  }, [availableCategories]);
+
+  const allowedCategorySlugs = useMemo(() => activeCategories.map(category => category.slug), [activeCategories]);
+
+  const getCategoryLabel = (category: CategoryDto) => {
+    const label = resolveLocalizedValue(category.name, 'az');
+    if (label && label.trim().length > 0) {
+      return label;
+    }
+    return category.slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  useEffect(() => {
+    if (activeCategories.length === 0) {
+      return;
+    }
+    setFormData(prev => {
+      const original = Array.isArray(prev.categories) ? prev.categories : [];
+      const allowed = new Set(allowedCategorySlugs);
+      const filtered = original.filter(slug => allowed.has(slug));
+      const unchanged = filtered.length === original.length && filtered.every((slug, index) => slug === original[index]);
+      if (unchanged && (filtered.length > 0 || isEditing)) {
+        return prev;
+      }
+      if (filtered.length === 0) {
+        if (isEditing) {
+          return { ...prev, categories: [] };
+        }
+        return { ...prev, categories: [activeCategories[0].slug] };
+      }
+      return { ...prev, categories: filtered };
+    });
+  }, [activeCategories, allowedCategorySlugs, isEditing]);
 
   const loadCar = async (carId: string) => {
     try {
@@ -80,14 +173,34 @@ const CarForm = () => {
         }
       }
 
+      const normalizedCategories = Array.isArray((car as any).categories) && (car as any).categories?.length
+        ? (car as any).categories.filter((category: unknown): category is string => typeof category === 'string' && category.trim() !== '')
+        : (car.category ? [car.category] : []);
+
+      const busyDates = Array.isArray((car as any).unavailable_dates)
+        ? (car as any).unavailable_dates
+            .map((value: unknown) => {
+              if (typeof value !== 'string') {
+                return null;
+              }
+              const trimmed = value.trim();
+              if (!trimmed) {
+                return null;
+              }
+              return trimmed;
+            })
+            .filter((value): value is string => Boolean(value))
+        : [];
+
       setFormData({
         brand: car.brand || '',
         model: car.model || '',
         year: car.year || new Date().getFullYear(),
-        category: car.category || 'ekonomik',
+        categories: normalizedCategories,
         price_per_day: car.price_per_day || 0,
         price_per_week: car.price_per_week || car.price_per_day * 7,
         price_per_month: car.price_per_month || car.price_per_day * 30,
+        unavailable_dates: busyDates,
         fuel_type: car.fuel_type || 'petrol',
         transmission: car.transmission || 'automatic',
         seats: car.seats || 5,
@@ -118,13 +231,33 @@ const CarForm = () => {
       return;
     }
 
+    if (!formData.categories || formData.categories.length === 0) {
+      toast.error('Ən azı bir kateqoriya seçin');
+      return;
+    }
+
     try {
       setLoading(true);
       
+      const sanitizedCategories = Array.from(new Set((formData.categories || [])
+        .map(category => category.trim())
+        .filter(Boolean)
+        .filter(category => allowedCategorySlugs.includes(category))));
+
+      if (sanitizedCategories.length === 0) {
+        toast.error('Ən azı bir kateqoriya seçin');
+        return;
+      }
+
       const submitData = {
         ...formData,
+        categories: sanitizedCategories,
+        category: sanitizedCategories[0] || 'uncategorized',
         price_per_week: formData.price_per_week || null,
         price_per_month: formData.price_per_month || null,
+        unavailable_dates: Array.from(new Set((formData.unavailable_dates || [])
+          .map(date => (typeof date === 'string' ? date.trim() : ''))
+          .filter((value): value is string => Boolean(value)))).sort(),
       };
 
       if (isEditing && id) {
@@ -281,6 +414,79 @@ const CarForm = () => {
                 </div>
               </div>
 
+
+
+              <div>
+                <Label>Məşğul günlər</Label>
+                <Flatpickr
+                  value={formData.unavailable_dates}
+                  options={{
+                    mode: 'multiple',
+                    dateFormat: 'Y-m-d',
+                    allowInput: true,
+                    disableMobile: true,
+                    defaultDate: formData.unavailable_dates,
+                  }}
+                  onChange={(dates, _dateStr, instance) => {
+                    const formatted = dates
+                      .map(date => {
+                        if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                          return null;
+                        }
+                        return instance.formatDate(date, 'Y-m-d');
+                      })
+                      .filter((value): value is string => Boolean(value));
+                    setFormData(prev => ({
+                      ...prev,
+                      unavailable_dates: Array.from(new Set(formatted)).sort(),
+                    }));
+                  }}
+                  render={({ defaultValue, value, ...props }, ref) => (
+                    <Input
+                      {...props}
+                      ref={ref as any}
+                      value={(formData.unavailable_dates || []).join(', ')}
+                      placeholder="YYYY-MM-DD, ..."
+                      readOnly
+                      className="w-full"
+                    />
+                  )}
+                />
+                {formData.unavailable_dates && formData.unavailable_dates.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.unavailable_dates.map(date => (
+                      <Button
+                        key={date}
+                        type="button"
+                        variant="outline"
+                        className="rounded-full border border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+                        onClick={() =>
+                          setFormData(prev => ({
+                            ...prev,
+                            unavailable_dates: (prev.unavailable_dates || []).filter(item => item !== date),
+                          }))
+                        }
+                      >
+                        {date}
+                        <span className="ml-2 text-xs text-slate-500">×</span>
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                  <span>Seçilmiş günlərdə avtomobil rezervasiya üçün əlçatan olmayacaq.</span>
+                  {formData.unavailable_dates && formData.unavailable_dates.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="h-auto px-2 py-0 text-xs text-accent hover:text-accent"
+                      onClick={() => setFormData(prev => ({ ...prev, unavailable_dates: [] }))}
+                    >
+                      Hamısını sil
+                    </Button>
+                  )}
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Yanacaq növü *</Label>
@@ -289,13 +495,14 @@ const CarForm = () => {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, fuel_type: value }))}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Yanacaq növü seçin" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="petrol">Benzin</SelectItem>
                       <SelectItem value="diesel">Dizel</SelectItem>
-                      <SelectItem value="electric">Elektrik</SelectItem>
                       <SelectItem value="hybrid">Hibrid</SelectItem>
+                      <SelectItem value="electric">Elektrik</SelectItem>
+                      <SelectItem value="gas">Qaz</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -317,22 +524,28 @@ const CarForm = () => {
               </div>
 
               <div>
-                <Label>Kateqoriya *</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kateqoriya seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ekonomik">Ekonomik</SelectItem>
-                    <SelectItem value="biznes">Biznes</SelectItem>
-                    <SelectItem value="premium">Premium</SelectItem>
-                    <SelectItem value="suv">SUV</SelectItem>
-                    <SelectItem value="minivan">Minivan</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Kateqoriyalar *</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {activeCategories.length === 0 ? (
+                    <span className="text-sm text-muted-foreground">Əvvəlcə kateqoriya yaradın</span>
+                  ) : (
+                    activeCategories.map(category => {
+                      const selected = isCategorySelected(category.slug);
+                      return (
+                        <Button
+                          key={category.id}
+                          type="button"
+                          variant={selected ? 'default' : 'outline'}
+                          className={selected ? 'bg-gradient-primary' : ''}
+                          onClick={() => handleCategoryToggle(category.slug)}
+                        >
+                          {getCategoryLabel(category)}
+                        </Button>
+                      );
+                    })
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">Birdən çox kateqoriya seçə bilərsiniz.</p>
               </div>
 
               <div>

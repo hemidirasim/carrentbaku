@@ -149,51 +149,25 @@ const About = () => {
   };
 
   // Default stats if not loaded
-  const defaultStats = [
-    { icon: Car, value: '100+', label: 'Avtomobil' },
-    { icon: Users, value: '5000+', label: 'Məmnun Müştəri' },
-    { icon: Award, value: '8+', label: 'İl Təcrübə' },
-    { icon: Shield, value: '100%', label: 'Sığortalı' },
-  ];
+  const rawStats = Array.isArray(aboutData?.stats) ? aboutData!.stats : [];
+  const stats = rawStats
+    .map(stat => ({
+      icon: getIconComponent(stat.icon),
+      value: stat.value,
+      label: stat.label,
+    }))
+    .filter(stat => stat.value && stat.label);
 
-  // Default values if not loaded
-  const defaultValues = [
-    {
-      title: 'Keyfiyyət',
-      description: 'Yüksək keyfiyyətli avtomobillər və xidmət standartları',
-      icon: '⭐',
-    },
-    {
-      title: 'Etibarlılıq',
-      description: '8 illik təcrübə və minlərlə məmnun müştəri',
-      icon: '🤝',
-    },
-    {
-      title: 'Şəffaflıq',
-      description: 'Gizli ödənişlər yoxdur, hər şey aydın və anlaşılandır',
-      icon: '💎',
-    },
-    {
-      title: 'Dəstək',
-      description: '24/7 müştəri dəstəyi və yardım',
-      icon: '🛟',
-    },
-  ];
-
-  const stats = aboutData?.stats?.map(stat => ({
-    icon: getIconComponent(stat.icon),
-    value: stat.value,
-    label: stat.label,
-  })) || defaultStats;
-
-  const values = aboutData?.values || defaultValues;
+  const values = Array.isArray(aboutData?.values)
+    ? aboutData!.values.filter(value => (value.title && value.title.trim()) || (value.description && value.description.trim()))
+    : [];
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Yüklənir...</p>
+          <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -220,7 +194,7 @@ const About = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Bizim Hekayəmiz</h2>
+              <h2 className="text-3xl font-bold mb-6">{t('about.storyTitle')}</h2>
               <div className="space-y-4 text-muted-foreground">
                 <div 
                   className="prose prose-lg max-w-none prose-p:text-muted-foreground prose-p:leading-relaxed"
@@ -235,7 +209,7 @@ const About = () => {
                   <div key={index} className={index === 1 || index === 3 ? 'pt-8' : ''}>
                     <img 
                       src={imageUrl}
-                      alt={`About ${index + 1}`}
+                      alt={t('about.galleryAlt')}
                       className="rounded-lg shadow-card w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       style={{ aspectRatio: '1 / 1', minHeight: '200px' }}
                     />
@@ -247,24 +221,24 @@ const About = () => {
                 <div className="space-y-4">
                   <img 
                     src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000"
-                    alt="Office"
+                    alt={t('about.galleryAlt')}
                     className="rounded-lg shadow-card"
                   />
                   <img 
                     src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1000"
-                    alt="Service"
+                    alt={t('about.galleryAlt')}
                     className="rounded-lg shadow-card"
                   />
                 </div>
                 <div className="space-y-4 pt-8">
                   <img 
                     src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000"
-                    alt="Cars"
+                    alt={t('about.galleryAlt')}
                     className="rounded-lg shadow-card"
                   />
                   <img 
                     src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000"
-                    alt="Fleet"
+                    alt={t('about.galleryAlt')}
                     className="rounded-lg shadow-card"
                   />
                 </div>
@@ -275,45 +249,49 @@ const About = () => {
       </section>
 
       {/* Stats */}
-      <section className="py-16 bg-gradient-card">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <Card key={index} className="text-center hover:shadow-elegant transition-all">
-                  <CardContent className="pt-6">
-                    <div className="w-12 h-12 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+      {stats.length > 0 && (
+        <section className="py-16 bg-gradient-card">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, index) => {
+                const IconComponent = stat.icon;
+                return (
+                  <Card key={index} className="text-center hover:shadow-elegant transition-all">
+                    <CardContent className="pt-6">
+                      <div className="w-12 h-12 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center">
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
+                      <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Values */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Dəyərlərimiz</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
-              <Card key={index} className="text-center hover:shadow-elegant transition-all hover:-translate-y-2">
-                <CardContent className="pt-6">
-                  <div className="text-4xl mb-4">{value.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{value.title}</h3>
-                  <p className="text-sm text-muted-foreground">{value.description}</p>
-                </CardContent>
-              </Card>
-            ))}
+      {values.length > 0 && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Dəyərlərimiz</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {values.map((value, index) => (
+                <Card key={index} className="text-center hover:shadow-elegant transition-all hover:-translate-y-2">
+                  <CardContent className="pt-6">
+                    <div className="text-4xl mb-4">{value.icon}</div>
+                    <h3 className="text-xl font-bold mb-2">{value.title}</h3>
+                    <p className="text-sm text-muted-foreground">{value.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
