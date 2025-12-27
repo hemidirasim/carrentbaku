@@ -64,32 +64,44 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/9ee2c8c9-ef1c-457a-be31-bf6266495654) and click on Share -> Publish.
 
-### Manual server deployment (new.carrentbaku.az)
+### Manual server deployment (carrentbaku.az)
 
-When deploying directly on the DigitalOcean droplet, follow these steps to avoid wiping user-generated uploads (blog images, etc.):
+When deploying directly on the server, follow these steps:
 
 1. SSH into the server and move to the project directory:
 
    ```bash
-   cd /var/www/new.carrentbaku.az/source
+   cd /var/www/carrentbaku.az
    ```
 
-2. Install dependencies (once) and build:
+2. Pull latest changes and install dependencies (if needed):
 
    ```bash
+   git pull origin main
    npm install
+   ```
+
+3. Build the frontend:
+
+   ```bash
    npm run build
    ```
 
-3. Sync the new build to `public_html` while preserving the `uploads` directory:
+4. Sync the new build to `public_html` while preserving the `uploads` directory:
 
    ```bash
-   rsync -a --delete --exclude 'uploads/' dist/ ../public_html/
+   rsync -a --delete --exclude 'uploads/' dist/ public_html/
    ```
 
-4. Restart the Node server (`/usr/bin/node --import tsx server/index.ts`).
+5. Restart the Node server:
 
-> ⚠️ Never run `rsync` with `--delete` against `public_html` without excluding the `uploads/` directory—doing so will erase all uploaded blog images.
+   ```bash
+   pkill -f 'server/index'
+   cd /var/www/carrentbaku.az
+   nohup node --import tsx server/index.ts > /dev/null 2>&1 &
+   ```
+
+> ⚠️ Never run `rsync` with `--delete` against `public_html` without excluding the `uploads/` directory—doing so will erase all uploaded images.
 
 ## Can I connect a custom domain to my Lovable project?
 
