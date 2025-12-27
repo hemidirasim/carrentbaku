@@ -74,7 +74,13 @@ export const ImageGalleryUpload = ({
         // Upload image
         const pathname = `${folder}/${Date.now()}-${i}-${file.name}`;
         const url = await uploadImage(file, pathname);
-        uploadedUrls.push(url);
+        
+        // Validate that URL is not a base64 string
+        if (url && !url.startsWith('data:image') && !url.startsWith('data:application')) {
+          uploadedUrls.push(url);
+        } else {
+          throw new Error('Invalid upload response: received base64 instead of file URL');
+        }
       } catch (error) {
         console.error('Upload error:', error);
         toast.error(`${file.name} yüklənərkən xəta baş verdi`);
@@ -177,7 +183,9 @@ export const ImageGalleryUpload = ({
       {images.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((url, index) => {
-            const preview = previews.get(index) || url;
+            // Use preview only if URL is not a base64 string
+            const isBase64 = url.startsWith('data:image') || url.startsWith('data:application');
+            const preview = isBase64 ? url : (previews.get(index) || url);
             return (
               <div key={index} className="relative group">
                 <div className="relative aspect-square rounded-lg border border-border overflow-hidden bg-muted">

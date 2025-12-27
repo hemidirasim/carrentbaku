@@ -249,8 +249,23 @@ const CarForm = () => {
         return;
       }
 
+      // Filter out base64 strings from image_url
+      const sanitizedImageUrls = Array.isArray(formData.image_url)
+        ? formData.image_url.filter(url => {
+            if (typeof url !== 'string') return false;
+            // Reject base64 data URLs
+            if (url.startsWith('data:image') || url.startsWith('data:application')) {
+              return false;
+            }
+            return true;
+          })
+        : (formData.image_url && typeof formData.image_url === 'string' && !formData.image_url.startsWith('data:') 
+            ? [formData.image_url] 
+            : []);
+
       const submitData = {
         ...formData,
+        image_url: sanitizedImageUrls,
         categories: sanitizedCategories,
         category: sanitizedCategories[0] || 'uncategorized',
         price_per_week: formData.price_per_week || null,
