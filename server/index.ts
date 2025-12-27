@@ -37,7 +37,7 @@ const allowedOrigins = [
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PUBLIC_ROOT = path.resolve(__dirname, '../../public_html');
+const PUBLIC_ROOT = path.resolve(__dirname, '../public_html');
 const UPLOAD_ROOT = path.join(PUBLIC_ROOT, 'uploads');
 const fsPromises = fs.promises;
 
