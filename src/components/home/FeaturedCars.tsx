@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { api, CategoryDto } from '@/lib/api';
 import { resolveLocalizedValue } from '@/hooks/useContactInfo';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface Car {
   id: string;
@@ -72,28 +73,12 @@ const FeaturedCars = () => {
     }
   };
 
-  // Parse Vercel Blob response if it's JSON
-  const parseImageUrl = (url: string | any): string => {
-    if (typeof url === 'string') {
-      try {
-        const parsed = JSON.parse(url);
-        return parsed.url || url;
-      } catch {
-        return url;
-      }
-    }
-    if (url && typeof url === 'object' && url.url) {
-      return url.url;
-    }
-    return url || '';
-  };
-
   // Get first image from array or single image
   const getCarImage = (car: Car) => {
     if (Array.isArray(car.image_url)) {
-      return car.image_url.length > 0 ? parseImageUrl(car.image_url[0]) : '';
+      return car.image_url.length > 0 ? normalizeImageUrl(car.image_url[0]) : '';
     }
-    return parseImageUrl(car.image_url || '');
+    return normalizeImageUrl(car.image_url || '');
   };
 
   const getCarName = (car: Car) => {

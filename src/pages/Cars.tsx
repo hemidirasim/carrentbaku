@@ -7,6 +7,7 @@ import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { api, CategoryDto } from '@/lib/api';
 import { resolveLocalizedValue } from '@/hooks/useContactInfo';
+import { normalizeImageUrl } from '@/lib/utils';
 
 const INITIAL_VISIBLE_CARS = 12;
 
@@ -180,28 +181,12 @@ const Cars = () => {
     navigate(`/cars${newSearch ? `?${newSearch}` : ''}`, { replace: true });
   };
 
-  // Parse Vercel Blob response if it's JSON
-  const parseImageUrl = (url: string | any): string => {
-    if (typeof url === 'string') {
-      try {
-        const parsed = JSON.parse(url);
-        return parsed.url || url;
-      } catch {
-        return url;
-      }
-    }
-    if (url && typeof url === 'object' && url.url) {
-      return url.url;
-    }
-    return url || '';
-  };
-
   // Get images array from car
   const getCarImages = (car: Car): string[] => {
     if (Array.isArray(car.image_url)) {
-      return car.image_url.map(url => parseImageUrl(url)).filter(url => url);
+      return car.image_url.map(url => normalizeImageUrl(url)).filter(url => url);
     }
-    const singleImage = parseImageUrl(car.image_url || '');
+    const singleImage = normalizeImageUrl(car.image_url || '');
     return singleImage ? [singleImage] : [];
   };
 

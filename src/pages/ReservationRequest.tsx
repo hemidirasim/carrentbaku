@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface Car {
   id: string;
@@ -334,25 +335,10 @@ const ReservationRequest = () => {
 
   const images = useMemo(() => {
     if (!car) return [] as string[];
-    const parseImageUrl = (url: string | any): string => {
-      if (typeof url === 'string') {
-        try {
-          const parsed = JSON.parse(url);
-          return parsed.url || url;
-        } catch {
-          return url;
-        }
-      }
-      if (url && typeof url === 'object' && url.url) {
-        return url.url;
-      }
-      return url || '';
-    };
-
     if (Array.isArray(car.image_url)) {
-      return car.image_url.map(parseImageUrl).filter(Boolean);
+      return car.image_url.map(normalizeImageUrl).filter(Boolean);
     }
-    const normalized = parseImageUrl(car.image_url || '');
+    const normalized = normalizeImageUrl(car.image_url || '');
     return normalized ? [normalized] : [];
   }, [car]);
 

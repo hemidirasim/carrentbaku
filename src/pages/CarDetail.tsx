@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Users, Fuel, Calendar, Shield, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { api } from '@/lib/api';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface Car {
   id: string;
@@ -53,29 +54,13 @@ const CarDetail = () => {
     }
   };
 
-  // Parse Vercel Blob response if it's JSON
-  const parseImageUrl = (url: string | any): string => {
-    if (typeof url === 'string') {
-      try {
-        const parsed = JSON.parse(url);
-        return parsed.url || url;
-      } catch {
-        return url;
-      }
-    }
-    if (url && typeof url === 'object' && url.url) {
-      return url.url;
-    }
-    return url || '';
-  };
-
   // Get images array from car
   const getCarImages = (): string[] => {
     if (!car) return [];
     if (Array.isArray(car.image_url)) {
-      return car.image_url.map(url => parseImageUrl(url)).filter(url => url);
+      return car.image_url.map(url => normalizeImageUrl(url)).filter(url => url);
     }
-    const singleImage = parseImageUrl(car.image_url || '');
+    const singleImage = normalizeImageUrl(car.image_url || '');
     return singleImage ? [singleImage] : [];
   };
 

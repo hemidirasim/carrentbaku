@@ -123,6 +123,9 @@ app.use(
 );
 app.use(express.json());
 
+// Serve static files from public_html
+app.use(express.static(PUBLIC_ROOT));
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
